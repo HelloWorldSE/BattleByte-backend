@@ -3,7 +3,7 @@ package com.battlebyte.battlebyte.entity.dto;
 import lombok.Data;
 
 @Data
-public class UserDTO {
-    public String username;
-    public String password;
+public class LoginDTO {
+    private String username;
+    private String password;
 }
