@@ -8,6 +8,6 @@ import lombok.Data;
 @Table(name = "Question")
 public class Question {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 }

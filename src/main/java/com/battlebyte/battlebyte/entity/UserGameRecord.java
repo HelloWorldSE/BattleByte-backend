@@ -7,7 +7,7 @@ import lombok.Data;
 @Table(name = "UserGameRecord")
 public class UserGameRecord {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "gameId",nullable = false)
     private Integer gameId;
