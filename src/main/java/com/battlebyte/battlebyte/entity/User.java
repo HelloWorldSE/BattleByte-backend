@@ -3,12 +3,14 @@ package com.battlebyte.battlebyte.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "User")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "userName", length = 20,nullable = false,unique = true)
     private String userName;
@@ -18,4 +20,8 @@ public class User {
     private String userEmail;
     @Column(name = "avatar", length = 20)
     private String avatar; //图片路径
+    @ManyToMany(mappedBy = "users")
+    private List<Role> roles;
+    @ManyToMany(mappedBy = "users")
+    private List<Permission> permissions;
 }
