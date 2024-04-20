@@ -6,9 +6,9 @@ spring:
     name: BattleByte
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/battlebyte?serverTimezone=GMT%2b8
+    url: jdbc:mysql://81.70.241.166:3306/battlebyte?serverTimezone=GMT%2b8
     username: root
-    password: Ab123456789
+    password: helloworld
 #  jpa:
 #    hibernate:
 #      ddl-auto: update

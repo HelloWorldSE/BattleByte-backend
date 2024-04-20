@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.entity;
 
+import com.battlebyte.battlebyte.exception.ServiceException;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,8 +21,4 @@ public class User {
     private String userEmail;
     @Column(name = "avatar", length = 20)
     private String avatar; //图片路径
-    @ManyToMany(mappedBy = "users")
-    private List<Role> roles;
-    @ManyToMany(mappedBy = "users")
-    private List<Permission> permissions;
 }
