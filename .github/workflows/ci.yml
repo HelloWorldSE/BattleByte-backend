@@ -1,49 +1,37 @@
-name: Build and Deploy
-# 监听 dev 分支上的 push 事件
+name: CI
+
 on:
   push:
     branches:
       - dev
+
 jobs:
-  build-and-deploy:
-    # 构建环境使用 ubuntu
+  deploy:
+    name: Deploy Spring Boot app
     runs-on: ubuntu-latest
+
     steps:
-      # 官方action, 将代码拉取到虚拟机
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # 安装node.js
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Java
+        uses: actions/setup-java@v2
         with:
-          node-version: "18.18.2"
+          java-version: '17'
 
-      # 下载依赖、打包项目
-      - name: Install and Build
+      - name: Build project
         run: |
-          yarn install
-          yarn build
+          ./mvnw clean package -DskipTests
 
-      # 部署到服务器
-      - name: Upload to Deploy Server
+      - name: Sync to server
         uses: appleboy/scp-action@master
         with:
-          # 服务器域名
           host: ${{ secrets.SERVER_HOST }}
-          # 服务器用户名
           username: ${{ secrets.SERVER_USERNAME }}
-          # 服务器密码
           password: ${{ secrets.SERVER_PASSWORD }}
-          # 服务器端口
-          port: ${{ secrets.SERVER_PORT }}
-          # 指定上传的文件目录(项目配置的打包目录名称)
-          source: './dist/*'
-          # 指定上传服务器目录
-          target: '/var/www/movie'
-          # 解压时覆盖现有文件
-          overwrite: true
-          # 删除指定数量的前导路径元素
-          strip_components: 1
+          source: "target/*.jar"
+          target: "/home/ubuntu/battlebyte-backend"
+
+      - name: SSH into server and start app
+        run: |
+          sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} -p 9090 "cd /path/to/remote/directory && java -jar BattleByte.jar"
