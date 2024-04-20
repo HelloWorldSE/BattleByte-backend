@@ -24,15 +24,31 @@ jobs:
         run: |
           mvn clean package -DskipTests
 
-      - name: Sync to server
-        uses: appleboy/scp-action@master
+      - name: Transfer jar packets
+        uses: garygrossgarten/github-action-scp@release
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          source: "target/*.jar"
-          target: "/home/ubuntu/BattleByte-backend"
+          # Github Action 的服务器文件路径
+          local: target/BattleByte.jar
+          # 私有服务器文件路径
+          remote: /home/ubuntu/BattleByte-backend/BattleByte.jar
+          # 私有服务器公网IP地址
+          host: ${{ secrets.HOST }}
+          # 私有服务器用户名
+          username: ${{ secrets.USERNAME }}
+          # 私有服务器用户密码
+          password: ${{ secrets.PASSWORD }}
 
-      - name: SSH into server and start app
-        run: |
-          sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "cd /home/ubuntu/BattleByte-backend && java -jar BattleByte.jar"
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          # 同上述
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          # ssh进入系统后执行什么样的操作。一般是关闭原有的服务在重启
+          script: |
+            cd /home/ubuntu/BattleByte-backend
+            ps -ef | grep BattleByte.jar | grep -v grep | awk '{print $2}' | xargs kill -9
+            nohup java -jar BattleByte.jar > runtime.log 2>&1 &
+            pwd
