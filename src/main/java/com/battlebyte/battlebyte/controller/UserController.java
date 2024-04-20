@@ -56,6 +56,7 @@ public class UserController {
     public Result getById(Integer id) {
         return Result.success(userService.findById(id));
     }
+
     @GetMapping("/test")
     public Result test() {
         return Result.success(userService.getRole(1));
