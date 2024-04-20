@@ -32,20 +32,20 @@ jobs:
           # 私有服务器文件路径
           remote: /home/ubuntu/BattleByte-backend/BattleByte.jar
           # 私有服务器公网IP地址
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SERVER_HOST }}
           # 私有服务器用户名
-          username: ${{ secrets.USERNAME }}
+          username: ${{ secrets.SERVER_USERNAME }}
           # 私有服务器用户密码
-          password: ${{ secrets.PASSWORD }}
+          password: ${{ secrets.SERVER_PASSWORD }}
 
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
           # 同上述
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
           # ssh进入系统后执行什么样的操作。一般是关闭原有的服务在重启
           script: |
             cd /home/ubuntu/BattleByte-backend
