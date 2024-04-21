@@ -11,7 +11,6 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -65,4 +64,9 @@ public class UserController {
         return Result.success(userService.getFriend(uid, pageable));
     }
 
+    @PostMapping("/api/user/update")
+    public Result update(@RequestBody User user) {
+        userService.update(user);
+        return Result.success();
+    }
 }
