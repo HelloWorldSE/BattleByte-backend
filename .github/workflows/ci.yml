@@ -24,20 +24,6 @@ jobs:
         run: |
           mvn clean package -DskipTests
 
-      - name: Transfer jar packets
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          # Github Action 的服务器文件路径
-          local: target/BattleByte.jar
-          # 私有服务器文件路径
-          remote: /home/ubuntu/BattleByte-backend/BattleByte.jar
-          # 私有服务器公网IP地址
-          host: ${{ secrets.SERVER_HOST }}
-          # 私有服务器用户名
-          username: ${{ secrets.SERVER_USERNAME }}
-          # 私有服务器用户密码
-          password: ${{ secrets.SERVER_PASSWORD }}
-
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
