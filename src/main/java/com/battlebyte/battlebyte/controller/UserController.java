@@ -2,7 +2,7 @@ package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.common.Result;
 import com.battlebyte.battlebyte.entity.User;
-import com.battlebyte.battlebyte.entity.dto.LoginDTO;
+import com.battlebyte.battlebyte.entity.dto.UserDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -11,9 +11,10 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class UserController {
@@ -30,7 +31,7 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/auth/login")
-    public Result loginUser(@RequestBody LoginDTO loginRequest) {
+    public Result loginUser(@RequestBody UserDTO loginRequest) {
 //        User user = userService.login(loginRequest.getUserName(), loginRequest.getPassword());
 //        if (user != null) {
 //            Subject subject = SecurityUtils.getSubject();
@@ -52,18 +53,16 @@ public class UserController {
         return Result.success();
     }
 
-    @PostMapping("/api/profile")
-    public Result getById(Integer id) {
-        return Result.success(userService.findById(id));
+    @GetMapping("/api/user/profile")
+    public Result getById(@RequestParam Integer id) {
+        return Result.success(userService.findByUserId(id));
     }
 
-    @GetMapping("/test")
-    public Result test() {
-        return Result.success(userService.getRole(1));
+    @GetMapping("/api/user/friend")
+    public Result getFriend(@RequestParam Integer uid,
+                            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return Result.success(userService.getFriend(uid, pageable));
     }
 
-    @GetMapping("/test2")
-    public Result test2() {
-        return Result.success(userService.getPermission(1));
-    }
 }
