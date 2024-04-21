@@ -1,10 +1,10 @@
 package com.battlebyte.battlebyte.entity;
 
 import com.battlebyte.battlebyte.exception.ServiceException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 
 @Data
 @Entity
