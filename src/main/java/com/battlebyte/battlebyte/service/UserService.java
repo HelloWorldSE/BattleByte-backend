@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -35,6 +36,11 @@ public class UserService {
     public User login(String username, String password) {
         User user = userDao.findUser(username, password);
         return user;
+    }
+
+    public User findById(Integer uid) {
+        Optional<User> op = userDao.findById(uid);
+        return op.orElse(null);
     }
 
     public UserProfileDTO findByUserId(Integer uid) {
@@ -65,4 +71,5 @@ public class UserService {
             userDao.save(user);
         }
     }
+
 }
