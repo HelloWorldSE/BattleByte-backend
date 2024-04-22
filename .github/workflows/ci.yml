@@ -6,8 +6,8 @@ on:
       - dev
 
 jobs:
-  deploy:
-    name: Deploy Spring Boot app
+  build:
+    name: Build Spring Boot app
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,24 @@ jobs:
         run: |
           ls target
           md5sum target/BattleByte.jar
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: battlebyte-backend
+          path: target/BattleByte.jar
+  
+  deploy:
+    name: Deploy jar
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: battlebyte-backend
 
       - name: Stop server
         continue-on-error: true
