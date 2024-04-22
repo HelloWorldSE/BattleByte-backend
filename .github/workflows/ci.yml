@@ -30,6 +30,7 @@ jobs:
           md5sum target/BattleByte.jar
 
       - name: Stop server
+        continue-on-error: true
         env:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
