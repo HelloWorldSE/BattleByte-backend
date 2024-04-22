@@ -60,7 +60,7 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
           HOST: ${{secrets.HOST}}
-        run: sshpass -p $PASSWORD scp -r -o StrictHostKeyChecking=no ./target/BattleByte.jar $USERNAME@$HOST:/home/ubuntu/BattleByte-backend
+        run: sshpass -p $PASSWORD scp -r -o StrictHostKeyChecking=no ./BattleByte.jar $USERNAME@$HOST:/home/ubuntu/BattleByte-backend
 
       - name: Restart server
         env:
