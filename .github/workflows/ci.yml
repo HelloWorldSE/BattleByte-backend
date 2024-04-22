@@ -34,7 +34,7 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
           HOST: ${{secrets.HOST}}
-        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && ps -ef | grep BattleByte.jar | grep -v grep | awk '{print $2}' | xargs -r kill -9"
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "screen -X -S backend quit"
 
       - name: Upload
         env:
@@ -48,4 +48,4 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
           HOST: ${{secrets.HOST}}
-        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && nohup java -jar BattleByte.jar 1> console.log 2> error.log & && pwd"
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && screen -dmS backend sh -c 'java -jar BattleByte.jar'"
