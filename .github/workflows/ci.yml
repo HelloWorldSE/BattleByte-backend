@@ -34,7 +34,7 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
           HOST: ${{secrets.HOST}}
-        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && ps -ef | grep BattleByte.jar | grep -v grep | awk '{print $2}' | xargs kill -9"
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && ps -ef | grep BattleByte.jar | grep -v grep | awk '{print $2}' | xargs -r kill -9"
 
       - name: Upload
         env:
