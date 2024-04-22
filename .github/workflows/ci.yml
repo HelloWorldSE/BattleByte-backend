@@ -48,4 +48,4 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
           USERNAME: ${{secrets.USERNAME}}
           HOST: ${{secrets.HOST}}
-        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && nohup java -jar BattleByte.jar 1> console.log 2> error.log &"
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && nohup java -jar BattleByte.jar 1> console.log 2> error.log & && pwd"
