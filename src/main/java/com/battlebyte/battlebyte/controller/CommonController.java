@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CommonController {
     @RequestMapping("/nopermission")
-    public Result noPermission() {
+    public void noPermission() {
         throw new ServiceException(2, "无权限");
     }
 }

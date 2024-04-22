@@ -23,14 +23,13 @@ public class UserService {
         userDao.save(user);
     }
 
-    public Result register(User user) {
+    public void register(User user) {
         if (userDao.findByUserName(user.getUserName()) != null) {
             throw new ServiceException("用户名已存在");
         } else {
             User user1 = userDao.save(user);
             userDao.setRole(user1.getId(), 1); // default set role = 0
         }
-        return Result.success();
     }
 
     public User login(String username, String password) {
