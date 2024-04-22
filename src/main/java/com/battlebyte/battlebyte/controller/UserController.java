@@ -46,12 +46,7 @@ public class UserController {
         return userService.findByUserId(id);
     }
 
-    @GetMapping("/api/user/friend")
-    public Page<UserInfoDTO> getFriend(@RequestParam Integer uid,
-                                       @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
-        return userService.getFriend(uid, pageable);
-    }
+
 
     @PostMapping("/api/user/update")
     public void update(@RequestBody User user) {

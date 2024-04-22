@@ -22,6 +22,5 @@ mybatis:
 
 emos:
   jwt:
-    secret: helloworld
     expire: 5
     cache-expire: 10
