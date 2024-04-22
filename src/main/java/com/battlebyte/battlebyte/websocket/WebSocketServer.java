@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
+
 @Component
 @ServerEndpoint("/server")
 @Slf4j
@@ -77,7 +79,7 @@ public class WebSocketServer {
                 //设置session
                 this.session = session;
                 if (type.equals("LOGIN_REQ")) {
-                    onMessage_LOGIN_REQ(data);
+                    onMessage_LOGIN_REQ(data,id);
                 }
             } catch (Exception e) {
                 log.error("用户【" + uid + "】发送消息异常！", e);
@@ -86,10 +88,12 @@ public class WebSocketServer {
     }
 
     //处理登录
-    private void onMessage_LOGIN_REQ(JSONObject data) throws IOException {
+    private void onMessage_LOGIN_REQ(JSONObject data,int id) throws IOException {
         String token = data.getString("token");
-        //获取uid
+        //获取uid 测试
         Integer uid = 1;
+        //获取uid
+        //Integer uid = getUserId(token);
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
@@ -104,7 +108,15 @@ public class WebSocketServer {
 
         log.info("用户【" + uid + "】连接成功，当前在线人数为:" + getOnlineCount());
         try {
-            sendMsg("连接成功");
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput=new JSONObject();
+            
+            dataOutput.put("code",0);
+
+            output.put("type","");
+            output.put("data",dataOutput);
+            output.put("id",id);
+            sendMsg(output.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
         }
