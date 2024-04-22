@@ -80,6 +80,8 @@ public class WebSocketServer {
                 this.session = session;
                 if (type.equals("LOGIN_REQ")) {
                     onMessage_LOGIN_REQ(data,id);
+                }else if(type.equals("MATCH_REQ")){
+                    onMessage_MATCH_REQ(data,id);
                 }
             } catch (Exception e) {
                 log.error("用户【" + uid + "】发送消息异常！", e);
@@ -108,25 +110,50 @@ public class WebSocketServer {
 
         log.info("用户【" + uid + "】连接成功，当前在线人数为:" + getOnlineCount());
         try {
-            JSONObject output = new JSONObject();
-            JSONObject dataOutput=new JSONObject();
+            JSONObject output_LOGIN_ACK = new JSONObject();
+            JSONObject dataOutput_LOGIN_ACK=new JSONObject();
             
-            dataOutput.put("code",0);
+            dataOutput_LOGIN_ACK.put("code",0);
 
-            output.put("type","");
-            output.put("data",dataOutput);
-            output.put("id",id);
-            sendMsg(output.toJSONString());
+            output_LOGIN_ACK.put("type","LOGIN_ACK");
+            output_LOGIN_ACK.put("data",dataOutput_LOGIN_ACK);
+            output_LOGIN_ACK.put("id",id);
+            sendMsg(output_LOGIN_ACK.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
         }
     }
-    /**
-     * 处理错误
-     *
-     * @param session
-     * @param error
-     */
+    private void onMessage_MATCH_REQ(JSONObject data,int id) throws IOException {
+        String type = data.getString("type");
+
+        //输出逻辑
+        JSONObject output_MATCH_START = new JSONObject();
+        JSONObject dataOutput_MATCH_START=new JSONObject();
+
+        dataOutput_MATCH_START.put("type",type);
+
+        output_MATCH_START.put("type","MATCH_START");
+        output_MATCH_START.put("data",dataOutput_MATCH_START);
+        output_MATCH_START.put("id",id);
+        sendMsg(output_MATCH_START.toJSONString());
+
+        //todo:调用后端匹配机制开始匹配
+        // 匹配完成
+        //输出逻辑
+        JSONObject output_MATCH_ENTER = new JSONObject();
+        JSONObject dataOutput_MATCH_ENTER=new JSONObject();
+
+        dataOutput_MATCH_ENTER.put("type",type);
+        //todo:
+        dataOutput_MATCH_ENTER.put("opponents","to be continue");
+        dataOutput_MATCH_ENTER.put("team_side","to be continue");
+
+        output_MATCH_ENTER.put("type","MATCH_ENTER");
+        output_MATCH_ENTER.put("data",dataOutput_MATCH_ENTER);
+        output_MATCH_ENTER.put("id",id);
+        sendMsg(output_MATCH_ENTER.toJSONString());
+    }
+    //处理匹配
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户【" + this.uid + "】处理消息错误，原因:" + error.getMessage());
