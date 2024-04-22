@@ -32,13 +32,8 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/auth/login")
-    public void loginUser(@RequestBody UserDTO loginRequest) {
-        User user = userService.login(loginRequest.getUserName(), loginRequest.getPassword());
-        if (user != null) {
-            return;
-        } else {
-            throw new ServiceException("用户名或密码错误");
-        }
+    public String loginUser(@RequestBody UserDTO loginRequest) {
+        return userService.login(loginRequest.getUserName(), loginRequest.getPassword());
     }
 
     @GetMapping("/api/user/profile")
