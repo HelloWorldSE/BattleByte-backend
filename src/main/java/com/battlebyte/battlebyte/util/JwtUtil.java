@@ -1,13 +1,14 @@
 package com.battlebyte.battlebyte.util;
 
-import cn.hutool.core.date.DateField;
-import cn.hutool.core.date.DateUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Date;
 
 @Component
@@ -20,6 +21,15 @@ public class JwtUtil {
                 .withExpiresAt(date)
                 .sign(algorithm);
         return token;
+    }
+
+    /** 无参函数：根据请求查询id
+     *  有参函数：根据传入的token查询id
+     */
+    public static int getUserId() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("token");
+        return getUserId(token);
     }
 
     public static int getUserId(String token){
