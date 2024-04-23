@@ -6,8 +6,8 @@ on:
       - dev
 
 jobs:
-  deploy:
-    name: Deploy Spring Boot app
+  build:
+    name: Build Spring Boot app
     runs-on: ubuntu-latest
 
     steps:
@@ -23,18 +23,48 @@ jobs:
       - name: Build project
         run: |
           mvn clean package -DskipTests
+    
+      - name: Check Hash
+        run: |
+          ls target
+          md5sum target/BattleByte.jar
 
-      - name: Deploy
-        uses: appleboy/ssh-action@master
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-          # 同上述
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: ${{ secrets.SERVER_PORT }}
-          # ssh进入系统后执行什么样的操作。一般是关闭原有的服务在重启
-          script: |
-            cd /home/ubuntu/BattleByte-backend
-            ps -ef | grep BattleByte.jar | grep -v grep | awk '{print $2}' | xargs kill -9
-            nohup java -jar BattleByte.jar > runtime.log 2>&1 &
-            pwd
+          name: battlebyte-backend
+          path: target/BattleByte.jar
+  
+  deploy:
+    name: Deploy jar
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: battlebyte-backend
+
+      - name: Stop server
+        continue-on-error: true
+        env:
+          PASSWORD: ${{secrets.PASSWORD}}
+          USERNAME: ${{secrets.USERNAME}}
+          HOST: ${{secrets.HOST}}
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "screen -X -S backend quit"
+
+      - name: Upload
+        env:
+          PASSWORD: ${{secrets.PASSWORD}}
+          USERNAME: ${{secrets.USERNAME}}
+          HOST: ${{secrets.HOST}}
+        run: sshpass -p $PASSWORD scp -r -o StrictHostKeyChecking=no ./BattleByte.jar $USERNAME@$HOST:/home/ubuntu/BattleByte-backend
+
+      - name: Restart server
+        env:
+          PASSWORD: ${{secrets.PASSWORD}}
+          USERNAME: ${{secrets.USERNAME}}
+          HOST: ${{secrets.HOST}}
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "cd /home/ubuntu/BattleByte-backend && screen -dmS backend sh -c 'java -jar BattleByte.jar'"
