@@ -3,7 +3,6 @@ package com.battlebyte.battlebyte.util;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -13,16 +12,11 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    @Value("${emos.jwt.expire}")
-    private static int expire;//保存的时间
 
-    //1、通过唯一的openID生成令牌
     public static String createToken(int userId, String secret){
-        Date date = DateUtil.offset(new Date(),
-                DateField.SECOND, expire * 24 * 60 * 60);
-        Algorithm algorithm=Algorithm.HMAC256(secret);
-        JWTCreator.Builder builder= JWT.create();
-        String token= builder.withClaim("userId", userId) //用户信息
+        Date date = new Date(System.currentTimeMillis() + 72 * 3600 * 1000);
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        String token = JWT.create().withClaim("userId", userId) //用户信息
                 .withExpiresAt(date)
                 .sign(algorithm);
         return token;
