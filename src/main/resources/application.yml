@@ -18,9 +18,3 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-
-emos:
-  jwt:
-    expire: 5
-    cache-expire: 10

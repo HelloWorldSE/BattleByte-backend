@@ -1,9 +1,10 @@
 package com.battlebyte.battlebyte.service;
 
-import com.battlebyte.battlebyte.common.Result;
 import com.battlebyte.battlebyte.config.UserToken;
 import com.battlebyte.battlebyte.dao.UserDao;
+import com.battlebyte.battlebyte.entity.Role;
 import com.battlebyte.battlebyte.entity.User;
+import com.battlebyte.battlebyte.entity.dto.LoginDTO;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
@@ -12,7 +13,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,27 +42,25 @@ public class UserService {
         }
     }
 
-    public String login(String username, String password) {
-        User user = userDao.findUser(username, password);
-//        User user = userDao.findByUserName(username);
+    public LoginDTO login(String username, String password) {
+        User user = userDao.findByUserName(username);
         if (user == null) {
             throw new ServiceException("用户名不存在");
         }
-
         String token = JwtUtil.createToken(user.getId(), password);
         UserToken userToken = new UserToken(token);
-//        Subject subject = SecurityUtils.getSubject();
-//        try {
-//            subject.login(userToken);
-//        } catch (UnknownAccountException e) {
-//            throw new ServiceException("用户不存在");
-//        } catch (IncorrectCredentialsException e) {
-//            throw new ServiceException("密码错误");
-//        } catch (ExpiredCredentialsException e) {
-//            throw new ServiceException("token过期");
-//        }
-//        return user;
-        return token;
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(userToken);
+        } catch (UnknownAccountException e) {
+            throw new ServiceException("用户不存在");
+        } catch (IncorrectCredentialsException e) {
+            throw new ServiceException("密码错误");
+        } catch (ExpiredCredentialsException e) {
+            throw new ServiceException("token过期");
+        }
+        List<String> roles = userDao.getRole(user.getId());
+        return new LoginDTO(token, roles.get(0));
     }
 
     public User findById(Integer uid) {
