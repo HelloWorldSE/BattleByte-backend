@@ -77,6 +77,9 @@ public class UserService {
     }
 
     public UserProfileDTO findByUserId(Integer uid) {
+        if (uid <= 0) {
+            uid = JwtUtil.getUserId();
+        }
         UserProfileDTO user = userDao.findByUserId(uid);
         if (user == null) {
             throw new ServiceException("用户未找到");

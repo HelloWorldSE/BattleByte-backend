@@ -2,6 +2,9 @@ package com.battlebyte.battlebyte.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Data
 @Entity
@@ -12,4 +15,8 @@ public class Game {
     private Integer id;
     @Column(name = "gameType",nullable = false)
     private Integer gameType;
+    @CreationTimestamp
+    @Column(name = "date", nullable = false, updatable = false)
+    private Date date;
+
 }
