@@ -121,7 +121,6 @@ public class WebSocketServer {
 
             output_LOGIN_ACK.put("type","LOGIN_ACK");
             output_LOGIN_ACK.put("data",dataOutput_LOGIN_ACK);
-            output_LOGIN_ACK.put("id",id);
             sendMsg(output_LOGIN_ACK.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
@@ -131,7 +130,7 @@ public class WebSocketServer {
     private void onMessage_MATCH_REQ(JSONObject data,int id) throws IOException {
         String type = data.getString("type");
 
-        //todo:调用后端匹配机制开始匹配
+        //todo:根据rating进行匹配
         MatchService.addPlayer(uid,1000);
 
         //输出逻辑
@@ -142,7 +141,6 @@ public class WebSocketServer {
 
         output_MATCH_START.put("type","MATCH_START");
         output_MATCH_START.put("data",dataOutput_MATCH_START);
-        output_MATCH_START.put("id",id);
         sendMsg(output_MATCH_START.toJSONString());
     }
     public static void return_MATCH_ENTER(int userId) throws IOException {
