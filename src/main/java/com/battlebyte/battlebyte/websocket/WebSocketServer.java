@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.websocket;
 
+import com.battlebyte.battlebyte.service.MatchService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -13,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import static com.battlebyte.battlebyte.service.MatchService.removePlayer;
 import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
 
 @Component
@@ -52,6 +54,8 @@ public class WebSocketServer {
     public void onClose() {
         if (webSocketMap.containsKey(uid)) {
             webSocketMap.remove(uid);
+            //取消匹配
+            removePlayer(uid);
             //从set中删除
             subOnlineCount();
         }
@@ -93,7 +97,7 @@ public class WebSocketServer {
     private void onMessage_LOGIN_REQ(JSONObject data,int id) throws IOException {
         String token = data.getString("token");
         //获取uid 测试
-        Integer uid = 1;
+        Integer uid = Integer.valueOf(token);
         //获取uid
         //Integer uid = getUserId(token);
         this.uid = uid;
@@ -123,8 +127,12 @@ public class WebSocketServer {
             log.error("用户【" + uid + "】网络异常!", e);
         }
     }
+    //处理匹配
     private void onMessage_MATCH_REQ(JSONObject data,int id) throws IOException {
         String type = data.getString("type");
+
+        //todo:调用后端匹配机制开始匹配
+        MatchService.addPlayer(uid,1000);
 
         //输出逻辑
         JSONObject output_MATCH_START = new JSONObject();
@@ -136,22 +144,20 @@ public class WebSocketServer {
         output_MATCH_START.put("data",dataOutput_MATCH_START);
         output_MATCH_START.put("id",id);
         sendMsg(output_MATCH_START.toJSONString());
-
-        //todo:调用后端匹配机制开始匹配
+    }
+    public static void return_MATCH_ENTER(int userId) throws IOException {
         // 匹配完成
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
         JSONObject dataOutput_MATCH_ENTER=new JSONObject();
 
-        dataOutput_MATCH_ENTER.put("type",type);
-        //todo:
         dataOutput_MATCH_ENTER.put("opponents","to be continue");
         dataOutput_MATCH_ENTER.put("team_side","to be continue");
 
         output_MATCH_ENTER.put("type","MATCH_ENTER");
         output_MATCH_ENTER.put("data",dataOutput_MATCH_ENTER);
-        output_MATCH_ENTER.put("id",id);
-        sendMsg(output_MATCH_ENTER.toJSONString());
+        output_MATCH_ENTER.put("id",0);
+        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
     }
     //处理匹配
     @OnError
@@ -166,7 +172,7 @@ public class WebSocketServer {
      * @param msg
      * @throws IOException
      */
-    private void sendMsg(String msg) throws IOException {
+    private  void sendMsg(String msg) throws IOException {
         this.session.getBasicRemote().sendText(msg);
     }
 
