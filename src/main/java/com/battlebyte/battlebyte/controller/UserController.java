@@ -8,6 +8,7 @@ import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.UserService;
+import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/api/user/profile")
-    public UserProfileDTO getById(@RequestParam Integer id) {
+    public UserProfileDTO getById(@RequestParam(defaultValue = "0") Integer id) {
         return userService.findByUserId(id);
     }
 

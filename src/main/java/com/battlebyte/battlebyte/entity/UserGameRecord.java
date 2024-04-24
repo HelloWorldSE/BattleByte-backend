@@ -15,4 +15,6 @@ public class UserGameRecord {
     private Integer userId;
     @Column(name = "questionId",nullable = false)
     private Integer questionId;
+    @Column(name = "team", nullable = false)
+    private Integer team;
 }
