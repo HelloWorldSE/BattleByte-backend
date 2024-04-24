@@ -86,6 +86,8 @@ public class WebSocketServer {
                     onMessage_LOGIN_REQ(data,id);
                 }else if(type.equals("MATCH_REQ")){
                     onMessage_MATCH_REQ(data,id);
+                }else if(type.equals("CHAT_REQ")){
+                    onMessage_CHAT_REQ(data,id);
                 }
             } catch (Exception e) {
                 log.error("用户【" + uid + "】发送消息异常！", e);
@@ -143,8 +145,8 @@ public class WebSocketServer {
         output_MATCH_START.put("data",dataOutput_MATCH_START);
         sendMsg(output_MATCH_START.toJSONString());
     }
+    //匹配成功
     public static void return_MATCH_ENTER(int userId) throws IOException {
-        // 匹配完成
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
         JSONObject dataOutput_MATCH_ENTER=new JSONObject();
@@ -154,10 +156,28 @@ public class WebSocketServer {
 
         output_MATCH_ENTER.put("type","MATCH_ENTER");
         output_MATCH_ENTER.put("data",dataOutput_MATCH_ENTER);
-        output_MATCH_ENTER.put("id",0);
         webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
     }
-    //处理匹配
+    // 处理聊天
+    private void onMessage_CHAT_REQ(JSONObject data,int id) throws IOException{
+        //读取json文件
+        String type = data.getString("type");
+        String message = data.getString("message");
+        Integer gameId = data.getInteger("gameId");
+
+        Integer toId=0;
+        //todo:根据gameId获取所有人参与的id for循环遍历输出
+        //输出逻辑
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput=new JSONObject();
+
+        dataOutput.put("fromId",uid);
+        dataOutput.put("message",message);
+
+        output.put("type","CHAT_MSG");
+        output.put("data",dataOutput);
+        webSocketMap.get(toId).sendMsg(output.toJSONString());
+    }
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户【" + this.uid + "】处理消息错误，原因:" + error.getMessage());
