@@ -6,8 +6,10 @@ import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ public interface UserDao extends JpaRepository<User, Integer> {
     @Query(value = "select distinct * from user where user_name = ?1 and password = ?2", nativeQuery = true)
     public User findUser(String username, String password);
 
+    @Modifying
+    @Transactional
     @Query(value = "insert into user_role (uid, rid) VALUE (?1, ?2)", nativeQuery = true)
     public void setRole(Integer uid, Integer rid);
 

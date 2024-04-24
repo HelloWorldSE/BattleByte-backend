@@ -10,8 +10,8 @@ public class FriendApplication {
     @Id
     @GeneratedValue
     private Integer id;
-    @Column(name = "senderId",nullable = false)
+    @Column(name = "sender_id",nullable = false)
     private Integer senderId;
-    @Column(name = "receiverId",nullable = false)
+    @Column(name = "receiver_id",nullable = false)
     private Integer receiverId;
 }

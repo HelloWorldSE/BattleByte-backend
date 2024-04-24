@@ -13,9 +13,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +27,11 @@ public class UserService {
     @Autowired
     UserDao userDao;
 
-    public void add(User user) {
-        userDao.save(user);
-    }
+    /**
+     * register: 注册
+     * login: 登录
+     * update: 更新个人信息
+     */
 
     public void register(User user) {
         if (userDao.findByUserName(user.getUserName()) != null) {
@@ -63,6 +63,14 @@ public class UserService {
         return new LoginDTO(token, roles.get(0));
     }
 
+    public void update(User user) {
+        if (!userDao.existsById(user.getId())) {
+            throw new ServiceException("用户不存在！");
+        } else {
+            userDao.save(user);
+        }
+    }
+
     public User findById(Integer uid) {
         Optional<User> op = userDao.findById(uid);
         return op.orElse(null);
@@ -89,11 +97,5 @@ public class UserService {
         return userDao.findFriend(uid, pageable);
     }
 
-    public void update(User user) {
-        if (!userDao.existsById(user.getId())) {
-            throw new ServiceException("用户不存在！");
-        } else {
-            userDao.save(user);
-        }
-    }
+
 }

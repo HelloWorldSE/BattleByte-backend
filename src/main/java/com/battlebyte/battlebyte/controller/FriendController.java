@@ -2,6 +2,7 @@ package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.dao.FriendApplicationDao;
 import com.battlebyte.battlebyte.dao.FriendDao;
+import com.battlebyte.battlebyte.entity.Friend;
 import com.battlebyte.battlebyte.entity.FriendApplication;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.service.FriendService;
@@ -32,8 +33,14 @@ public class FriendController {
         friendService.addFriend(dest);
     }
 
-    @PostMapping("/")
-    public void handleFriend() {
 
+    @PostMapping("/process")
+    public void process(@RequestBody FriendApplication friendApplication, @RequestParam boolean accept) {
+        friendService.processApply(friendApplication, accept);
+    }
+
+    @PostMapping("/delete")
+    public void delFriend(@RequestBody Friend friend) {
+        friendService.delFriend(friend);
     }
 }
