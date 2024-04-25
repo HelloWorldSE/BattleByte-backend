@@ -15,10 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
-@Component
 public class UserRealm extends AuthorizingRealm {
-    @Autowired
-    private JwtUtil jwtUtil;
     @Autowired
     private UserService userService;
 
