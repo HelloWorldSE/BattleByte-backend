@@ -23,16 +23,16 @@ public class UserFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("token");
         if (token == null || "".equals(token)){
-            throw new ServiceException("无token，无权访问");
+            return false;
         }
         UserToken jwtToken = new UserToken(token);
         try {
             SecurityUtils.getSubject().login(jwtToken);
             return true;
         } catch (ExpiredCredentialsException e){
-            throw new ServiceException("token过期");
+            return false;
         } catch (Exception e){
-            throw new ServiceException("无效的token");
+            return false;
         }
     }
 
@@ -41,17 +41,15 @@ public class UserFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        executeLogin(request, response);  //token验证
-        return true;
+        return executeLogin(request, response);  //token验证
+
     }
 
-    /**
-     * isAccessAllowed()方法返回false，即认证不通过时进入onAccessDenied方法
-     */
-//    @Override
-//    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-//        return super.onAccessDenied(request, response);
-//    }
+
+    @Override
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        throw new ServiceException(2, "验证用户信息失败");
+    }
 
     /**
      * token认证executeLogin成功后，进入此方法，可以进行token更新过期时间
