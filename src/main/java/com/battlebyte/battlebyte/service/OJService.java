@@ -9,13 +9,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class OJService {
+    public String cookie="_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
+            "csrftoken=zmhHSrlVXD2ftJGuyIoZVCMRvAacO4SUErs0n1hzgCohm4tAnygoB1atErcFjJit; " +
+            "sessionid=p67cm7vhedqzec59y9jpnqyy9azkjauk";
+    public String X_Csrftoken="zmhHSrlVXD2ftJGuyIoZVCMRvAacO4SUErs0n1hzgCohm4tAnygoB1atErcFjJit";
     public String getProblem(Integer id) {
-        String url = "http://81.70.241.166:1233/api/admin/problem?id=" + id;
+        String url = "http://81.70.241.166:1233/api/problem?problem_id=" + id;
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Csrftoken", "vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2");
-        headers.add("Cookie", "_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
-                "csrftoken=vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2; " +
-                "sessionid=fowtr0r4jrylvsyybkd963kso2cu97am");
+        headers.add("X-Csrftoken", X_Csrftoken);
+        headers.add("Cookie", cookie);
 
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -26,15 +28,13 @@ public class OJService {
     public String submit(String input) {
         String url = "http://81.70.241.166:1233/api/submission";
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Csrftoken", "vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2");
-        headers.add("Cookie", "_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
-                "csrftoken=vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2; " +
-                "sessionid=fowtr0r4jrylvsyybkd963kso2cu97am");
+        headers.add("X-Csrftoken", X_Csrftoken);
+        headers.add("Cookie", cookie);
 
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(input.replace(' ', ' '), headers);
-        String result =  getString(url, requestEntity);
+        String result =  postString(url, requestEntity);
 
         JSONObject resultObj = JSON.parseObject(result);
         JSONObject data = resultObj.getJSONObject("data");
@@ -43,18 +43,27 @@ public class OJService {
     }
 
     public String getResult(String input) {
-        String url = "http://81.70.241.166:1233/api/submission?submission_id=" + input;
+        String url = "http://81.70.241.166:1233/api/submission?id=" + input;
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Csrftoken", "vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2");
-        headers.add("Cookie", "_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
-                "csrftoken=vLH0iNGPu4ufpc9Lk1ekq5VmshkEM6a2aw6FGvxFZxz29Lqat88S4vfiHjQnNoV2; " +
-                "sessionid=fowtr0r4jrylvsyybkd963kso2cu97am");
+        headers.add("X-Csrftoken", X_Csrftoken);
+        headers.add("Cookie", cookie);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         return getString(url, requestEntity);
     }
 
     private static String getString(String url, HttpEntity<String> requestEntity) {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+
+        HttpStatusCode statusCode = responseEntity.getStatusCode();
+        if (statusCode == HttpStatus.OK) {
+            return responseEntity.getBody();
+        } else {
+            throw new ServiceException("访问失败");
+        }
+    }
+    private static String postString(String url, HttpEntity<String> requestEntity) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
