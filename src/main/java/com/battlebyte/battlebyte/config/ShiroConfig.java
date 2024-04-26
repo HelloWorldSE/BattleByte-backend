@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.config;
 
 import com.battlebyte.battlebyte.realm.UserRealm;
+import jakarta.servlet.Filter;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -12,8 +13,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
-import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,12 +27,6 @@ public class ShiroConfig {
         return new LifecycleBeanPostProcessor();
     }
 
-//    @Bean
-//    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(DefaultWebSecurityManager securityManager) {
-//        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
-//        advisor.setSecurityManager(securityManager);
-//        return advisor;
-//    }
     @Bean("SecurityManager")
     public SecurityManager userSecurityManager(UserRealm realm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -41,7 +36,7 @@ public class ShiroConfig {
     }
 
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("SecurityManager") SecurityManager securityManager, UserFilter filter) {
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("SecurityManager") SecurityManager securityManager,  UserFilter filter) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
@@ -50,8 +45,8 @@ public class ShiroConfig {
         shiroFilter.setFilters(map);
 
         Map<String, String> filterMap = new LinkedHashMap<>();
-        filterMap.put("/auth/login", "anon");
-        filterMap.put("/**", "authc");
+        // filterMap.put("/auth/login", "anon");
+        filterMap.put("/**", "jwt");
 
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
@@ -62,11 +57,13 @@ public class ShiroConfig {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         ThreadContext.bind(securityManager);
         securityManager.setRealm(realm);
+
         DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
         DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
         subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         securityManager.setSubjectDAO(subjectDAO);
+
         return securityManager;
     }
 
