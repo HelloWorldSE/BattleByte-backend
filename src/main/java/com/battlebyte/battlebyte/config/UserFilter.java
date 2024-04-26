@@ -36,9 +36,6 @@ public class UserFilter extends BasicHttpAuthenticationFilter {
         }
     }
 
-    /**
-     * 过滤器拦截请求的入口方法
-     */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         return executeLogin(request, response);  //token验证

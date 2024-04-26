@@ -17,7 +17,9 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,7 @@ public class UserService {
      * update: 更新个人信息
      */
 
+    @Transactional
     public void register(User user) {
         if (userDao.findByUserName(user.getUserName()) != null) {
             throw new ServiceException("用户名已存在");
@@ -63,6 +66,7 @@ public class UserService {
         return new LoginDTO(token, roles.get(0));
     }
 
+    @Transactional
     public void update(User user) {
         if (!userDao.existsById(user.getId())) {
             throw new ServiceException("用户不存在！");
@@ -100,5 +104,17 @@ public class UserService {
         return userDao.findFriend(uid, pageable);
     }
 
+    @Modifying
+    @Transactional
+    public void setRating(Integer uid, Integer rating) {
+        User user = findById(uid);
+        user.setRating(rating);
+        userDao.save(user);
+    }
 
+    public void addRating(Integer uid, Integer offset) {
+        User user = findById(uid);
+        user.setRating(user.getRating() + offset);
+        userDao.save(user);
+    }
 }

@@ -21,6 +21,7 @@ public class UserController {
     // 注册用户
     @PostMapping("/auth/register")
     public void registerUser(@RequestBody User user) {
+        user.setRating(0);
         userService.register(user);
     }
 
