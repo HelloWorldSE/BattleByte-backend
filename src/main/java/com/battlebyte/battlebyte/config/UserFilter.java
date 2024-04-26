@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @Slf4j
-@Component
 public class UserFilter extends BasicHttpAuthenticationFilter {
 
     @Override

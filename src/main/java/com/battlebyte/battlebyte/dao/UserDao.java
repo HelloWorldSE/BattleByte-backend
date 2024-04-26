@@ -25,7 +25,7 @@ public interface UserDao extends JpaRepository<User, Integer> {
 
     public User findByUserName(String username);
 
-    @Query(value = "select id, user_name as userName, user_email as userEmail, avatar from user where id = ?1", nativeQuery = true)
+    @Query(value = "select id, user_name as userName, user_email as userEmail, avatar, rating from user where id = ?1", nativeQuery = true)
     public UserProfileDTO findByUserId(Integer id);
 
     @Query(value = "select distinct name from user_role, role where user_role.rid = role.rid and user_role.uid = ?1", nativeQuery = true)

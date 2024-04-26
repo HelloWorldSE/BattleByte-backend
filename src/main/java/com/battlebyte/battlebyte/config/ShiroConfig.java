@@ -13,7 +13,6 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,17 +35,17 @@ public class ShiroConfig {
     }
 
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("SecurityManager") SecurityManager securityManager,  UserFilter filter) {
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("SecurityManager") SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
         Map<String, Filter> map = new HashMap<>();
-        map.put("jwt", filter);
+        map.put("jwt", new UserFilter());
         shiroFilter.setFilters(map);
 
         Map<String, String> filterMap = new LinkedHashMap<>();
         filterMap.put("/auth/login", "anon");
-        filterMap.put("/**", "anon");
+        filterMap.put("/**", "jwt");
 
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         shiroFilter.setUnauthorizedUrl("/nopermission");

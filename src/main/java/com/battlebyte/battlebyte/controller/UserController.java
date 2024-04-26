@@ -1,14 +1,11 @@
 package com.battlebyte.battlebyte.controller;
 
-import com.battlebyte.battlebyte.common.Result;
 import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.entity.dto.LoginDTO;
 import com.battlebyte.battlebyte.entity.dto.UserDTO;
-import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.UserService;
-import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
