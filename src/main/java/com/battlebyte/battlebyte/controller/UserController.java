@@ -35,10 +35,13 @@ public class UserController {
         return userService.findByUserId(id);
     }
 
-
-
     @PostMapping("/api/user/update")
     public void update(@RequestBody User user) {
         userService.update(user);
+    }
+
+    @GetMapping("/nopermission")
+    public void nopermission() {
+        throw new ServiceException(2, "无权限");
     }
 }

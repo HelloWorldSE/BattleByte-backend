@@ -45,10 +45,11 @@ public class ShiroConfig {
         shiroFilter.setFilters(map);
 
         Map<String, String> filterMap = new LinkedHashMap<>();
-        // filterMap.put("/auth/login", "anon");
-        filterMap.put("/**", "jwt");
+        filterMap.put("/auth/login", "anon");
+        filterMap.put("/**", "anon");
 
         shiroFilter.setFilterChainDefinitionMap(filterMap);
+        shiroFilter.setUnauthorizedUrl("/nopermission");
         return shiroFilter;
     }
 
