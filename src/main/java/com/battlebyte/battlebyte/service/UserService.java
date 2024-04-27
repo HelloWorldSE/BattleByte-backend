@@ -100,8 +100,8 @@ public class UserService {
         return userDao.getPermission(uid);
     }
 
-    public Page<UserInfoDTO> getFriend(Integer uid, Pageable pageable) {
-        return userDao.findFriend(uid, pageable);
+    public Page<UserInfoDTO> getFriend(Integer id, String name, Integer uid, Pageable pageable) {
+        return userDao.findFriend(id, name, uid, pageable);
     }
 
     @Modifying

@@ -36,11 +36,17 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "select id, user_name as userName, avatar from user where id in (\n" +
-            "    select large_id from friend where (small_id = ?1)\n" +
+    @Query(value = "select id, user_name as userName, avatar from user where \n" +
+            "    (\n" +
+            "        id = CASE WHEN ?1 != 0 THEN ?1 ELSE id END \n" +
+            "        AND \n" +
+            "        user_name LIKE CONCAT('%', ?2, '%')\n" +
+            "    )\n" +
+            "    AND id in (\n" +
+            "        select large_id from friend where (small_id = ?3)\n" +
             "        union\n" +
-            "    select small_id from friend where (large_id = ?1)\n" +
+            "        select small_id from friend where (large_id = ?3)\n" +
             "    )", nativeQuery = true)
-    public Page<UserInfoDTO> findFriend(Integer uid, Pageable pageable);
+    public Page<UserInfoDTO> findFriend(Integer id, String name, Integer uid, Pageable pageable);
 
 }
