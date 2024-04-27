@@ -193,7 +193,7 @@ public class WebSocketServer {
         //输出逻辑
         JSONObject output = new JSONObject();
         JSONObject dataOutput=new JSONObject();
-        JSONObject result = JSON.parseObject(ojService.getProblem(submit_id));
+        JSONObject result = ojService.getProblem(submit_id);
 
         dataOutput.put("result",result);
         output.put("type","ANSWER_RESULT");
