@@ -36,7 +36,7 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "select id, user_name as userName from user where id in (\n" +
+    @Query(value = "select id, user_name as userName, avatar from user where id in (\n" +
             "    select large_id from friend where (small_id = ?1)\n" +
             "        union\n" +
             "    select small_id from friend where (large_id = ?1)\n" +
