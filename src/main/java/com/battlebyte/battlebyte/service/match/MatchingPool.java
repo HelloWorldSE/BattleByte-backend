@@ -133,6 +133,6 @@ public class MatchingPool extends Thread {
         int opponents1[] = {b.getUserId()};
         returnMatchResult(a.getUserId(), questionId1, 1, opponents1);
         int opponents2[] = {a.getUserId()};
-        returnMatchResult(b.getUserId(), questionId2, 1, opponents2);
+        returnMatchResult(b.getUserId(), questionId2, 2, opponents2);
     }
 }
