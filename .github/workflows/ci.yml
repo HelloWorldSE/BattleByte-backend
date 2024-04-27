@@ -55,6 +55,14 @@ jobs:
           HOST: ${{secrets.HOST}}
         run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "screen -X -S backend quit"
 
+      - name: Clear server
+        continue-on-error: true
+        env:
+          PASSWORD: ${{secrets.PASSWORD}}
+          USERNAME: ${{secrets.USERNAME}}
+          HOST: ${{secrets.HOST}}
+        run: sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "rm /home/ubuntu/BattleByte-backend/BattleByte.jar"
+
       - name: Upload
         env:
           PASSWORD: ${{secrets.PASSWORD}}
