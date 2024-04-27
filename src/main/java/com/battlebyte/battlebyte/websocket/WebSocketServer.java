@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.websocket;
 
 import com.battlebyte.battlebyte.service.MatchService;
+import com.battlebyte.battlebyte.service.OJService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -41,6 +42,10 @@ public class WebSocketServer {
      * 接收客户端消息的uid
      */
     private Integer uid = 0;
+    /**
+     * OJ服务
+     */
+    private OJService ojService = new OJService();
 
 
     @OnOpen
@@ -88,7 +93,10 @@ public class WebSocketServer {
                     onMessage_MATCH_REQ(data,id);
                 }else if(type.equals("CHAT_REQ")){
                     onMessage_CHAT_REQ(data,id);
+                }else if(type.equals("ANSWER_REFRESH")){
+                    onMessage_ANSWER_REFRESH(data,id);
                 }
+
             } catch (Exception e) {
                 log.error("用户【" + uid + "】发送消息异常！", e);
             }
@@ -177,6 +185,21 @@ public class WebSocketServer {
         output.put("type","CHAT_MSG");
         output.put("data",dataOutput);
         webSocketMap.get(toId).sendMsg(output.toJSONString());
+    }
+    // 刷新评测结果
+    private void onMessage_ANSWER_REFRESH(JSONObject data,int id) throws IOException{
+        Integer submit_id = data.getInteger("submit_id");
+
+        //输出逻辑
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput=new JSONObject();
+        JSONObject result = JSON.parseObject(ojService.getProblem(submit_id));
+
+        dataOutput.put("result",result);
+
+        output.put("type","CHAT_MSG");
+        output.put("data",dataOutput);
+        sendMsg(output.toJSONString());
     }
     @OnError
     public void onError(Session session, Throwable error) {
