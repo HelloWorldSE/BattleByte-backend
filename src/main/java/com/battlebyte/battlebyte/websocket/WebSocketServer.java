@@ -88,13 +88,13 @@ public class WebSocketServer {
                 //设置session
                 this.session = session;
                 if (type.equals("LOGIN_REQ")) {
-                    onMessage_LOGIN_REQ(data,id);
-                }else if(type.equals("MATCH_REQ")){
-                    onMessage_MATCH_REQ(data,id);
-                }else if(type.equals("CHAT_REQ")){
-                    onMessage_CHAT_REQ(data,id);
-                }else if(type.equals("ANSWER_REFRESH")){
-                    onMessage_ANSWER_REFRESH(data,id);
+                    onMessage_LOGIN_REQ(data, id);
+                } else if (type.equals("MATCH_REQ")) {
+                    onMessage_MATCH_REQ(data, id);
+                } else if (type.equals("CHAT_REQ")) {
+                    onMessage_CHAT_REQ(data, id);
+                } else if (type.equals("ANSWER_REFRESH")) {
+                    onMessage_ANSWER_REFRESH(data, id);
                 }
 
             } catch (Exception e) {
@@ -104,7 +104,7 @@ public class WebSocketServer {
     }
 
     //处理登录
-    private void onMessage_LOGIN_REQ(JSONObject data,int id) throws IOException {
+    private void onMessage_LOGIN_REQ(JSONObject data, int id) throws IOException {
         String token = data.getString("token");
         //获取uid 测试
 //        Integer uid = Integer.valueOf(token);
@@ -113,7 +113,7 @@ public class WebSocketServer {
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
-            WebSocketServer beforeSession=webSocketMap.get(uid);
+            WebSocketServer beforeSession = webSocketMap.get(uid);
             beforeSession.getSession().close();
             webSocketMap.remove(uid);
         }
@@ -125,81 +125,90 @@ public class WebSocketServer {
         log.info("用户【" + uid + "】连接成功，当前在线人数为:" + getOnlineCount());
         try {
             JSONObject output_LOGIN_ACK = new JSONObject();
-            JSONObject dataOutput_LOGIN_ACK=new JSONObject();
-            
-            dataOutput_LOGIN_ACK.put("code",0);
+            JSONObject dataOutput_LOGIN_ACK = new JSONObject();
 
-            output_LOGIN_ACK.put("type","LOGIN_ACK");
-            output_LOGIN_ACK.put("data",dataOutput_LOGIN_ACK);
+            dataOutput_LOGIN_ACK.put("code", 0);
+
+            output_LOGIN_ACK.put("type", "LOGIN_ACK");
+            output_LOGIN_ACK.put("data", dataOutput_LOGIN_ACK);
             sendMsg(output_LOGIN_ACK.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
         }
     }
+
     //处理匹配
-    private void onMessage_MATCH_REQ(JSONObject data,int id) throws IOException {
+    private void onMessage_MATCH_REQ(JSONObject data, int id) throws IOException {
         String type = data.getString("type");
 
         //todo:根据rating进行匹配
-        MatchService.addPlayer(uid,1000);
+        MatchService.addPlayer(uid, 1000);
 
         //输出逻辑
         JSONObject output_MATCH_START = new JSONObject();
-        JSONObject dataOutput_MATCH_START=new JSONObject();
+        JSONObject dataOutput_MATCH_START = new JSONObject();
 
-        dataOutput_MATCH_START.put("type",type);
+        dataOutput_MATCH_START.put("type", type);
 
-        output_MATCH_START.put("type","MATCH_START");
-        output_MATCH_START.put("data",dataOutput_MATCH_START);
+        output_MATCH_START.put("type", "MATCH_START");
+        output_MATCH_START.put("data", dataOutput_MATCH_START);
         sendMsg(output_MATCH_START.toJSONString());
     }
+
     //匹配成功
-    public static void return_MATCH_ENTER(int userId) throws IOException {
+    public static void return_MATCH_ENTER(int userId, int questionId, int teamId, int[] opponents) throws IOException {
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
-        JSONObject dataOutput_MATCH_ENTER=new JSONObject();
+        JSONObject dataOutput_MATCH_ENTER = new JSONObject();
 
-        dataOutput_MATCH_ENTER.put("opponents","to be continue");
-        dataOutput_MATCH_ENTER.put("team_side","to be continue");
+        dataOutput_MATCH_ENTER.put("quesionId", questionId);
+//        dataOutput_MATCH_ENTER.put("opponents","to be continue");
+//        dataOutput_MATCH_ENTER.put("team_side","to be continue");
 
-        output_MATCH_ENTER.put("type","MATCH_ENTER");
-        output_MATCH_ENTER.put("data",dataOutput_MATCH_ENTER);
+        output_MATCH_ENTER.put("opponents", opponents);
+        output_MATCH_ENTER.put("team_side", teamId);
+
+        output_MATCH_ENTER.put("type", "MATCH_ENTER");
+        output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
         webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
     }
+
     // 处理聊天
-    private void onMessage_CHAT_REQ(JSONObject data,int id) throws IOException{
+    private void onMessage_CHAT_REQ(JSONObject data, int id) throws IOException {
         //读取json文件
         String type = data.getString("type");
         String message = data.getString("message");
         Integer gameId = data.getInteger("gameId");
 
-        Integer toId=0;
+        Integer toId = 0;
         //todo:根据gameId获取所有人参与的id for循环遍历输出
         //输出逻辑
         JSONObject output = new JSONObject();
-        JSONObject dataOutput=new JSONObject();
+        JSONObject dataOutput = new JSONObject();
 
-        dataOutput.put("fromId",uid);
-        dataOutput.put("message",message);
+        dataOutput.put("fromId", uid);
+        dataOutput.put("message", message);
 
-        output.put("type","CHAT_MSG");
-        output.put("data",dataOutput);
+        output.put("type", "CHAT_MSG");
+        output.put("data", dataOutput);
         webSocketMap.get(toId).sendMsg(output.toJSONString());
     }
+
     // 刷新评测结果
-    private void onMessage_ANSWER_REFRESH(JSONObject data,int id) throws IOException{
+    private void onMessage_ANSWER_REFRESH(JSONObject data, int id) throws IOException {
         Integer submit_id = data.getInteger("submit_id");
 
         //输出逻辑
         JSONObject output = new JSONObject();
-        JSONObject dataOutput=new JSONObject();
+        JSONObject dataOutput = new JSONObject();
         JSONObject result = JSON.parseObject(ojService.getProblem(submit_id));
 
-        dataOutput.put("result",result);
-        output.put("type","ANSWER_RESULT");
-        output.put("data",dataOutput);
+        dataOutput.put("result", result);
+        output.put("type", "ANSWER_RESULT");
+        output.put("data", dataOutput);
         sendMsg(output.toJSONString());
     }
+
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户【" + this.uid + "】处理消息错误，原因:" + error.getMessage());
@@ -212,11 +221,11 @@ public class WebSocketServer {
      * @param msg
      * @throws IOException
      */
-    private  void sendMsg(String msg) throws IOException {
+    private void sendMsg(String msg) throws IOException {
         this.session.getBasicRemote().sendText(msg);
     }
 
-    public Session getSession(){
+    public Session getSession() {
         return this.session;
     }
 
