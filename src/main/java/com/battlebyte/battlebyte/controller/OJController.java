@@ -13,12 +13,12 @@ public class OJController {
     @Autowired
     private OJService ojService;
     @GetMapping("/problem")
-    public String get(@RequestParam Integer id) throws InterruptedException {
+    public String get(@RequestParam Integer id){
         return ojService.getProblem(id);
     }
 
     @PostMapping("/submit")
-    public String submit(@RequestBody String input) throws InterruptedException {
+    public String submit(@RequestBody String input) {
         return ojService.submit(input);
     }
 }

@@ -13,7 +13,7 @@ public class OJService {
             "csrftoken=2YPsM0GU3sS9jsSAOSCFMuHqKNqblm0Ce6pjtZeErHtceTBXFS1poqm3fCPNNQMI; " +
             "sessionid=fmlxdqc9dj0abgqh8ycgq2cxz8hi2axl";
     public String X_Csrftoken="2YPsM0GU3sS9jsSAOSCFMuHqKNqblm0Ce6pjtZeErHtceTBXFS1poqm3fCPNNQMI";
-    public String getProblem(Integer id) throws InterruptedException {
+    public String getProblem(Integer id) {
         String url = "http://81.70.241.166:1233/api/problem?problem_id=" + id;
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
@@ -25,7 +25,7 @@ public class OJService {
         return getString(url, requestEntity);
     }
 
-    public String submit(String input) throws InterruptedException {
+    public String submit(String input)  {
         String url = "http://81.70.241.166:1233/api/submission";
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
@@ -42,7 +42,7 @@ public class OJService {
         return getResult(submission_id);
     }
 
-    public String getResult(String input) throws InterruptedException {
+    public String getResult(String input) {
         String url = "http://81.70.241.166:1233/api/submission?id=" + input;
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
@@ -52,7 +52,7 @@ public class OJService {
         return getString(url, requestEntity);
     }
 
-    private static String getString(String url, HttpEntity<String> requestEntity) throws InterruptedException {
+    private static String getString(String url, HttpEntity<String> requestEntity) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
         HttpStatusCode statusCode = responseEntity.getStatusCode();
@@ -62,7 +62,7 @@ public class OJService {
             throw new ServiceException("访问失败");
         }
     }
-    private static String postString(String url, HttpEntity<String> requestEntity) throws InterruptedException {
+    private static String postString(String url, HttpEntity<String> requestEntity) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
