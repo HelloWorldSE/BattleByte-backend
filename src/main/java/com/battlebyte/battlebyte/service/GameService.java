@@ -30,6 +30,6 @@ public class GameService {
     }
 
     public Page<UserInfoDTO> getPlayer(Integer id, Pageable pageable) {
-        return null;
+        return gameDao.getPlayer(id, pageable);
     }
 }
