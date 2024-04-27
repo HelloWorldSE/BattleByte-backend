@@ -64,6 +64,8 @@ public class MatchingPool extends Thread {
             try {
                 Thread.sleep(1000);
                 lock.lock();
+
+                System.out.println("run once, current pool players num:"+players.size());
                 try {
                     increaseWaitingTime();
                     matchPlayers();
