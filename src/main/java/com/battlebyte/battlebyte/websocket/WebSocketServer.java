@@ -160,13 +160,13 @@ public class WebSocketServer {
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
         JSONObject dataOutput_MATCH_ENTER = new JSONObject();
+        JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
-        dataOutput_MATCH_ENTER.put("quesionId", questionId);
-//        dataOutput_MATCH_ENTER.put("opponents","to be continue");
-//        dataOutput_MATCH_ENTER.put("team_side","to be continue");
+        infoOutput_MATCH_ENTER.put("quesionId", questionId);
 
-        output_MATCH_ENTER.put("opponents", opponents);
-        output_MATCH_ENTER.put("team_side", teamId);
+        dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
+        dataOutput_MATCH_ENTER.put("opponents", opponents);
+        dataOutput_MATCH_ENTER.put("team_side", teamId);
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
