@@ -104,7 +104,7 @@ public class WebSocketServer {
     }
 
     //处理登录
-    private void onMessage_LOGIN_REQ(JSONObject data,int id) throws IOException {
+    private void onMessage_LOGIN_REQ(JSONObject data, int id) throws IOException {
         String token = data.getString("token");
         //获取uid 测试
 //        Integer uid = Integer.valueOf(token);
@@ -113,7 +113,7 @@ public class WebSocketServer {
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
-            WebSocketServer beforeSession=webSocketMap.get(uid);
+            WebSocketServer beforeSession = webSocketMap.get(uid);
             beforeSession.getSession().close();
             webSocketMap.remove(uid);
         }
@@ -125,12 +125,12 @@ public class WebSocketServer {
         log.info("用户【" + uid + "】连接成功，当前在线人数为:" + getOnlineCount());
         try {
             JSONObject output_LOGIN_ACK = new JSONObject();
-            JSONObject dataOutput_LOGIN_ACK=new JSONObject();
-            
-            dataOutput_LOGIN_ACK.put("code",0);
+            JSONObject dataOutput_LOGIN_ACK = new JSONObject();
 
-            output_LOGIN_ACK.put("type","LOGIN_ACK");
-            output_LOGIN_ACK.put("data",dataOutput_LOGIN_ACK);
+            dataOutput_LOGIN_ACK.put("code", 0);
+
+            output_LOGIN_ACK.put("type", "LOGIN_ACK");
+            output_LOGIN_ACK.put("data", dataOutput_LOGIN_ACK);
             sendMsg(output_LOGIN_ACK.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
@@ -189,12 +189,13 @@ public class WebSocketServer {
         dataOutput.put("fromId", uid);
         dataOutput.put("message", message);
 
-        output.put("type","CHAT_MSG");
-        output.put("data",dataOutput);
+        output.put("type", "CHAT_MSG");
+        output.put("data", dataOutput);
         webSocketMap.get(toId).sendMsg(output.toJSONString());
     }
+
     // 刷新评测结果
-    private void onMessage_ANSWER_REFRESH(JSONObject data,int id) throws IOException{
+    private void onMessage_ANSWER_REFRESH(JSONObject data, int id) throws IOException {
         Integer submit_id = data.getInteger("submit_id");
 
         //输出逻辑
@@ -202,11 +203,12 @@ public class WebSocketServer {
         JSONObject dataOutput=new JSONObject();
         JSONObject result = ojService.getProblem(submit_id);
 
-        dataOutput.put("result",result);
-        output.put("type","ANSWER_RESULT");
-        output.put("data",dataOutput);
+        dataOutput.put("result", result);
+        output.put("type", "ANSWER_RESULT");
+        output.put("data", dataOutput);
         sendMsg(output.toJSONString());
     }
+
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户【" + this.uid + "】处理消息错误，原因:" + error.getMessage());
