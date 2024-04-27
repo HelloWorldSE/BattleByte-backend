@@ -7,15 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @Service
 public class UploadService {
-
     @Autowired
     public UserService userService;
+
     public void updateAvatar(@RequestParam MultipartFile file) {
         if (file.isEmpty()) {
             throw new ServiceException("空文件");
@@ -53,6 +55,27 @@ public class UploadService {
             return "video";
         } else {
             return "other";
+        }
+    }
+
+    public byte[] getAvatar(Integer uid) {
+        User user = userService.findById(uid);
+        String path = user.getAvatar();
+        if (path == null) {
+            return null;
+        }
+        try {
+            // 读取头像文件
+            File file = new File(path);
+            FileInputStream inputStream = new FileInputStream(file);
+            byte[] avatarBytes = IOUtils.toByteArray(inputStream);
+            inputStream.close();
+
+            // 返回头像的字节数组和相关的HTTP头信息
+            // 例如：Content-Type等
+            return avatarBytes;
+        } catch (IOException e) {
+            throw new ServiceException("获取头像信息失败");
         }
     }
 }

@@ -5,11 +5,9 @@ import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.UploadService;
 import com.battlebyte.battlebyte.service.UserService;
 import com.battlebyte.battlebyte.util.JwtUtil;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,5 +24,9 @@ public class UploadController {
         uploadService.updateAvatar(file);
     }
 
+    @GetMapping("/getAvatar")
+    public byte[] getAvatar(@RequestParam(defaultValue = "0") Integer userId) {
+        return uploadService.getAvatar(userId);
+    }
 
 }
