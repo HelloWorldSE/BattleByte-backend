@@ -98,7 +98,10 @@ public class MatchingPool extends Thread {
                 Player a = players.get(i), b = players.get(j);
                 if (checkMatched(a, b) && !a.getUserId().equals(b.getUserId())) {
                     used[i] = used[j] = true;
-                    sendResult(a, b); // 匹配成功之后返回结果
+                    Random random = new Random();
+                    int randomQuestionId1 = random.nextInt(50) + 1;
+                    int randomQuestionId2 = random.nextInt(50) + 1;
+                    sendResult(a, b, randomQuestionId1, randomQuestionId2); // 匹配成功之后返回结果
                     break;
                 }
             }
@@ -124,10 +127,12 @@ public class MatchingPool extends Thread {
     }
 
     // 返回匹配结果
-    private void sendResult(Player a, Player b) throws IOException {
+    private void sendResult(Player a, Player b, int questionId1, int questionId2) throws IOException {
         System.out.println("send result: " + a.getUserId() + " " + b.getUserId());
         //todo:比赛信息加入数据库，返回
-        returnMatchResult(a.getUserId());
-        returnMatchResult(b.getUserId());
+        int opponents1[] = {b.getUserId()};
+        returnMatchResult(a.getUserId(), questionId1, 1, opponents1);
+        int opponents2[] = {a.getUserId()};
+        returnMatchResult(b.getUserId(), questionId2, 1, opponents2);
     }
 }
