@@ -44,7 +44,9 @@ public class ShiroConfig {
         shiroFilter.setFilters(map);
 
         Map<String, String> filterMap = new LinkedHashMap<>();
+
 //        filterMap.put("/auth/**", "anon");
+//        filterMap.put("/server", "anon");
 //        filterMap.put("/server/**", "anon");
 //        filterMap.put("/api/admin/**", "jwt,roles[admin]");
 //        filterMap.put("/**", "jwt");

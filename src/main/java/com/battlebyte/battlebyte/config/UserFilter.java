@@ -1,6 +1,9 @@
 package com.battlebyte.battlebyte.config;
 
+import cn.hutool.json.JSONObject;
+import com.battlebyte.battlebyte.common.Result;
 import com.battlebyte.battlebyte.exception.ServiceException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,36 +11,72 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 
 @Slf4j
 public class UserFilter extends BasicHttpAuthenticationFilter {
 
     @Override
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws ServiceException {
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws ServiceException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("token");
         if (token == null || "".equals(token)){
+            Object result = Result.error(2, "识别用户信息失败");
+            OutputStream os = response.getOutputStream();
+            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
             return false;
         }
         UserToken jwtToken = new UserToken(token);
         try {
             SecurityUtils.getSubject().login(jwtToken);
             return true;
+        } catch (UnknownAccountException e) {
+            Object result = Result.error(2, "用户名不存在");
+            OutputStream os = response.getOutputStream();
+            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
+            return false;
+        } catch (IncorrectCredentialsException e) {
+            Object result = Result.error(2, "无效的token");
+            OutputStream os = response.getOutputStream();
+            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
+            return false;
         } catch (ExpiredCredentialsException e){
+            Object result = Result.error(2, "token已过期");
+            OutputStream os = response.getOutputStream();
+            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
             return false;
         } catch (Exception e){
+            Object result = Result.error(2, "未知错误");
+            OutputStream os = response.getOutputStream();
+            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
             return false;
         }
     }
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        return executeLogin(request, response);  //token验证
+        try {
+            return executeLogin(request, response);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
