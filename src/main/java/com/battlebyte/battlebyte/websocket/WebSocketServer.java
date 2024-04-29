@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import static com.battlebyte.battlebyte.service.MatchService.removePlayer;
+import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
 
 @Component
 @ServerEndpoint("/server")
@@ -120,9 +121,9 @@ public class WebSocketServer {
     private void onMessage_LOGIN_REQ(JSONObject data, int id) throws IOException {
         String token = data.getString("token");
         //获取uid 测试
-        Integer uid = Integer.valueOf(token);
+//        Integer uid = Integer.valueOf(token);
         //获取uid
-//        Integer uid = getUserId(token);
+        Integer uid = getUserId(token);
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
