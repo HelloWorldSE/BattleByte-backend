@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/update")
+@RequestMapping("/api/upload")
 public class UploadController {
     @Autowired
     public UploadService uploadService;
@@ -25,8 +25,8 @@ public class UploadController {
     }
 
     @GetMapping("/getAvatar")
-    public byte[] getAvatar(@RequestParam(defaultValue = "0") Integer userId) {
-        return uploadService.getAvatar(userId);
+    public byte[] getAvatar(@RequestParam(defaultValue = "0") Integer id) {
+        return uploadService.getAvatar(id);
     }
 
 }

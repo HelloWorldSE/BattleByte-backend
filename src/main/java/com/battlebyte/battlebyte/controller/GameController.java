@@ -28,6 +28,11 @@ public class GameController {
         gameService.delGame(gameId);
     }
 
+    @GetMapping("")
+    public Game getGame(Integer id) {
+        return gameService.getGame(id);
+    }
+
     @PostMapping("/update")
     public void updateGame(@RequestBody Game game) {
         gameService.updateGame(game);

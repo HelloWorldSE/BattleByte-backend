@@ -1,7 +1,5 @@
 package com.battlebyte.battlebyte.controller;
 
-import com.battlebyte.battlebyte.dao.FriendApplicationDao;
-import com.battlebyte.battlebyte.dao.FriendDao;
 import com.battlebyte.battlebyte.entity.Friend;
 import com.battlebyte.battlebyte.entity.FriendApplication;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
@@ -23,9 +21,10 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("")
-    public Page<UserInfoDTO> getFriend(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+    public Page<UserInfoDTO> getFriend(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        return userService.getFriend(JwtUtil.getUserId(), pageable);
+        return userService.getFriend(id, name, JwtUtil.getUserId(), pageable);
     }
 
     @PostMapping("/add-apply")

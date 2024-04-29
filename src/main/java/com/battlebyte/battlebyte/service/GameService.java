@@ -25,6 +25,11 @@ public class GameService {
         gameDao.deleteById(gameId);
     }
 
+    public Game getGame(Integer id) {
+        Optional<Game> op = gameDao.findById(id);
+        return op.orElse(null);
+    }
+
     public void updateGame(Game game) {
         gameDao.save(game);
     }
