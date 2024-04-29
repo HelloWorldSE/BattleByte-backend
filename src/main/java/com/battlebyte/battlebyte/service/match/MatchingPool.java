@@ -1,5 +1,7 @@
 package com.battlebyte.battlebyte.service.match;
 
+import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.service.match.Player;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -65,7 +67,7 @@ public class MatchingPool extends Thread {
                 Thread.sleep(1000);
                 lock.lock();
 
-                System.out.println("run once, current pool players num:"+players.size());
+                System.out.println("run once, current pool players num:" + players.size());
                 try {
                     increaseWaitingTime();
                     matchPlayers();
@@ -103,7 +105,16 @@ public class MatchingPool extends Thread {
                     Random random = new Random();
                     int randomQuestionId1 = random.nextInt(50) + 1;
                     int randomQuestionId2 = random.nextInt(50) + 1;
-                    sendResult(a, b, randomQuestionId1, randomQuestionId2); // 匹配成功之后返回结果
+                    ArrayList<Player> players = new ArrayList<>();
+                    players.add(a);
+                    players.add(b);
+
+                    ArrayList<Integer> questionIds=new ArrayList<>();
+                    questionIds.add(randomQuestionId1);
+                    questionIds.add(randomQuestionId2);
+
+
+                    sendResult(players, questionIds); // 匹配成功之后返回结果
                     break;
                 }
             }
@@ -129,12 +140,27 @@ public class MatchingPool extends Thread {
     }
 
     // 返回匹配结果
-    private void sendResult(Player a, Player b, int questionId1, int questionId2) throws IOException {
-        System.out.println("send result: " + a.getUserId() + " " + b.getUserId());
+    private void sendResult(ArrayList<Player>players , ArrayList<Integer>questionIds) throws IOException {
+        System.out.println("send result: " + players.get(0).getUserId() + " " + players.get(1).getUserId());
+        int num=2;
         //todo:比赛信息加入数据库，返回
-        int opponents1[] = {b.getUserId()};
-        returnMatchResult(a.getUserId(), questionId1, 1, opponents1);
-        int opponents2[] = {a.getUserId()};
-        returnMatchResult(b.getUserId(), questionId2, 2, opponents2);
+
+        // Game加入数据库
+        Game game = new Game();
+        game.setGameType(0);
+        // UserGameRecord加入数据库
+        for(int i=0;i<num;i++){
+            UserGameRecord userGameRecord=new UserGameRecord();
+            userGameRecord.setUserId(players.get(i).getUserId());
+            userGameRecord.setQuestionId(questionIds.get(i));
+        }
+        // 返回
+        Map<String, Integer> playerMap = new HashMap<>();
+        for (int i=0;i<num;i++){
+            playerMap.put(Integer.toString(i),players.get(i).getUserId());
+        }
+        for(int i=0;i<num;i++){
+            returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap);
+        }
     }
 }

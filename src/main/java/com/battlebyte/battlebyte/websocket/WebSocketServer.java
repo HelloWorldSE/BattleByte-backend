@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.fastjson.JSON;
@@ -46,7 +48,6 @@ public class WebSocketServer {
      * OJ服务
      */
     private OJService ojService = new OJService();
-
 
     @OnOpen
     public void onOpen(Session session) {
@@ -107,9 +108,9 @@ public class WebSocketServer {
     private void onMessage_LOGIN_REQ(JSONObject data, int id) throws IOException {
         String token = data.getString("token");
         //获取uid 测试
-//        Integer uid = Integer.valueOf(token);
+        Integer uid = Integer.valueOf(token);
         //获取uid
-        Integer uid = getUserId(token);
+//        Integer uid = getUserId(token);
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
@@ -156,7 +157,8 @@ public class WebSocketServer {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, int questionId, int teamId, int[] opponents) throws IOException {
+    public static void return_MATCH_ENTER(int userId, int questionId,  Map<String,Integer> playerMap) throws IOException {
+        //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
         JSONObject dataOutput_MATCH_ENTER = new JSONObject();
@@ -165,8 +167,7 @@ public class WebSocketServer {
         infoOutput_MATCH_ENTER.put("quesionId", questionId);
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
-        dataOutput_MATCH_ENTER.put("opponents", opponents);
-        dataOutput_MATCH_ENTER.put("team_side", teamId);
+        dataOutput_MATCH_ENTER.put("playerMap", playerMap);
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
@@ -207,6 +208,15 @@ public class WebSocketServer {
         output.put("type", "ANSWER_RESULT");
         output.put("data", dataOutput);
         sendMsg(output.toJSONString());
+
+        //判断是否结束
+        JSONObject dataResult = result.getJSONObject("data");
+        JSONObject statistic_info = result.getJSONObject("statistic_info");
+        JSONObject info = result.getJSONObject("info");
+        //已评测完
+        if(!(info.isEmpty()&&statistic_info.isEmpty())){
+
+        }
     }
 
     @OnError

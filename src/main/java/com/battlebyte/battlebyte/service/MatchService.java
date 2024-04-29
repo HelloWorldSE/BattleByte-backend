@@ -5,6 +5,7 @@ import com.battlebyte.battlebyte.websocket.WebSocketServer;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 匹配池
@@ -28,8 +29,8 @@ public class MatchService {
         matchingPool.removePlayer(userId);
     }
 
-    public static void returnMatchResult(Integer userId, int questionId, int teamId, int[] opponents) throws IOException {
-        WebSocketServer.return_MATCH_ENTER(userId, questionId, teamId, opponents);
+    public static void returnMatchResult(Integer userId, int questionId, Map<String,Integer> playerMap) throws IOException {
+        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap);
     }
 
 }
