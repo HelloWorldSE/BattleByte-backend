@@ -177,7 +177,7 @@ public class WebSocketServer {
         JSONObject dataOutput_MATCH_ENTER = new JSONObject();
         JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
-        infoOutput_MATCH_ENTER.put("quesionId", questionId);
+        infoOutput_MATCH_ENTER.put("questionId", questionId);
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
         dataOutput_MATCH_ENTER.put("playerMap", playerMap);
