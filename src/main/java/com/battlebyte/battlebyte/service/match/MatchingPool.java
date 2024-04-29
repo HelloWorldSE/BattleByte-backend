@@ -1,11 +1,12 @@
 package com.battlebyte.battlebyte.service.match;
 
-import com.battlebyte.battlebyte.service.match.Player;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
