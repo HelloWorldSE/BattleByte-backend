@@ -1,12 +1,16 @@
 package com.battlebyte.battlebyte.service.match;
 
+import com.battlebyte.battlebyte.config.BeanContext;
+import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
@@ -14,13 +18,18 @@ import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
 /**
  * 匹配池
  */
-@Component
+@Configurable
 public class MatchingPool extends Thread {
+
+    private GameService gameService;
 
     private static List<Player> players = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
 
+    public MatchingPool(){
+        this.gameService= BeanContext.getApplicationContext().getBean(GameService.class);
+    }
     /**
      * 向匹配池中添加一个玩家
      *
@@ -66,7 +75,7 @@ public class MatchingPool extends Thread {
                 Thread.sleep(1000);
                 lock.lock();
 
-                System.out.println("run once, current pool players num:"+players.size());
+                System.out.println("run once, current pool players num:" + players.size());
                 try {
                     increaseWaitingTime();
                     matchPlayers();
@@ -104,7 +113,16 @@ public class MatchingPool extends Thread {
                     Random random = new Random();
                     int randomQuestionId1 = random.nextInt(50) + 1;
                     int randomQuestionId2 = random.nextInt(50) + 1;
-                    sendResult(a, b, randomQuestionId1, randomQuestionId2); // 匹配成功之后返回结果
+                    ArrayList<Player> players = new ArrayList<>();
+                    players.add(a);
+                    players.add(b);
+
+                    ArrayList<Integer> questionIds=new ArrayList<>();
+                    questionIds.add(randomQuestionId1);
+                    questionIds.add(randomQuestionId2);
+
+
+                    sendResult(players, questionIds); // 匹配成功之后返回结果
                     break;
                 }
             }
@@ -130,12 +148,32 @@ public class MatchingPool extends Thread {
     }
 
     // 返回匹配结果
-    private void sendResult(Player a, Player b, int questionId1, int questionId2) throws IOException {
-        System.out.println("send result: " + a.getUserId() + " " + b.getUserId());
-        //todo:比赛信息加入数据库，返回
-        int opponents1[] = {b.getUserId()};
-        returnMatchResult(a.getUserId(), questionId1, 1, opponents1);
-        int opponents2[] = {a.getUserId()};
-        returnMatchResult(b.getUserId(), questionId2, 2, opponents2);
+    private void sendResult(ArrayList<Player>players , ArrayList<Integer>questionIds) throws IOException {
+        System.out.println("send result: " + players.get(0).getUserId() + " " + players.get(1).getUserId());
+        int num=2;
+
+        // Game加入数据库
+        Game game = new Game();
+        game.setGameType(0);
+        gameService.addGame(game);
+
+        // UserGameRecord加入数据库
+        for(int i=0;i<num;i++){
+            UserGameRecord userGameRecord=new UserGameRecord();
+            userGameRecord.setUserId(players.get(i).getUserId());
+            userGameRecord.setQuestionId(questionIds.get(i));
+            userGameRecord.setGameId(game.getId());
+            userGameRecord.setTeam(i); //todo:多人修改逻辑
+            gameService.save(userGameRecord);
+        }
+
+        // 返回
+        Map<String, Integer> playerMap = new HashMap<>();
+        for (int i=0;i<num;i++){
+            playerMap.put(Integer.toString(i),players.get(i).getUserId());
+        }
+        for(int i=0;i<num;i++){
+            returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap,game.getId());
+        }
     }
 }

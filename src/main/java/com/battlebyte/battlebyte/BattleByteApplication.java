@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BattleByteApplication {
 
 	public static void main(String[] args) {
-		MatchService.start();
 		SpringApplication.run(BattleByteApplication.class, args);
+		MatchService.start();
 	}
 
 }
