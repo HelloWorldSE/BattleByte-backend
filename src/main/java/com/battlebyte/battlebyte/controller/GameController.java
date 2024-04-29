@@ -2,7 +2,7 @@ package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
-import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
+import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.UserGameRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class GameController {
     }
 
     @GetMapping("/player")
-    public Page<UserInfoDTO> getPlayer(@RequestParam Integer id, @RequestParam(defaultValue = "1") Integer page,
+    public Page<UserGameDTO> getPlayer(@RequestParam Integer id, @RequestParam(defaultValue = "1") Integer page,
                                        @RequestParam(defaultValue = "10") Integer pageSize) {
         return gameService.getPlayer(id, PageRequest.of(page - 1, pageSize));
     }

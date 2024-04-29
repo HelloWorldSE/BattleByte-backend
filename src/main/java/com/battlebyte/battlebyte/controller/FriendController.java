@@ -32,6 +32,13 @@ public class FriendController {
         friendService.addFriend(dest);
     }
 
+    @GetMapping("/apply")
+    public Page<UserInfoDTO> getFriendApplications(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
+                                                   @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return friendService.getFriendApplications(id, name, JwtUtil.getUserId(), pageable);
+    }
+
 
     @PostMapping("/process")
     public void process(@RequestBody FriendApplication friendApplication, @RequestParam boolean accept) {
