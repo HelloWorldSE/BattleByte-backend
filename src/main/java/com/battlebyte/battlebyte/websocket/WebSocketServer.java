@@ -1,16 +1,22 @@
 package com.battlebyte.battlebyte.websocket;
 
+import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
+import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.MatchService;
 import com.battlebyte.battlebyte.service.OJService;
+import com.battlebyte.battlebyte.service.match.Player;
 import io.micrometer.common.util.StringUtils;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +24,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import static com.battlebyte.battlebyte.service.MatchService.removePlayer;
-import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
 
 @Component
 @ServerEndpoint("/server")
@@ -34,6 +39,7 @@ public class WebSocketServer {
      * 使用线程安全的ConcurrentHashMap来存放每个客户端对应的WebSocket对象
      */
     private static ConcurrentHashMap<Integer, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Integer, CurrentGame> currentGameMap = new ConcurrentHashMap<>();
 
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -47,7 +53,11 @@ public class WebSocketServer {
     /**
      * OJ服务
      */
-    private OJService ojService = new OJService();
+    @Autowired
+    private OJService ojService;
+
+    @Autowired
+    private GameService gameService;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -157,7 +167,7 @@ public class WebSocketServer {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, int questionId,  Map<String,Integer> playerMap) throws IOException {
+    public static void return_MATCH_ENTER(int userId, int questionId,  Map<String,Integer> playerMap,int gameId) throws IOException {
         //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
@@ -172,6 +182,11 @@ public class WebSocketServer {
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
         webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
+
+        //更新当前比赛信息
+        CurrentGame currentGame=new CurrentGame();
+        currentGame.setGameId(gameId);
+        currentGameMap.put(userId,currentGame);
     }
 
     // 处理聊天
@@ -197,12 +212,12 @@ public class WebSocketServer {
 
     // 刷新评测结果
     private void onMessage_ANSWER_REFRESH(JSONObject data, int id) throws IOException {
-        Integer submit_id = data.getInteger("submit_id");
+        String submit_id = data.getString("submit_id");
 
         //输出逻辑
         JSONObject output = new JSONObject();
         JSONObject dataOutput=new JSONObject();
-        JSONObject result = ojService.getProblem(submit_id);
+        JSONObject result = ojService.getResult(submit_id);
 
         dataOutput.put("result", result);
         output.put("type", "ANSWER_RESULT");
@@ -211,12 +226,47 @@ public class WebSocketServer {
 
         //判断是否结束
         JSONObject dataResult = result.getJSONObject("data");
-        JSONObject statistic_info = result.getJSONObject("statistic_info");
-        JSONObject info = result.getJSONObject("info");
+        JSONObject statistic_info = dataResult.getJSONObject("statistic_info");
+        JSONObject info = dataResult.getJSONObject("info");
         //已评测完
         if(!(info.isEmpty()&&statistic_info.isEmpty())){
 
+            //已结束
+            if(dataResult.getInteger("result")==0){
+                Integer gameId=currentGameMap.get(id).getGameId();
+                List<UserGameDTO> players =gameService.getPlayer(gameId);
+                //获取赢的队伍
+                int winTeamId=0;
+                //todo:多人模式记得修改这部分逻辑
+                for(UserGameDTO userGameDTO:players){
+                    if(userGameDTO.getId()==uid){
+                        winTeamId=userGameDTO.getTeam();
+                        break;
+                    }
+                }
+                for(UserGameDTO userGameDTO:players){
+                    //如果是赢
+                    if(userGameDTO.getTeam()==winTeamId){
+                        returnGameEnd(userGameDTO.getId(),"win");
+                    }else{//假如是输
+                        returnGameEnd(userGameDTO.getId(),"lose");
+                    }
+                    //清楚当前比赛
+                    currentGameMap.remove(userGameDTO.getId());
+                }
+            }
         }
+    }
+
+    public void returnGameEnd(int userId,String result) throws IOException {
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput=new JSONObject();
+
+        dataOutput.put("result", result);
+        output.put("type", "ANSWER_RESULT");
+        output.put("data", dataOutput);
+
+        webSocketMap.get(userId).sendMsg(output.toJSONString());
     }
 
     @OnError

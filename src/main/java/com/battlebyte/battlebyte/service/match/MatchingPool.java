@@ -2,7 +2,9 @@ package com.battlebyte.battlebyte.service.match;
 
 import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.match.Player;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +19,7 @@ import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
  */
 @Component
 public class MatchingPool extends Thread {
+    private GameService gameService =new GameService();
 
     private static List<Player> players = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
@@ -143,24 +146,29 @@ public class MatchingPool extends Thread {
     private void sendResult(ArrayList<Player>players , ArrayList<Integer>questionIds) throws IOException {
         System.out.println("send result: " + players.get(0).getUserId() + " " + players.get(1).getUserId());
         int num=2;
-        //todo:比赛信息加入数据库，返回
 
         // Game加入数据库
         Game game = new Game();
         game.setGameType(0);
+        gameService.addGame(game);
+
         // UserGameRecord加入数据库
         for(int i=0;i<num;i++){
             UserGameRecord userGameRecord=new UserGameRecord();
             userGameRecord.setUserId(players.get(i).getUserId());
             userGameRecord.setQuestionId(questionIds.get(i));
+            userGameRecord.setGameId(game.getId());
+            userGameRecord.setTeam(i); //todo:多人修改逻辑
+            gameService.save(userGameRecord);
         }
+
         // 返回
         Map<String, Integer> playerMap = new HashMap<>();
         for (int i=0;i<num;i++){
             playerMap.put(Integer.toString(i),players.get(i).getUserId());
         }
         for(int i=0;i<num;i++){
-            returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap);
+            returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap,game.getId());
         }
     }
 }

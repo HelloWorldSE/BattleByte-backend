@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +45,9 @@ public class GameService {
         return gameDao.getPlayer(id, pageable);
     }
 
+    public List<UserGameDTO> getPlayer(Integer id) {
+        return gameDao.getPlayer(id);
+    }
     public void save(UserGameRecord userGameRecord) {
         userGameRecordDao.save(userGameRecord);
     }
