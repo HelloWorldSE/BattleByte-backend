@@ -2,6 +2,7 @@ package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.service.match.MatchingPool;
 import com.battlebyte.battlebyte.websocket.WebSocketServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Service
 public class MatchService {
 
-    public final static MatchingPool matchingPool = new MatchingPool();
+    public static MatchingPool matchingPool = new MatchingPool();
 
     public static void start() {
         matchingPool.start();

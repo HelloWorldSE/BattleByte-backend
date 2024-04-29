@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.websocket;
 
+import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.MatchService;
@@ -53,12 +54,13 @@ public class WebSocketServer {
     /**
      * OJ服务
      */
-    @Autowired
-    private OJService ojService;
+    private OJService ojService = new OJService();
 
-    @Autowired
     private GameService gameService;
-
+    public WebSocketServer(){
+        ojService= BeanContext.getApplicationContext().getBean(OJService.class);
+        gameService=BeanContext.getApplicationContext().getBean(GameService.class);
+    }
     @OnOpen
     public void onOpen(Session session) {
     }

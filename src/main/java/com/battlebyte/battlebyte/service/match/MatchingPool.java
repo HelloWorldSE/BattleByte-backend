@@ -1,10 +1,11 @@
 package com.battlebyte.battlebyte.service.match;
 
+import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.service.GameService;
-import com.battlebyte.battlebyte.service.match.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,14 +18,18 @@ import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
 /**
  * 匹配池
  */
-@Component
+@Configurable
 public class MatchingPool extends Thread {
-    private GameService gameService =new GameService();
+
+    private GameService gameService;
 
     private static List<Player> players = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
 
+    public MatchingPool(){
+        this.gameService= BeanContext.getApplicationContext().getBean(GameService.class);
+    }
     /**
      * 向匹配池中添加一个玩家
      *
