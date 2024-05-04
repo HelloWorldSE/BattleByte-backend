@@ -201,20 +201,47 @@ public class WebSocketServer {
         //读取json文件
         String type = data.getString("type");
         String message = data.getString("message");
-        Integer gameId = data.getInteger("gameId");
 
-        Integer toId = 0;
-        //todo:根据gameId获取所有人参与的id for循环遍历输出
-        //输出逻辑
-        JSONObject output = new JSONObject();
-        JSONObject dataOutput = new JSONObject();
+        //获取同局人员
+        Integer gameId = currentGameMap.get(uid).getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        //获取当前uid的队号
+        int teamId=0;
+        for (UserGameDTO userGameDTO : players) {
+            if (userGameDTO.getId() == uid) {
+                teamId = userGameDTO.getTeam();
+                break;
+            }
+        }
+        if (type.equals("team")) { //队内聊天
+            for (UserGameDTO userGameDTO : players) {
+                if(userGameDTO.getTeam()==teamId){ //如果是同队的
+                    //输出逻辑
+                    JSONObject output = new JSONObject();
+                    JSONObject dataOutput = new JSONObject();
 
-        dataOutput.put("fromId", uid);
-        dataOutput.put("message", message);
+                    dataOutput.put("fromId", uid);
+                    dataOutput.put("message", message);
 
-        output.put("type", "CHAT_MSG");
-        output.put("data", dataOutput);
-        webSocketMap.get(toId).sendMsg(output.toJSONString());
+                    output.put("type", "CHAT_MSG");
+                    output.put("data", dataOutput);
+                    webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                }
+            }
+        } else if (type.equals("global")) { //全局聊天
+            for (UserGameDTO userGameDTO : players) {
+                //输出逻辑
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("fromId", uid);
+                dataOutput.put("message", message);
+
+                output.put("type", "CHAT_MSG");
+                output.put("data", dataOutput);
+                webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+            }
+        }
     }
 
     // 刷新评测结果
@@ -292,10 +319,10 @@ public class WebSocketServer {
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
 
-                dataOutput.put("row",row);
-                dataOutput.put("col",col);
-                dataOutput.put("total_rows",total_rows);
-                dataOutput.put("user_id",uid);
+                dataOutput.put("row", row);
+                dataOutput.put("col", col);
+                dataOutput.put("total_rows", total_rows);
+                dataOutput.put("user_id", uid);
 
                 output.put("type", "POS_SYNC");
                 output.put("data", dataOutput);
