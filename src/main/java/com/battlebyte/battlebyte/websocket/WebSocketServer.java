@@ -58,10 +58,12 @@ public class WebSocketServer {
     private OJService ojService = new OJService();
 
     private GameService gameService;
-    public WebSocketServer(){
-        ojService= BeanContext.getApplicationContext().getBean(OJService.class);
-        gameService=BeanContext.getApplicationContext().getBean(GameService.class);
+
+    public WebSocketServer() {
+        ojService = BeanContext.getApplicationContext().getBean(OJService.class);
+        gameService = BeanContext.getApplicationContext().getBean(GameService.class);
     }
+
     @OnOpen
     public void onOpen(Session session) {
     }
@@ -102,13 +104,15 @@ public class WebSocketServer {
                 //设置session
                 this.session = session;
                 if (type.equals("LOGIN_REQ")) {
-                    onMessage_LOGIN_REQ(data,id);
-                }else if(type.equals("MATCH_REQ")){
-                    onMessage_MATCH_REQ(data,id);
-                }else if(type.equals("CHAT_REQ")){
-                    onMessage_CHAT_REQ(data,id);
-                }else if(type.equals("ANSWER_REFRESH")){
-                    onMessage_ANSWER_REFRESH(data,id);
+                    onMessage_LOGIN_REQ(data, id);
+                } else if (type.equals("MATCH_REQ")) {
+                    onMessage_MATCH_REQ(data, id);
+                } else if (type.equals("CHAT_REQ")) {
+                    onMessage_CHAT_REQ(data, id);
+                } else if (type.equals("ANSWER_REFRESH")) {
+                    onMessage_ANSWER_REFRESH(data, id);
+                } else if (type.equals("POS_UPDATE")) {
+                    onMessage_POS_UPDATE(data, id);
                 }
 
             } catch (Exception e) {
@@ -170,7 +174,7 @@ public class WebSocketServer {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, int questionId,  Map<String,Integer> playerMap,int gameId) throws IOException {
+    public static void return_MATCH_ENTER(int userId, int questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
         //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
@@ -187,9 +191,9 @@ public class WebSocketServer {
         webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
 
         //更新当前比赛信息
-        CurrentGame currentGame=new CurrentGame();
+        CurrentGame currentGame = new CurrentGame();
         currentGame.setGameId(gameId);
-        currentGameMap.put(userId,currentGame);
+        currentGameMap.put(userId, currentGame);
     }
 
     // 处理聊天
@@ -219,7 +223,7 @@ public class WebSocketServer {
 
         //输出逻辑
         JSONObject output = new JSONObject();
-        JSONObject dataOutput=new JSONObject();
+        JSONObject dataOutput = new JSONObject();
         JSONObject result = ojService.getResult(submit_id);
 
         dataOutput.put("result", result);
@@ -232,27 +236,27 @@ public class WebSocketServer {
         JSONObject statistic_info = dataResult.getJSONObject("statistic_info");
         JSONObject info = dataResult.getJSONObject("info");
         //已评测完
-        if(!(info.isEmpty()&&statistic_info.isEmpty())){
+        if (!(info.isEmpty() && statistic_info.isEmpty())) {
 
             //已结束
-            if(dataResult.getInteger("result")==0){
-                Integer gameId=currentGameMap.get(id).getGameId();
-                List<UserGameDTO> players =gameService.getPlayer(gameId);
+            if (dataResult.getInteger("result") == 0) {
+                Integer gameId = currentGameMap.get(uid).getGameId();
+                List<UserGameDTO> players = gameService.getPlayer(gameId);
                 //获取赢的队伍
-                int winTeamId=0;
+                int winTeamId = 0;
                 //todo:多人模式记得修改这部分逻辑
-                for(UserGameDTO userGameDTO:players){
-                    if(userGameDTO.getId()==uid){
-                        winTeamId=userGameDTO.getTeam();
+                for (UserGameDTO userGameDTO : players) {
+                    if (userGameDTO.getId() == uid) {
+                        winTeamId = userGameDTO.getTeam();
                         break;
                     }
                 }
-                for(UserGameDTO userGameDTO:players){
+                for (UserGameDTO userGameDTO : players) {
                     //如果是赢
-                    if(userGameDTO.getTeam()==winTeamId){
-                        returnGameEnd(userGameDTO.getId(),"win");
-                    }else{//假如是输
-                        returnGameEnd(userGameDTO.getId(),"lose");
+                    if (userGameDTO.getTeam() == winTeamId) {
+                        returnGameEnd(userGameDTO.getId(), "win");
+                    } else {//假如是输
+                        returnGameEnd(userGameDTO.getId(), "lose");
                     }
                     //清楚当前比赛
                     currentGameMap.remove(userGameDTO.getId());
@@ -261,15 +265,43 @@ public class WebSocketServer {
         }
     }
 
-    public void returnGameEnd(int userId,String result) throws IOException {
+    public void returnGameEnd(int userId, String result) throws IOException {
         JSONObject output = new JSONObject();
-        JSONObject dataOutput=new JSONObject();
+        JSONObject dataOutput = new JSONObject();
 
         dataOutput.put("result", result);
         output.put("type", "ANSWER_RESULT");
         output.put("data", dataOutput);
 
         webSocketMap.get(userId).sendMsg(output.toJSONString());
+    }
+
+    //处理光标移动
+    private void onMessage_POS_UPDATE(JSONObject data, int id) throws IOException {
+        int row = data.getInteger("row");
+        int col = data.getInteger("col");
+        int total_rows = data.getInteger("total_rows");
+
+        //获取同局人员
+        Integer gameId = currentGameMap.get(uid).getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+        for (UserGameDTO userGameDTO : players) {
+            if (userGameDTO.getId() != uid) {
+                //输出逻辑
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("row",row);
+                dataOutput.put("col",col);
+                dataOutput.put("total_rows",total_rows);
+                dataOutput.put("uid",uid);
+
+                output.put("type", "POS_SYNC");
+                output.put("data", dataOutput);
+                webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+            }
+        }
     }
 
     @OnError
