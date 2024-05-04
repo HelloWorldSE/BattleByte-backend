@@ -295,7 +295,7 @@ public class WebSocketServer {
                 dataOutput.put("row",row);
                 dataOutput.put("col",col);
                 dataOutput.put("total_rows",total_rows);
-                dataOutput.put("uid",uid);
+                dataOutput.put("user_id",uid);
 
                 output.put("type", "POS_SYNC");
                 output.put("data", dataOutput);
