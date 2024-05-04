@@ -27,8 +27,8 @@ public class UploadService {
         if (!getFileType(suffix).equals("image")) {
             throw new ServiceException("文件类型错误");
         }
-        fileName = JwtUtil.getUserId() + "-" + fileName + "." + suffix;
-        String filePath = "avatar/";
+        fileName = JwtUtil.getUserId() + "-" + fileName;
+        String filePath = "/home/ubuntu/BattleByte-backend/avatar/";
         try {
             file.transferTo(new File(filePath + fileName));
         } catch (IOException e) {
@@ -62,7 +62,7 @@ public class UploadService {
         User user = userService.findById(uid);
         String path = user.getAvatar();
         if (path == null) {
-            return null;
+            path = "/home/ubuntu/BattleByte-backend/avatar/11-player1.jpg";
         }
         try {
             // 读取头像文件
