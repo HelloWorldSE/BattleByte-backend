@@ -17,7 +17,7 @@ public class User {
     private String password;
     @Column(name = "userEmail", length = 30,nullable = false)
     private String userEmail;
-    @Column(name = "avatar", length = 20)
+    @Column(name = "avatar", length = 100)
     private String avatar; //图片路径
     @Column(name = "rating")
     private Integer rating;
