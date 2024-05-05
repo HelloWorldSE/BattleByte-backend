@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FriendApplicationDao extends JpaRepository<FriendApplication, Integer> {
-    @Query(value = "select id, user_name as userName, avatar from user where \n" +
+    @Query(value = "select id, user_name as userName, avatar, user_email as userEmail from user where \n" +
             "    (\n" +
             "        id = CASE WHEN ?1 != 0 THEN ?1 ELSE id END \n" +
             "        AND \n" +

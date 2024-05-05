@@ -36,7 +36,7 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "select id, user_name as userName, avatar from user where \n" +
+    @Query(value = "select id, user_name as userName, avatar, user_email as userEmail from user where \n" +
             "    (\n" +
             "        id = CASE WHEN ?1 != 0 THEN ?1 ELSE id END \n" +
             "        AND \n" +
