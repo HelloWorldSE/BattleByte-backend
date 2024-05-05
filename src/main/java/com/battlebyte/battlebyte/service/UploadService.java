@@ -62,7 +62,7 @@ public class UploadService {
         User user = userService.findById(uid);
         String path = user.getAvatar();
         if (path == null) {
-            path = "/home/ubuntu/BattleByte-backend/avatar/11-player1.jpg";
+            path = "/home/ubuntu/BattleByte-backend/avatar/default.jpg";
         }
         try {
             // 读取头像文件
