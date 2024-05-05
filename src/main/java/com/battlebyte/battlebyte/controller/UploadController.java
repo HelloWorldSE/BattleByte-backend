@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.controller;
 
+import com.battlebyte.battlebyte.common.Result;
 import com.battlebyte.battlebyte.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public class UploadController {
     }
 
     @GetMapping("/getAvatar")
-    public byte[] getAvatar(@RequestParam(defaultValue = "0") Integer id) {
-        return uploadService.getAvatar(id);
+    public Result getAvatar(@RequestParam(defaultValue = "0") Integer id) {
+        return Result.success(uploadService.getAvatar(id));
     }
 
 }
