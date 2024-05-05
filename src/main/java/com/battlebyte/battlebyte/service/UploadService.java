@@ -59,6 +59,9 @@ public class UploadService {
     }
 
     public byte[] getAvatar(Integer uid) {
+        if (uid <= 0) {
+            uid = JwtUtil.getUserId();
+        }
         User user = userService.findById(uid);
         String path = user.getAvatar();
         if (path == null) {
