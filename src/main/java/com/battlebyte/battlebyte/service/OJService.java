@@ -14,9 +14,9 @@ public class OJService {
             "sessionid=fmlxdqc9dj0abgqh8ycgq2cxz8hi2axl";
     public String X_Csrftoken="2YPsM0GU3sS9jsSAOSCFMuHqKNqblm0Ce6pjtZeErHtceTBXFS1poqm3fCPNNQMI";
 
-    public JSONObject putProblem() {
-        
-    }
+//    public JSONObject putProblem() {
+//
+//    }
 
     public JSONObject getProblem(Integer id) {
         String url = "http://81.70.241.166:1233/api/problem?problem_id=" + id;

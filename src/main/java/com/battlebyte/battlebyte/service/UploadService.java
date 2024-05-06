@@ -1,16 +1,13 @@
 package com.battlebyte.battlebyte.service;
 
-import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 @Service
@@ -37,23 +34,23 @@ public class UploadService {
         return fileName;
     }
 
-//    private static String getFileType(String extension) {
-//        String document = "txt doc pdf ppt pps xlsx xls docx csv";
-//        String music = "mp3 wav wma mpa ram ra aac aif m4a";
-//        String video = "avi mpg mpe mpeg asf wmv mov qt rm mp4 flv m4v webm ogv ogg";
-//        String image = "bmp dib pcp dif wmf gif jpg tif eps psd cdr iff tga pcd mpt png jpeg";
-//        if (image.contains(extension)) {
-//            return "image";
-//        } else if (document.contains(extension)) {
-//            return "document";
-//        } else if (music.contains(extension)) {
-//            return "music";
-//        } else if (video.contains(extension)) {
-//            return "video";
-//        } else {
-//            return "other";
-//        }
-//    }
+    private static String getFileType(String extension) {
+        String document = "txt doc pdf ppt pps xlsx xls docx csv";
+        String music = "mp3 wav wma mpa ram ra aac aif m4a";
+        String video = "avi mpg mpe mpeg asf wmv mov qt rm mp4 flv m4v webm ogv ogg";
+        String image = "bmp dib pcp dif wmf gif jpg tif eps psd cdr iff tga pcd mpt png jpeg";
+        if (image.contains(extension)) {
+            return "image";
+        } else if (document.contains(extension)) {
+            return "document";
+        } else if (music.contains(extension)) {
+            return "music";
+        } else if (video.contains(extension)) {
+            return "video";
+        } else {
+            return "other";
+        }
+    }
 //
 //    public byte[] getAvatar(Integer uid) {
 //        if (uid <= 0) {
