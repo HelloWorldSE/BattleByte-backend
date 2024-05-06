@@ -176,18 +176,32 @@ public class WebSocketServer {
     private void onMessage_MATCH_REQ(JSONObject data, int id) throws IOException {
         String type = data.getString("type");
 
-        //todo:根据rating进行匹配
-        MatchService.addPlayer(uid, 1000);
+        //如果上局比赛没结束
+        if(currentGameMap.containsKey(uid)){
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput = new JSONObject();
 
-        //输出逻辑
-        JSONObject output_MATCH_START = new JSONObject();
-        JSONObject dataOutput_MATCH_START = new JSONObject();
+            dataOutput.put("ack",id);
+            dataOutput.put("msg","已在匹配对局中");
 
-        dataOutput_MATCH_START.put("type", type);
+            output.put("type","ERROR");
+            output.put("data",dataOutput);
 
-        output_MATCH_START.put("type", "MATCH_START");
-        output_MATCH_START.put("data", dataOutput_MATCH_START);
-        sendMsg(output_MATCH_START.toJSONString());
+            sendMsg(output.toJSONString());
+        }else{
+            //todo:根据rating进行匹配
+            MatchService.addPlayer(uid, 1000);
+
+            //输出逻辑
+            JSONObject output_MATCH_START = new JSONObject();
+            JSONObject dataOutput_MATCH_START = new JSONObject();
+
+            dataOutput_MATCH_START.put("type", type);
+
+            output_MATCH_START.put("type", "MATCH_START");
+            output_MATCH_START.put("data", dataOutput_MATCH_START);
+            sendMsg(output_MATCH_START.toJSONString());
+        }
     }
 
     //匹配成功
