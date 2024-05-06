@@ -329,7 +329,7 @@ public class WebSocketServer {
         JSONObject dataOutput = new JSONObject();
 
         dataOutput.put("result", result);
-        output.put("type", "ANSWER_RESULT");
+        output.put("type", "GAME_END");
         output.put("data", dataOutput);
 
         webSocketMap.get(userId).sendMsg(output.toJSONString());
