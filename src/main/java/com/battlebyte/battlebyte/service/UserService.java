@@ -4,6 +4,7 @@ import com.battlebyte.battlebyte.config.UserToken;
 import com.battlebyte.battlebyte.dao.UserDao;
 import com.battlebyte.battlebyte.entity.Role;
 import com.battlebyte.battlebyte.entity.User;
+import com.battlebyte.battlebyte.entity.dto.FriendDTO;
 import com.battlebyte.battlebyte.entity.dto.LoginDTO;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
@@ -101,7 +102,7 @@ public class UserService {
         return userDao.getPermission(uid);
     }
 
-    public Page<UserInfoDTO> getFriend(Integer id, String name, Integer uid, Pageable pageable) {
+    public Page<FriendDTO> getFriend(Integer id, String name, Integer uid, Pageable pageable) {
         return userDao.findFriend(id, name, uid, pageable);
     }
 

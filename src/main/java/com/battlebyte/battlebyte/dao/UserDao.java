@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.dao;
 
 import com.battlebyte.battlebyte.entity.User;
+import com.battlebyte.battlebyte.entity.dto.FriendDTO;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import org.springframework.data.domain.Page;
@@ -36,17 +37,34 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "select id, user_name as userName, avatar, user_email as userEmail from user where \n" +
-            "    (\n" +
-            "        id = CASE WHEN ?1 != 0 THEN ?1 ELSE id END \n" +
-            "        AND \n" +
-            "        user_name LIKE CONCAT('%', ?2, '%')\n" +
-            "    )\n" +
-            "    AND id in (\n" +
-            "        select large_id from friend where (small_id = ?3)\n" +
-            "        union\n" +
-            "        select small_id from friend where (large_id = ?3)\n" +
-            "    )", nativeQuery = true)
-    public Page<UserInfoDTO> findFriend(Integer id, String name, Integer uid, Pageable pageable);
+    @Query(value = "WITH FriendsCTE AS (\n" +
+            "    SELECT \n" +
+            "        large_id AS friendId\n" +
+            "    FROM \n" +
+            "        friend\n" +
+            "    WHERE \n" +
+            "        small_id = ?3\n" +
+            "    UNION ALL\n" +
+            "    SELECT \n" +
+            "        small_id AS friendId\n" +
+            "    FROM \n" +
+            "        friend\n" +
+            "    WHERE \n" +
+            "        large_id = ?3\n" +
+            ")\n" +
+            "SELECT \n" +
+            "    u.id,\n" +
+            "    u.user_name AS userName,\n" +
+            "    u.avatar,\n" +
+            "    u.user_email AS userEmail,\n" +
+            "    f.friendId\n" +
+            "FROM \n" +
+            "    user u\n" +
+            "JOIN \n" +
+            "    FriendsCTE f ON u.id = f.friendId\n" +
+            "WHERE \n" +
+            "    u.id = CASE WHEN ?1 != 0 THEN ?1 ELSE u.id END\n" +
+            "    AND u.user_name LIKE CONCAT('%', ?2, '%');", nativeQuery = true)
+    public Page<FriendDTO> findFriend(Integer id, String name, Integer uid, Pageable pageable);
 
 }

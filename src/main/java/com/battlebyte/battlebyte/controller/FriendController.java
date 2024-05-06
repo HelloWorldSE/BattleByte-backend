@@ -2,6 +2,7 @@ package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.Friend;
 import com.battlebyte.battlebyte.entity.FriendApplication;
+import com.battlebyte.battlebyte.entity.dto.FriendDTO;
 import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.service.FriendService;
 import com.battlebyte.battlebyte.service.UserService;
@@ -21,8 +22,8 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("")
-    public Page<UserInfoDTO> getFriend(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+    public Page<FriendDTO> getFriend(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
+                                     @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         return userService.getFriend(id, name, JwtUtil.getUserId(), pageable);
     }
@@ -33,7 +34,7 @@ public class FriendController {
     }
 
     @GetMapping("/apply")
-    public Page<UserInfoDTO> getFriendApplications(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
+    public Page<FriendDTO> getFriendApplications(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
                                                    @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         return friendService.getFriendApplications(id, name, JwtUtil.getUserId(), pageable);
@@ -41,12 +42,12 @@ public class FriendController {
 
 
     @PostMapping("/process")
-    public void process(@RequestBody FriendApplication friendApplication, @RequestParam boolean accept) {
-        friendService.processApply(friendApplication, accept);
+    public void process(@RequestBody Integer id, @RequestParam boolean accept) {
+        friendService.processApply(id, accept);
     }
 
-    @PostMapping("/delete")
-    public void delFriend(@RequestBody Friend friend) {
-        friendService.delFriend(friend);
+    @DeleteMapping("/{id}")
+    public void delFriend(@PathVariable("id") Integer id) {
+        friendService.delFriend(id);
     }
 }
