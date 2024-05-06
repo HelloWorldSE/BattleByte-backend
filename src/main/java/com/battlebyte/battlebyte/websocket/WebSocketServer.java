@@ -2,9 +2,11 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
+import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.MatchService;
 import com.battlebyte.battlebyte.service.OJService;
+import com.battlebyte.battlebyte.service.UserService;
 import com.battlebyte.battlebyte.service.match.Player;
 import io.micrometer.common.util.StringUtils;
 import jakarta.websocket.*;
@@ -56,12 +58,13 @@ public class WebSocketServer {
      * OJ服务
      */
     private OJService ojService = new OJService();
-
     private GameService gameService;
+    private UserService userService;
 
     public WebSocketServer() {
         ojService = BeanContext.getApplicationContext().getBean(OJService.class);
         gameService = BeanContext.getApplicationContext().getBean(GameService.class);
+        userService =BeanContext.getApplicationContext().getBean(UserService.class);
     }
 
     @OnOpen
@@ -253,6 +256,10 @@ public class WebSocketServer {
                     JSONObject output = new JSONObject();
                     JSONObject dataOutput = new JSONObject();
 
+                    //通过uid读取名字
+                    UserProfileDTO userProfileDTO = userService.findByUserId(uid);
+
+                    dataOutput.put("fromName", userProfileDTO.getUserName());
                     dataOutput.put("fromId", uid);
                     dataOutput.put("message", message);
 
