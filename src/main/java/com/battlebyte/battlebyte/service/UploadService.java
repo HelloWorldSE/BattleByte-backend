@@ -36,7 +36,7 @@ public class UploadService {
         }
         User user = new User();
         user.setId(JwtUtil.getUserId());
-        user.setAvatar(filePath + fileName);
+        user.setAvatar(fileName);
         userService.update(user);
     }
 

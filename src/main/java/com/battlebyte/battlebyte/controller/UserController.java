@@ -19,6 +19,7 @@ public class UserController {
     @PostMapping("/auth/register")
     public void registerUser(@RequestBody User user) {
         user.setRating(0);
+        user.setAvatar("default.jpg");
         userService.register(user);
     }
 
