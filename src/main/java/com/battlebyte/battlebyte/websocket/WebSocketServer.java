@@ -274,6 +274,10 @@ public class WebSocketServer {
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
 
+                //通过uid读取名字
+                UserProfileDTO userProfileDTO = userService.findByUserId(uid);
+
+                dataOutput.put("fromName", userProfileDTO.getUserName());
                 dataOutput.put("fromId", uid);
                 dataOutput.put("message", message);
 
