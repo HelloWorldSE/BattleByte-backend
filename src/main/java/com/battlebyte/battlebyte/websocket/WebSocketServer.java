@@ -139,7 +139,6 @@ public class WebSocketServer {
         webSocketMap.put(uid, this);
         //在线数加1
         addOnlineCount();
-
         log.info("用户【" + uid + "】连接成功，当前在线人数为:" + getOnlineCount());
         try {
             JSONObject output_LOGIN_ACK = new JSONObject();
@@ -152,6 +151,22 @@ public class WebSocketServer {
             sendMsg(output_LOGIN_ACK.toJSONString());
         } catch (IOException e) {
             log.error("用户【" + uid + "】网络异常!", e);
+        }
+        //如果上局比赛没结束
+        if(currentGameMap.containsKey(uid)){
+            CurrentGame currentGame = currentGameMap.get(uid);
+            JSONObject output_MATCH_ENTER = new JSONObject();
+            JSONObject dataOutput_MATCH_ENTER = new JSONObject();
+            JSONObject infoOutput_MATCH_ENTER = new JSONObject();
+
+            infoOutput_MATCH_ENTER.put("questionId", currentGame.getQuestionId());
+
+            dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
+            dataOutput_MATCH_ENTER.put("playerMap", currentGame.getPlayerMap());
+
+            output_MATCH_ENTER.put("type", "MATCH_ENTER");
+            output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
+            webSocketMap.get(uid).sendMsg(output_MATCH_ENTER.toJSONString());
         }
     }
 
@@ -193,6 +208,8 @@ public class WebSocketServer {
         //更新当前比赛信息
         CurrentGame currentGame = new CurrentGame();
         currentGame.setGameId(gameId);
+        currentGame.setQuestionId(questionId);
+        currentGame.setPlayerMap(playerMap);
         currentGameMap.put(userId, currentGame);
     }
 
