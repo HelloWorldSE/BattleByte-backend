@@ -22,4 +22,8 @@ public class UploadController {
         return Result.success(uploadService.getAvatar(id));
     }
 
+//    @GetMapping("/avatar/**")
+//    public String getAvatar() {
+//        return null;
+//    }
 }

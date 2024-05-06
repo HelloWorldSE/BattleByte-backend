@@ -27,6 +27,8 @@ public class UserFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws ServiceException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("token");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=UTF-8");
         if (token == null || "".equals(token)){
             Object result = Result.error(2, "识别用户信息失败");
             OutputStream os = response.getOutputStream();
