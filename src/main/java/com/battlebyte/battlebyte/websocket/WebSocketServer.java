@@ -113,6 +113,8 @@ public class WebSocketServer {
                     onMessage_ANSWER_REFRESH(data, id);
                 } else if (type.equals("POS_UPDATE")) {
                     onMessage_POS_UPDATE(data, id);
+                }else if (type.equals("SURRENDER")) {
+                    onMessage_SURRENDER(data, id);
                 }
 
             } catch (Exception e) {
@@ -281,7 +283,6 @@ public class WebSocketServer {
         JSONObject info = dataResult.getJSONObject("info");
         //已评测完
         if (!(info.isEmpty() && statistic_info.isEmpty())) {
-
             //已结束
             if (dataResult.getInteger("result") == 0) {
                 Integer gameId = currentGameMap.get(uid).getGameId();
@@ -345,6 +346,29 @@ public class WebSocketServer {
                 output.put("data", dataOutput);
                 webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
             }
+        }
+    }
+    public void onMessage_SURRENDER(JSONObject data, int id) throws IOException{
+        Integer gameId = currentGameMap.get(uid).getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        //获取赢的队伍
+        int surrenderTeamId = 0;
+        //todo:多人模式记得修改这部分逻辑
+        for (UserGameDTO userGameDTO : players) {
+            if (userGameDTO.getId() == uid) {
+                surrenderTeamId = userGameDTO.getTeam();
+                break;
+            }
+        }
+        for (UserGameDTO userGameDTO : players) {
+            //如果是赢
+            if (userGameDTO.getTeam() == surrenderTeamId) {
+                returnGameEnd(userGameDTO.getId(), "lose");
+            } else {//假如是输
+                returnGameEnd(userGameDTO.getId(), "win");
+            }
+            //清楚当前比赛
+            currentGameMap.remove(userGameDTO.getId());
         }
     }
 
