@@ -37,7 +37,15 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "WITH FriendsCTE AS (\n" +
+    @Query(value = "SELECT \n" +
+            "    u.id,\n" +
+            "    u.user_name AS userName,\n" +
+            "    u.avatar,\n" +
+            "    u.user_email AS userEmail,\n" +
+            "    f.friendId\n" +
+            "FROM \n" +
+            "    user u\n" +
+            "JOIN (\n" +
             "    SELECT \n" +
             "        large_id AS friendId\n" +
             "    FROM \n" +
@@ -51,17 +59,7 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "        friend\n" +
             "    WHERE \n" +
             "        large_id = ?3\n" +
-            ")\n" +
-            "SELECT \n" +
-            "    u.id,\n" +
-            "    u.user_name AS userName,\n" +
-            "    u.avatar,\n" +
-            "    u.user_email AS userEmail,\n" +
-            "    f.friendId\n" +
-            "FROM \n" +
-            "    user u\n" +
-            "JOIN \n" +
-            "    FriendsCTE f ON u.id = f.friendId\n" +
+            ") f ON u.id = f.friendId\n" +
             "WHERE \n" +
             "    u.id = CASE WHEN ?1 != 0 THEN ?1 ELSE u.id END\n" +
             "    AND u.user_name LIKE CONCAT('%', ?2, '%');", nativeQuery = true)
