@@ -13,14 +13,14 @@ public class UploadController {
     public UploadService uploadService;
 
     @PostMapping("/avatar")
-    public void updateAvatar(@RequestParam MultipartFile file) {
-        uploadService.updateAvatar(file);
+    public String updateAvatar(@RequestParam MultipartFile file) {
+        return uploadService.updateAvatar(file);
     }
 
-    @GetMapping("/getAvatar")
-    public Result getAvatar(@RequestParam(defaultValue = "0") Integer id) {
-        return Result.success(uploadService.getAvatar(id));
-    }
+//    @GetMapping("/getAvatar")
+//    public Result getAvatar(@RequestParam(defaultValue = "0") Integer id) {
+//        return Result.success(uploadService.getAvatar(id));
+//    }
 
 //    @GetMapping("/avatar/**")
 //    public String getAvatar() {
