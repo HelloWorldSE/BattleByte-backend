@@ -119,6 +119,8 @@ public class WebSocketServer {
                     onMessage_POS_UPDATE(data, id);
                 } else if (type.equals("SURRENDER")) {
                     onMessage_SURRENDER(data, id);
+                } else if (type.equals("ITEM_SEND")) {
+                    onMessage_ITEM_SEND(data, id);
                 }
 
             } catch (Exception e) {
@@ -268,7 +270,7 @@ public class WebSocketServer {
                     output.put("type", "CHAT_MSG");
                     output.put("data", dataOutput);
                     //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
-                    sendMsg(userGameDTO.getId(),output.toJSONString());
+                    sendMsg(userGameDTO.getId(), output.toJSONString());
                 }
             }
         } else if (type.equals("global")) { //全局聊天
@@ -287,7 +289,7 @@ public class WebSocketServer {
                 output.put("type", "CHAT_MSG");
                 output.put("data", dataOutput);
                 //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
-                sendMsg(userGameDTO.getId(),output.toJSONString());
+                sendMsg(userGameDTO.getId(), output.toJSONString());
             }
         }
     }
@@ -402,6 +404,40 @@ public class WebSocketServer {
             //清楚当前比赛
             currentGameMap.remove(userGameDTO.getId());
         }
+    }
+
+    //处理道具
+    private void onMessage_ITEM_SEND(JSONObject data, int id) throws IOException {
+        //读取json文件
+        String type = data.getString("type");
+
+        //获取同局人员
+        Integer gameId = currentGameMap.get(uid).getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        //获取当前uid的队号
+        int teamId = 0;
+        for (UserGameDTO userGameDTO : players) {
+            if (userGameDTO.getId() == uid) {
+                teamId = userGameDTO.getTeam();
+                break;
+            }
+        }
+
+        for (UserGameDTO userGameDTO : players) {
+            //如果不同队
+            if (userGameDTO.getTeam() != teamId){
+                //输出逻辑
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+                dataOutput.put("type", type);
+
+                output.put("type", "ITEM_USED");
+                output.put("data", dataOutput);
+                
+                sendMsg(userGameDTO.getId(), output.toJSONString());
+            }
+        }
+
     }
 
     @OnError
