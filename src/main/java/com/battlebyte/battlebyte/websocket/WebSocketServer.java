@@ -286,7 +286,8 @@ public class WebSocketServer {
 
                 output.put("type", "CHAT_MSG");
                 output.put("data", dataOutput);
-                webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                sendMsg(userGameDTO.getId(),output.toJSONString());
             }
         }
     }

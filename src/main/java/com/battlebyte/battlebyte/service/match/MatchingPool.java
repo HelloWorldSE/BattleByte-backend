@@ -4,6 +4,7 @@ import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.service.GameService;
+import com.battlebyte.battlebyte.service.OJService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
@@ -22,13 +23,14 @@ import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
 public class MatchingPool extends Thread {
 
     private GameService gameService;
-
+    private OJService ojService;
     private static List<Player> players = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
 
     public MatchingPool(){
         this.gameService= BeanContext.getApplicationContext().getBean(GameService.class);
+        this.ojService= BeanContext.getApplicationContext().getBean(OJService.class);
     }
     /**
      * 向匹配池中添加一个玩家
@@ -111,7 +113,8 @@ public class MatchingPool extends Thread {
                 if (checkMatched(a, b) && !a.getUserId().equals(b.getUserId())) {
                     used[i] = used[j] = true;
                     Random random = new Random();
-                    int randomQuestionId1 = random.nextInt(50) + 1;
+                    int randomIndex = random.nextInt(ojService.problems.values().size());
+                    int randomQuestionId1 = ((ArrayList<Integer>)ojService.problems.values()).get(randomIndex);
 //                    int randomQuestionId2 = random.nextInt(50) + 1;
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(a);
@@ -175,5 +178,10 @@ public class MatchingPool extends Thread {
         for(int i=0;i<num;i++){
             returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap,game.getId());
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        MatchingPool matchingPool=new MatchingPool();
+        matchingPool.matchPlayers();
     }
 }
