@@ -25,7 +25,7 @@ public class FriendController {
     public Page<FriendDTO> getFriend(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
                                      @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        return userService.getFriend(id, name, JwtUtil.getUserId(), pageable);
+        return friendService.getFriend(id, name, JwtUtil.getUserId(), pageable);
     }
 
     @PostMapping("/add-apply")
