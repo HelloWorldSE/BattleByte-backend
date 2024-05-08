@@ -114,9 +114,9 @@ public class MatchingPool extends Thread {
                 if (checkMatched(a, b) && !a.getUserId().equals(b.getUserId())) {
                     used[i] = used[j] = true;
                     Random random = new Random();
-                    ArrayList<Integer>values= (ArrayList<Integer>) ojService.problems.values();
-                    int randomIndex = random.nextInt(values.size());
-                    int randomQuestionId1 = values.get(randomIndex);
+                    Object[] values = ojService.problems.values().toArray();
+                    int randomIndex = random.nextInt(values.length);
+                    int randomQuestionId1 = (int) values[randomIndex];
 //                    int randomQuestionId2 = random.nextInt(50) + 1;
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(a);
