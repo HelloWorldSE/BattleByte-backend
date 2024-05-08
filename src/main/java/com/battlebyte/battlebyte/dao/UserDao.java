@@ -37,32 +37,6 @@ public interface UserDao extends JpaRepository<User, Integer> {
             "and user_role.uid = ?1", nativeQuery = true)
     public List<String> getPermission(Integer uid);
 
-    @Query(value = "SELECT \n" +
-            "    u.id,\n" +
-            "    u.user_name AS userName,\n" +
-            "    u.avatar,\n" +
-            "    u.user_email AS userEmail,\n" +
-            "    f.friendId\n" +
-            "FROM \n" +
-            "    user u\n" +
-            "JOIN (\n" +
-            "    SELECT \n" +
-            "        large_id AS friendId\n" +
-            "    FROM \n" +
-            "        friend\n" +
-            "    WHERE \n" +
-            "        small_id = ?3\n" +
-            "    UNION ALL\n" +
-            "    SELECT \n" +
-            "        small_id AS friendId\n" +
-            "    FROM \n" +
-            "        friend\n" +
-            "    WHERE \n" +
-            "        large_id = ?3\n" +
-            ") f ON u.id = f.friendId\n" +
-            "WHERE \n" +
-            "    u.id = CASE WHEN ?1 != 0 THEN ?1 ELSE u.id END\n" +
-            "    AND u.user_name LIKE CONCAT('%', ?2, '%');", nativeQuery = true)
-    public Page<FriendDTO> findFriend(Integer id, String name, Integer uid, Pageable pageable);
+
 
 }
