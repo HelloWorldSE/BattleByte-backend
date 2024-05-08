@@ -112,14 +112,14 @@ public class MatchingPool extends Thread {
                     used[i] = used[j] = true;
                     Random random = new Random();
                     int randomQuestionId1 = random.nextInt(50) + 1;
-                    int randomQuestionId2 = random.nextInt(50) + 1;
+//                    int randomQuestionId2 = random.nextInt(50) + 1;
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(a);
                     players.add(b);
 
                     ArrayList<Integer> questionIds=new ArrayList<>();
                     questionIds.add(randomQuestionId1);
-                    questionIds.add(randomQuestionId2);
+                    questionIds.add(randomQuestionId1);
 
 
                     sendResult(players, questionIds); // 匹配成功之后返回结果
