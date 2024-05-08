@@ -104,6 +104,7 @@ public class MatchingPool extends Thread {
     // 等待时间长的玩家优先进行匹配
     // 由于存储所有玩家的是list集合，因此下标小的等待时间一定更长
     private void matchPlayers() throws IOException {
+        ojService.updateProblems();
         boolean[] used = new boolean[players.size()]; // 当前玩家是否匹配
         for (int i = 0; i < players.size(); i++) {
             if (used[i]) continue;
@@ -113,8 +114,9 @@ public class MatchingPool extends Thread {
                 if (checkMatched(a, b) && !a.getUserId().equals(b.getUserId())) {
                     used[i] = used[j] = true;
                     Random random = new Random();
-                    int randomIndex = random.nextInt(ojService.problems.values().size());
-                    int randomQuestionId1 = ((ArrayList<Integer>)ojService.problems.values()).get(randomIndex);
+                    ArrayList<Integer>values= (ArrayList<Integer>) ojService.problems.values();
+                    int randomIndex = random.nextInt(values.size());
+                    int randomQuestionId1 = values.get(randomIndex);
 //                    int randomQuestionId2 = random.nextInt(50) + 1;
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(a);
