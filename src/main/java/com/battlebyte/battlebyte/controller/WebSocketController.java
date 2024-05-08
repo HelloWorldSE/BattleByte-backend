@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.controller;
 
+import com.battlebyte.battlebyte.util.JwtUtil;
 import com.battlebyte.battlebyte.websocket.WebSocketServer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,4 +20,8 @@ public class WebSocketController {
         return ResponseEntity.ok("Send Success!");
     }
 
+    @GetMapping("/currentMatch")
+    public int currentMatch() {
+        return WebSocketServer.getCurrentMatch();
+    }
 }

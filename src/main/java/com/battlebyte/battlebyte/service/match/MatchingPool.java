@@ -93,6 +93,10 @@ public class MatchingPool extends Thread {
         }
     }
 
+    public int getCurrentMatch(){
+        return players.size();
+    }
+
     // 将所有当前玩家的等待时间加1
     private void increaseWaitingTime() {
         for (Player player : players) {
