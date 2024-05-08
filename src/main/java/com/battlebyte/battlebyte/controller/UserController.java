@@ -1,12 +1,14 @@
 package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.User;
-import com.battlebyte.battlebyte.entity.dto.LoginDTO;
-import com.battlebyte.battlebyte.entity.dto.UserDTO;
-import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
+import com.battlebyte.battlebyte.entity.dto.*;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.UserService;
+import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,8 +41,10 @@ public class UserController {
         userService.update(user);
     }
 
-    @GetMapping("/nopermission")
-    public void nopermission() {
-        throw new ServiceException(2, "无权限");
+    @GetMapping("/api/user")
+    public Page<UserInfoDTO> getUser(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
+                                     @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return userService.getUser(id, name, pageable);
     }
 }

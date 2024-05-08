@@ -106,6 +106,10 @@ public class UserService {
         return userDao.findFriend(id, name, uid, pageable);
     }
 
+    public Page<UserInfoDTO> getUser(Integer id, String name, Pageable pageable) {
+        return userDao.findUser(id, name, pageable);
+    }
+
     @Modifying
     @Transactional
     public void setRating(Integer uid, Integer rating) {

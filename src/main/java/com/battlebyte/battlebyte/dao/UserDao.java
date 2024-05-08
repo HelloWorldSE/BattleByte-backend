@@ -16,8 +16,8 @@ import java.util.List;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Integer> {
-    @Query(value = "select distinct * from user where user_name = ?1 and password = ?2", nativeQuery = true)
-    public User findUser(String username, String password);
+    @Query(value = "select distinct id, avatar, user_name as userName, user_email as userEmail from user where id = CASE WHEN ?1 != 0 THEN ?1 ELSE id END and user_name LIKE CONCAT('%', ?2, '%')", nativeQuery = true)
+    public Page<UserInfoDTO> findUser(Integer id, String name, Pageable pageable);
 
     @Modifying
     @Transactional
