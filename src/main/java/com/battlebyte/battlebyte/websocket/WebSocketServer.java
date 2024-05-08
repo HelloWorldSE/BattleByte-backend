@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.SynchronousQueue;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -410,7 +411,10 @@ public class WebSocketServer {
      * @throws IOException
      */
     private void sendMsg(String msg) throws IOException {
-        this.session.getBasicRemote().sendText(msg);
+        if(this.session!=null)
+            this.session.getBasicRemote().sendText(msg);
+        else
+            System.out.println("no session here");
     }
 
     public Session getSession() {
