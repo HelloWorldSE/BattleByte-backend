@@ -24,4 +24,10 @@ public class WebSocketController {
     public int currentMatch() {
         return WebSocketServer.getCurrentMatch();
     }
+
+    @GetMapping("/onlineCount")
+    public int onlineCount() {
+        return WebSocketServer.getOnlineCount();
+    }
+
 }
