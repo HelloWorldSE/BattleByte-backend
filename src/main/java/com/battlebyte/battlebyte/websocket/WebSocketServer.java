@@ -486,6 +486,9 @@ public class WebSocketServer {
         }
     }
 
+    public static synchronized int getCurrentMatch(){
+        return MatchService.matchingPool.getCurrentMatch();
+    }
     private static synchronized int getOnlineCount() {
         return onlineCount;
     }
@@ -497,5 +500,4 @@ public class WebSocketServer {
     private static synchronized void subOnlineCount() {
         WebSocketServer.onlineCount--;
     }
-
 }
