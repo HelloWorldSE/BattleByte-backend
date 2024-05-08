@@ -489,7 +489,7 @@ public class WebSocketServer {
     public static synchronized int getCurrentMatch(){
         return MatchService.matchingPool.getCurrentMatch();
     }
-    private static synchronized int getOnlineCount() {
+    public static synchronized int getOnlineCount() {
         return onlineCount;
     }
 
