@@ -65,7 +65,7 @@ public class WebSocketServer {
     public WebSocketServer() {
         ojService = BeanContext.getApplicationContext().getBean(OJService.class);
         gameService = BeanContext.getApplicationContext().getBean(GameService.class);
-        userService =BeanContext.getApplicationContext().getBean(UserService.class);
+        userService = BeanContext.getApplicationContext().getBean(UserService.class);
     }
 
     @OnOpen
@@ -117,7 +117,7 @@ public class WebSocketServer {
                     onMessage_ANSWER_REFRESH(data, id);
                 } else if (type.equals("POS_UPDATE")) {
                     onMessage_POS_UPDATE(data, id);
-                }else if (type.equals("SURRENDER")) {
+                } else if (type.equals("SURRENDER")) {
                     onMessage_SURRENDER(data, id);
                 }
 
@@ -159,7 +159,7 @@ public class WebSocketServer {
             log.error("用户【" + uid + "】网络异常!", e);
         }
         //如果上局比赛没结束
-        if(currentGameMap.containsKey(uid)){
+        if (currentGameMap.containsKey(uid)) {
             CurrentGame currentGame = currentGameMap.get(uid);
             JSONObject output_MATCH_ENTER = new JSONObject();
             JSONObject dataOutput_MATCH_ENTER = new JSONObject();
@@ -172,7 +172,8 @@ public class WebSocketServer {
 
             output_MATCH_ENTER.put("type", "MATCH_ENTER");
             output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-            webSocketMap.get(uid).sendMsg(output_MATCH_ENTER.toJSONString());
+            //webSocketMap.get(uid).sendMsg(output_MATCH_ENTER.toJSONString());
+            sendMsg(uid, output_MATCH_ENTER.toJSONString());
         }
     }
 
@@ -181,18 +182,18 @@ public class WebSocketServer {
         String type = data.getString("type");
 
         //如果上局比赛没结束
-        if(currentGameMap.containsKey(uid)){
+        if (currentGameMap.containsKey(uid)) {
             JSONObject output = new JSONObject();
             JSONObject dataOutput = new JSONObject();
 
-            dataOutput.put("ack",id);
-            dataOutput.put("msg","已在匹配对局中");
+            dataOutput.put("ack", id);
+            dataOutput.put("msg", "已在匹配对局中");
 
-            output.put("type","ERROR");
-            output.put("data",dataOutput);
+            output.put("type", "ERROR");
+            output.put("data", dataOutput);
 
             sendMsg(output.toJSONString());
-        }else{
+        } else {
             //todo:根据rating进行匹配
             MatchService.addPlayer(uid, 1000);
 
@@ -243,7 +244,7 @@ public class WebSocketServer {
         Integer gameId = currentGameMap.get(uid).getGameId();
         List<UserGameDTO> players = gameService.getPlayer(gameId);
         //获取当前uid的队号
-        int teamId=0;
+        int teamId = 0;
         for (UserGameDTO userGameDTO : players) {
             if (userGameDTO.getId() == uid) {
                 teamId = userGameDTO.getTeam();
@@ -252,7 +253,7 @@ public class WebSocketServer {
         }
         if (type.equals("team")) { //队内聊天
             for (UserGameDTO userGameDTO : players) {
-                if(userGameDTO.getTeam()==teamId){ //如果是同队的
+                if (userGameDTO.getTeam() == teamId) { //如果是同队的
                     //输出逻辑
                     JSONObject output = new JSONObject();
                     JSONObject dataOutput = new JSONObject();
@@ -266,7 +267,8 @@ public class WebSocketServer {
 
                     output.put("type", "CHAT_MSG");
                     output.put("data", dataOutput);
-                    webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                    //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                    sendMsg(userGameDTO.getId(),output.toJSONString());
                 }
             }
         } else if (type.equals("global")) { //全局聊天
@@ -344,7 +346,8 @@ public class WebSocketServer {
         output.put("type", "GAME_END");
         output.put("data", dataOutput);
 
-        webSocketMap.get(userId).sendMsg(output.toJSONString());
+        //webSocketMap.get(userId).sendMsg(output.toJSONString());
+        sendMsg(userId, output.toJSONString());
     }
 
     //处理光标移动
@@ -370,11 +373,13 @@ public class WebSocketServer {
 
                 output.put("type", "POS_SYNC");
                 output.put("data", dataOutput);
-                webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
+                sendMsg(userGameDTO.getId(), output.toJSONString());
             }
         }
     }
-    public void onMessage_SURRENDER(JSONObject data, int id) throws IOException{
+
+    public void onMessage_SURRENDER(JSONObject data, int id) throws IOException {
         Integer gameId = currentGameMap.get(uid).getGameId();
         List<UserGameDTO> players = gameService.getPlayer(gameId);
         //获取赢的队伍
@@ -411,8 +416,15 @@ public class WebSocketServer {
      * @throws IOException
      */
     private void sendMsg(String msg) throws IOException {
-        if(this.session!=null)
+        if (this.session != null)
             this.session.getBasicRemote().sendText(msg);
+        else
+            System.out.println("no session here");
+    }
+
+    private void sendMsg(int uid, String msg) throws IOException {
+        if (webSocketMap.containsKey(uid))
+            webSocketMap.get(uid).session.getBasicRemote().sendText(msg);
         else
             System.out.println("no session here");
     }
