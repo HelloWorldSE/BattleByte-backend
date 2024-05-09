@@ -20,14 +20,14 @@ public class WebSocketController {
         return ResponseEntity.ok("Send Success!");
     }
 
-    @GetMapping("/currentMatch")
-    public int currentMatch() {
-        return WebSocketServer.getCurrentMatch();
-    }
-
-    @GetMapping("/onlineCount")
-    public int onlineCount() {
-        return WebSocketServer.getOnlineCount();
-    }
+//    @GetMapping("/currentMatch")
+//    public int currentMatch() {
+//        return WebSocketServer.getCurrentMatch();
+//    }
+//
+//    @GetMapping("/onlineCount")
+//    public int onlineCount() {
+//        return WebSocketServer.getOnlineCount();
+//    }
 
 }
