@@ -2,12 +2,8 @@ package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.config.UserToken;
 import com.battlebyte.battlebyte.dao.UserDao;
-import com.battlebyte.battlebyte.entity.Role;
 import com.battlebyte.battlebyte.entity.User;
-import com.battlebyte.battlebyte.entity.dto.FriendDTO;
-import com.battlebyte.battlebyte.entity.dto.LoginDTO;
-import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
-import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
+import com.battlebyte.battlebyte.entity.dto.*;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
@@ -30,17 +26,17 @@ public class UserService {
     @Autowired
     UserDao userDao;
 
-    /**
-     * register: 注册
-     * login: 登录
-     * update: 更新个人信息
-     */
-
     @Transactional
     public void register(User user) {
         if (userDao.findByUserName(user.getUserName()) != null) {
             throw new ServiceException("用户名已存在");
         } else {
+            if (user.getPassword().length() <= 5) {
+                throw new ServiceException("密码长度过短！");
+            }
+            if (user.getUserName().length() < 2) {
+                throw new ServiceException("用户名长度过短！");
+            }
             User user1 = userDao.save(user);
             userDao.setRole(user1.getId(), 1); // default set role = user
         }
