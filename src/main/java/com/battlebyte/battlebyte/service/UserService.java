@@ -42,7 +42,7 @@ public class UserService {
             throw new ServiceException("用户名已存在");
         } else {
             User user1 = userDao.save(user);
-            userDao.setRole(user1.getId(), 2); // default set role = 0
+            userDao.setRole(user1.getId(), 1); // default set role = user
         }
     }
 
