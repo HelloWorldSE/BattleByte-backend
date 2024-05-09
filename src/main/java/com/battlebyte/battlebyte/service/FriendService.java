@@ -30,8 +30,26 @@ public class FriendService {
     }
 
     public void addFriend(Integer dest) {
+        int sender = JwtUtil.getUserId();
         FriendApplication application = new FriendApplication();
-        application.setSenderId(JwtUtil.getUserId());
+
+        int smallId = sender;
+        int largeId = dest;
+        if (smallId > largeId) {
+            int temp = smallId;
+            smallId = largeId;
+            largeId = temp;
+        }
+
+        if (friendDao.findFriendById(smallId, largeId) != null) {
+            throw new ServiceException("已是好友");
+        }
+
+        if (friendApplicationDao.getOne(sender, dest) != null) {
+            throw new ServiceException("好友申请已存在");
+        }
+
+        application.setSenderId(sender);
         application.setReceiverId(dest);
         friendApplicationDao.save(application);
     }
