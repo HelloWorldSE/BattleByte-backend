@@ -49,6 +49,12 @@ public class FriendService {
             throw new ServiceException("好友申请已存在");
         }
 
+        FriendApplication friendApplication = friendApplicationDao.getOne(dest, sender);
+        if (friendApplication != null) {
+            processApply(friendApplication.getId(), true);
+            return;
+        }
+
         application.setSenderId(sender);
         application.setReceiverId(dest);
         friendApplicationDao.save(application);
