@@ -14,9 +14,9 @@ import java.util.LinkedHashMap;
 @Service
 public class OJService {
     public String cookie="_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
-            "csrftoken=2YPsM0GU3sS9jsSAOSCFMuHqKNqblm0Ce6pjtZeErHtceTBXFS1poqm3fCPNNQMI; " +
-            "sessionid=fmlxdqc9dj0abgqh8ycgq2cxz8hi2axl";
-    public String X_Csrftoken="2YPsM0GU3sS9jsSAOSCFMuHqKNqblm0Ce6pjtZeErHtceTBXFS1poqm3fCPNNQMI";
+            "csrftoken=OpbTIr28gud1FxXeEAUG7Mkk1CHhOcTqyKMLFO4kuVDq3adQhjBWwxm7RYUCXHp7; " +
+            "sessionid=9svp9riw8jdfqpzaqnmkdlik1qel50vc";
+    public String X_Csrftoken="OpbTIr28gud1FxXeEAUG7Mkk1CHhOcTqyKMLFO4kuVDq3adQhjBWwxm7RYUCXHp7";
     public HashMap<Integer,Integer>problems=new HashMap<>();//<id:_id>
     public void updateProblems () {
         String url = "http://81.70.241.166:1233/api/admin/problem?limit=100&offset=0";
