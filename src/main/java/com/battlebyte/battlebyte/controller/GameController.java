@@ -9,6 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * TODO: 该类可能有严重的权限问题！
+ */
+
 @RequestMapping("/api/game")
 @RestController
 public class GameController {
