@@ -6,6 +6,7 @@ import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.entity.dto.*;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
+import com.battlebyte.battlebyte.util.RsaUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -37,6 +38,7 @@ public class UserService {
             if (user.getUserName().length() < 2) {
                 throw new ServiceException("用户名长度过短！");
             }
+            user.setPassword(RsaUtils.decryptByPrivateKey(, user.getPassword()));
             User user1 = userDao.save(user);
             userDao.setRole(user1.getId(), 1); // default set role = user
         }
