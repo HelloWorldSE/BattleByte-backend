@@ -4,22 +4,46 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.exception.ServiceException;
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 @Service
 public class OJService {
-    public String cookie="_pk_id.1.7ebb=d3c89c8c7f0158ca.1713614493.; " +
-            "csrftoken=ownThFVXH5T4UF0Y8ipqKbBH5f2rV7j9o0cjf7OYgOUUEo9il2Z158Pa8k91Zs9s; " +
-            "sessionid=f9wdoefbdbsjrrct4j0f08fviczxympo";
-    public String X_Csrftoken="ownThFVXH5T4UF0Y8ipqKbBH5f2rV7j9o0cjf7OYgOUUEo9il2Z158Pa8k91Zs9s";
+    public String cookie;
+    public String X_Csrftoken;
     public HashMap<Integer,Integer>problems=new HashMap<>();//<id:_id>
+    public void login(){
+        String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
+        BufferedReader reader = null;
+        try{
+            reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            cookie = reader.readLine();
+            X_Csrftoken = reader.readLine();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // 关闭 BufferedReader
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void updateProblems () {
         String url = "http://81.70.241.166:1233/api/admin/problem?limit=100&offset=0";
+        login();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
@@ -38,6 +62,7 @@ public class OJService {
 
     public JSONObject getProblem(Integer id) {
         String url = "http://81.70.241.166:1233/api/problem?problem_id=" + id;
+        login();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
@@ -50,6 +75,7 @@ public class OJService {
 
     public JSONObject submit(String input)  {
         String url = "http://81.70.241.166:1233/api/submission";
+        login();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
