@@ -48,7 +48,6 @@ public class ShiroConfig {
         filterMap.put("/auth/**", "anon");
         filterMap.put("/server", "anon");
         filterMap.put("/server/**", "anon");
-        filterMap.put("/api/admin/**", "jwt,roles[admin]");
         filterMap.put("/**", "jwt");
 
 //        filterMap.put("/**", "anon");
