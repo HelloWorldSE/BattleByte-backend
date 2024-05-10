@@ -21,4 +21,6 @@ public class User {
     private String avatar; //图片路径
     @Column(name = "rating")
     private Integer rating;
+    @Column(name = "sign")
+    private String sign;
 }
