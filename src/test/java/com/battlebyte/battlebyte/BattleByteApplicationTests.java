@@ -1,13 +1,19 @@
 package com.battlebyte.battlebyte;
 
+import com.battlebyte.battlebyte.service.GameService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class BattleByteApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+    private GameService gameService;
+    
+    public BattleByteApplicationTests(GameService gameServiceInput) {
+        this.gameService = gameServiceInput;
+    }
+    
+    @Test
+    void contextLoads() {
+    }
+    
 }
