@@ -22,7 +22,7 @@ jobs:
 
       - name: Build project
         run: |
-          mvn clean package -DskipTests
+          mvn -Dmaven.test.skip package -Dskip.it=true spring-boot:repackage -f pom.xml
     
       - name: Check Hash
         run: |
