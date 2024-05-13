@@ -38,7 +38,13 @@ public class UserService {
             if (user.getUserName().length() < 2) {
                 throw new ServiceException("用户名长度过短！");
             }
-            user.setPassword(RsaUtils.decryptByPrivateKey(, user.getPassword()));
+
+            try {
+                user.setPassword(RsaUtils.decrypt(user.getPassword()));
+            } catch (Exception e) {
+                throw new ServiceException(2, "无效的token");
+            }
+
             User user1 = userDao.save(user);
             userDao.setRole(user1.getId(), 1); // default set role = user
         }
@@ -47,6 +53,13 @@ public class UserService {
     @Transactional
     public LoginDTO login(String username, String password) {
         User user = userDao.findByUserName(username);
+
+        try {
+            user.setPassword(RsaUtils.decrypt(user.getPassword()));
+        } catch (Exception e) {
+            throw new ServiceException(2, "无效的token");
+        }
+
         if (user == null) {
             throw new ServiceException("用户名不存在");
         }

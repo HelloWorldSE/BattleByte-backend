@@ -1,6 +1,5 @@
 package com.battlebyte.battlebyte.config;
 
-import com.battlebyte.battlebyte.exception.ServiceException;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
