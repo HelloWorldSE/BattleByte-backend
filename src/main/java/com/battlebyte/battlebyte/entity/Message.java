@@ -1,12 +1,14 @@
 package com.battlebyte.battlebyte.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
+@Entity
+@Table(name = "message")
 public class Message {
     @Id
     @GeneratedValue
