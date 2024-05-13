@@ -24,24 +24,40 @@ public class MatchingPool extends Thread {
 
     private GameService gameService;
     private OJService ojService;
-    private static List<Player> players = new ArrayList<>();
+    private static List<Player> royalePlayers = new ArrayList<>();
+    private static List<Player> oneToOnePlayers = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
 
-    public MatchingPool(){
-        this.gameService= BeanContext.getApplicationContext().getBean(GameService.class);
-        this.ojService= BeanContext.getApplicationContext().getBean(OJService.class);
+    public MatchingPool() {
+        this.gameService = BeanContext.getApplicationContext().getBean(GameService.class);
+        this.ojService = BeanContext.getApplicationContext().getBean(OJService.class);
     }
-    /**
-     * 向匹配池中添加一个玩家
-     *
-     * @param userId
-     * @param rating
-     */
-    public void addPlayer(Integer userId, Integer botId, Integer rating) {
+
+    //排序
+    private Comparator<Player> playerComparator = new Comparator<Player>() {
+        @Override
+        public int compare(Player p1, Player p2) {
+            // 根据Player对象的变量i进行比较
+            return Double.compare(p1.getRating() * 0.1 + p1.getWaitingTime() * 50, p2.getRating() * 0.1 + p2.getWaitingTime() * 50);
+        }
+    };
+
+    //单人模式
+    public void addPlayer1(Integer userId, Integer botId, Integer rating) {
         lock.lock();
         try {
-            players.add(new Player(userId, rating, 0));
+            oneToOnePlayers.add(new Player(userId, rating, 0));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    //大逃杀模式
+    public void addPlayer2(Integer userId, Integer botId, Integer rating) {
+        lock.lock();
+        try {
+            royalePlayers.add(new Player(userId, rating, 0));
         } finally {
             lock.unlock();
         }
@@ -55,13 +71,23 @@ public class MatchingPool extends Thread {
     public void removePlayer(Integer userId) {
         lock.lock();
         try {
-            List<Player> newPlayers = new ArrayList<>();
-            for (Player player : players) {
+            //删除1v1模式
+            List<Player> newPlayers1 = new ArrayList<>();
+            for (Player player : oneToOnePlayers) {
                 if (!player.getUserId().equals(userId)) {
-                    newPlayers.add(player);
+                    newPlayers1.add(player);
                 }
             }
-            players = newPlayers;
+            oneToOnePlayers = newPlayers1;
+
+            //删除大逃杀模式
+            List<Player> newPlayers2 = new ArrayList<>();
+            for (Player player : royalePlayers) {
+                if (!player.getUserId().equals(userId)) {
+                    newPlayers2.add(player);
+                }
+            }
+            royalePlayers = newPlayers2;
         } finally {
             lock.unlock();
         }
@@ -77,10 +103,12 @@ public class MatchingPool extends Thread {
                 Thread.sleep(1000);
                 lock.lock();
 
-                System.out.println("run once, current pool players num:" + players.size());
+                System.out.println("current 1v1 pool players num:" + oneToOnePlayers.size());
+                System.out.println("current Royale pool players num:" + royalePlayers.size());
                 try {
                     increaseWaitingTime();
-                    matchPlayers();
+                    matchPlayersOneVsOne();
+                    matchPlayersRoyale();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -93,13 +121,17 @@ public class MatchingPool extends Thread {
         }
     }
 
-    public int getCurrentMatch(){
-        return players.size();
+    //获取1v1匹配
+    public int getCurrentMatch() {
+        return oneToOnePlayers.size();
     }
 
     // 将所有当前玩家的等待时间加1
     private void increaseWaitingTime() {
-        for (Player player : players) {
+        for (Player player : oneToOnePlayers) {
+            player.setWaitingTime(player.getWaitingTime() + 1);
+        }
+        for (Player player : royalePlayers) {
             player.setWaitingTime(player.getWaitingTime() + 1);
         }
     }
@@ -107,14 +139,14 @@ public class MatchingPool extends Thread {
     // 尝试匹配所有玩家
     // 等待时间长的玩家优先进行匹配
     // 由于存储所有玩家的是list集合，因此下标小的等待时间一定更长
-    private void matchPlayers() throws IOException {
+    private void matchPlayersOneVsOne() throws IOException {
         ojService.updateProblems();
-        boolean[] used = new boolean[players.size()]; // 当前玩家是否匹配
-        for (int i = 0; i < players.size(); i++) {
+        boolean[] used = new boolean[oneToOnePlayers.size()]; // 当前玩家是否匹配
+        for (int i = 0; i < oneToOnePlayers.size(); i++) {
             if (used[i]) continue;
-            for (int j = i + 1; j < players.size(); j++) {
+            for (int j = i + 1; j < oneToOnePlayers.size(); j++) {
                 if (used[j]) continue;
-                Player a = players.get(i), b = players.get(j);
+                Player a = oneToOnePlayers.get(i), b = oneToOnePlayers.get(j);
                 if (checkMatched(a, b) && !a.getUserId().equals(b.getUserId())) {
                     used[i] = used[j] = true;
                     Random random = new Random();
@@ -126,7 +158,7 @@ public class MatchingPool extends Thread {
                     players.add(a);
                     players.add(b);
 
-                    ArrayList<Integer> questionIds=new ArrayList<>();
+                    ArrayList<Integer> questionIds = new ArrayList<>();
                     questionIds.add(randomQuestionId1);
                     questionIds.add(randomQuestionId1);
 
@@ -139,13 +171,41 @@ public class MatchingPool extends Thread {
 
         // 匹配成功的需要从匹配池中剔除
         List<Player> newPlayers = new ArrayList<>();
-        for (int i = 0; i < players.size(); i++) {
+        for (int i = 0; i < oneToOnePlayers.size(); i++) {
             if (!used[i]) {
-                newPlayers.add(players.get(i));
+                newPlayers.add(oneToOnePlayers.get(i));
             }
         }
-        players = newPlayers;
+        oneToOnePlayers = newPlayers;
+    }
 
+    //匹配大逃杀模式
+    private void matchPlayersRoyale() throws IOException {
+        ojService.updateProblems();
+
+        //排序
+        Collections.sort(royalePlayers, Collections.reverseOrder(playerComparator));
+        while (royalePlayers.size() >= 8) {
+            Collections.sort(royalePlayers, Collections.reverseOrder(playerComparator));
+            List<Player> first8Players = royalePlayers.subList(0, 8);
+            //用户
+            ArrayList<Player> players = new ArrayList<>();
+            //题目
+            ArrayList<Integer> questionIds = new ArrayList<>();
+            //随机
+            Random random = new Random();
+            Object[] values = ojService.problems.values().toArray();
+            int randomIndex = random.nextInt(values.length);
+            for (Player player : first8Players) {
+                players.add(player);
+                int randomQuestionId = (int) values[randomIndex];
+                questionIds.add(randomQuestionId);
+            }
+            //匹配完成
+            sendResult(players, questionIds);
+            //清除
+            royalePlayers.subList(0, 8).clear();
+        }
     }
 
     // 判断两名玩家是否匹配
@@ -157,9 +217,9 @@ public class MatchingPool extends Thread {
     }
 
     // 返回匹配结果
-    private void sendResult(ArrayList<Player>players , ArrayList<Integer>questionIds) throws IOException {
+    private void sendResult(ArrayList<Player> players, ArrayList<Integer> questionIds) throws IOException {
         System.out.println("send result: " + players.get(0).getUserId() + " " + players.get(1).getUserId());
-        int num=2;
+        int num = players.size();
 
         // Game加入数据库
         Game game = new Game();
@@ -167,8 +227,8 @@ public class MatchingPool extends Thread {
         gameService.addGame(game);
 
         // UserGameRecord加入数据库
-        for(int i=0;i<num;i++){
-            UserGameRecord userGameRecord=new UserGameRecord();
+        for (int i = 0; i < num; i++) {
+            UserGameRecord userGameRecord = new UserGameRecord();
             userGameRecord.setUserId(players.get(i).getUserId());
             userGameRecord.setQuestionId(questionIds.get(i));
             userGameRecord.setGameId(game.getId());
@@ -178,16 +238,16 @@ public class MatchingPool extends Thread {
 
         // 返回
         Map<String, Integer> playerMap = new HashMap<>();
-        for (int i=0;i<num;i++){
-            playerMap.put(Integer.toString(i),players.get(i).getUserId());
+        for (int i = 0; i < num; i++) {
+            playerMap.put(Integer.toString(i), players.get(i).getUserId());
         }
-        for(int i=0;i<num;i++){
-            returnMatchResult(players.get(i).getUserId(),questionIds.get(i),playerMap,game.getId());
+        for (int i = 0; i < num; i++) {
+            returnMatchResult(players.get(i).getUserId(), questionIds.get(i), playerMap, game.getId());
         }
     }
 
     public static void main(String[] args) throws IOException {
-        MatchingPool matchingPool=new MatchingPool();
-        matchingPool.matchPlayers();
+        MatchingPool matchingPool = new MatchingPool();
+        matchingPool.matchPlayersOneVsOne();
     }
 }

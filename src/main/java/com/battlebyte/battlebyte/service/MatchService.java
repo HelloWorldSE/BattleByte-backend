@@ -20,9 +20,14 @@ public class MatchService {
         matchingPool.start();
     }
 
-    public static void addPlayer(Integer userId, Integer rating) {
-        System.out.println("add player: " + userId + " " + rating);
-        matchingPool.addPlayer(userId, rating, 0);
+    public static void addPlayer1(Integer userId, Integer rating) {
+        System.out.println("add player 1v1: " + userId + " " + rating);
+        matchingPool.addPlayer1(userId, rating, 0);
+    }
+
+    public static void addPlayer2(Integer userId, Integer rating) {
+        System.out.println("add player 大逃杀: " + userId + " " + rating);
+        matchingPool.addPlayer2(userId, rating, 0);
     }
 
     public static void removePlayer(Integer userId) {
