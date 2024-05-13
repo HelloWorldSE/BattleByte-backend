@@ -49,7 +49,7 @@ public class UserFilter extends BasicHttpAuthenticationFilter {
             os.close();
             return false;
         } catch (IncorrectCredentialsException e) {
-            Object result = Result.error(2, "无效的token");
+            Object result = Result.error(2, "token密码错误");
             OutputStream os = response.getOutputStream();
             os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));
             os.flush();
