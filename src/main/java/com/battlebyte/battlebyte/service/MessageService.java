@@ -18,11 +18,11 @@ public class MessageService {
     @Autowired
     private FriendService friendService;
 
-    public void send(@RequestBody Integer receiver) {
+    public void send(Integer receiver) {
 
     }
 
-    public List<Message> receive(@RequestParam Integer receiver) {
+    public List<Message> receive(Integer receiver) {
         return null;
     }
 }

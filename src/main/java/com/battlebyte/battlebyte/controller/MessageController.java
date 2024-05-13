@@ -21,4 +21,5 @@ public class MessageController {
     public List<Message> receive(@RequestParam Integer receiver) {
         return null;
     }
+
 }

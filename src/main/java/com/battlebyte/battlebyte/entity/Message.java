@@ -17,4 +17,5 @@ public class Message {
     private Integer receiver;
     private String message;
     private Date date;
+    private Integer tag;
 }
