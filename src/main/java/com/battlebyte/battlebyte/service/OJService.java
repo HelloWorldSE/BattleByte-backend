@@ -21,7 +21,7 @@ public class OJService {
     public String X_Csrftoken;
     public HashMap<Integer,Integer>problems=new HashMap<>();//<_id:id>
     public void login(){
-        String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
+        String filePath = "./token.txt";
         BufferedReader reader = null;
         try{
             reader = new BufferedReader(new FileReader(filePath));
