@@ -23,31 +23,26 @@ public class OJService {
     public HashMap<Integer,Integer>problems=new HashMap<>();//<_id:id>
     public void login(){
 
-        String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
+        String filePath = "./token.txt";
         BufferedReader reader = null;
 
         File file = new File(filePath);
-        if(file.exists()){
-            try{
-                reader = new BufferedReader(new FileReader(filePath));
-                String line;
-                cookie = reader.readLine();
-                X_Csrftoken = reader.readLine();
-            }catch (IOException e) {
+        try{
+            reader = new BufferedReader(new FileReader(filePath));
+            cookie = reader.readLine();
+            X_Csrftoken = reader.readLine();
+        }catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // 关闭 BufferedReader
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    // 关闭 BufferedReader
-                    if (reader != null)
-                        reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-        }else{
-            cookie = "csrftoken=fJChgfOhjy7EoCUIS6ts2VwncFRv07vzHbGUoqZFQFlZURAIhAkN04peGihbvp0H;sessionid=tth5artv88ti77titydlf68r7r2qye9d";
-            X_Csrftoken = "fJChgfOhjy7EoCUIS6ts2VwncFRv07vzHbGUoqZFQFlZURAIhAkN04peGihbvp0H";
         }
+
 
     }
     public void updateProblems () {
