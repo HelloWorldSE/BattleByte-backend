@@ -81,8 +81,15 @@ public class OJService {
         headers.add("Cookie", cookie);
 
         headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject jsonObject = JSON.parseObject(input.replace(' ', ' '));
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(input.replace(' ', ' '), headers);
+        // 将旧值改为新值
+        jsonObject.put("id", problems.get(jsonObject.getString("id")));
+
+        // 将修改后的 JSONObject 转换回 JSON 字符串
+        String newJsonString = jsonObject.toString();
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(newJsonString, headers);
         JSONObject result =  postString(url, requestEntity);
         JSONObject data = result.getJSONObject("data");
         String submission_id = data.getString("submission_id");
@@ -91,7 +98,7 @@ public class OJService {
 
     public JSONObject getResult(String input) {
         login();
-        String url = "http://81.70.241.166:1233/api/submission?id=" + problems.get(input);
+        String url = "http://81.70.241.166:1233/api/submission?id=" + input;
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
