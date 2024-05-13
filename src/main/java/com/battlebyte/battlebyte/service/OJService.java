@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 public class OJService {
     public String cookie;
     public String X_Csrftoken;
-    public HashMap<Integer,Integer>problems=new HashMap<>();//<id:_id>
+    public HashMap<Integer,Integer>problems=new HashMap<>();//<_id:id>
     public void login(){
         String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
         BufferedReader reader = null;
@@ -55,7 +55,7 @@ public class OJService {
         HashMap<Integer,Integer>newProblems=new HashMap<>();
         for (int i = 0; i < results.size(); i++) {
             LinkedHashMap<String, Object> t = (LinkedHashMap<String, Object>) results.get(i);
-            newProblems.put((Integer) t.get("id"),Integer.parseInt((String) t.get("_id")));
+            newProblems.put(Integer.parseInt((String) t.get("_id")),(Integer) t.get("id"));
         }
         problems=newProblems;
     }
@@ -90,7 +90,8 @@ public class OJService {
     }
 
     public JSONObject getResult(String input) {
-        String url = "http://81.70.241.166:1233/api/submission?id=" + input;
+        login();
+        String url = "http://81.70.241.166:1233/api/submission?id=" + problems.get(input);
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
