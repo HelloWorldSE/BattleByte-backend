@@ -30,7 +30,7 @@ public class GameController {
     }
 
     @GetMapping("")
-    public Game getGame(Integer id) {
+    public Game getGame(@RequestParam(defaultValue = "0") Integer id) {
         return gameService.getGame(id);
     }
 
@@ -45,7 +45,7 @@ public class GameController {
         return gameService.getPlayer(id, PageRequest.of(page - 1, pageSize));
     }
 
-    @GetMapping("/update-record")
+    @PostMapping("/update-record")
     public void save(@RequestBody UserGameRecord userGameRecord) {
         gameService.save(userGameRecord);
     }

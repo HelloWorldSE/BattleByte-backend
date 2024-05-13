@@ -40,6 +40,9 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException { // 认证：用户的权限信息
         String accessToken = (String) token.getPrincipal();
         int userId = JwtUtil.getUserId(accessToken);
+        System.out.println("\\\\");
+        System.out.println("ID: "+userId);
+        System.out.println("\\\\");
         User user = userService.findById(userId);
 
         if (user == null) {

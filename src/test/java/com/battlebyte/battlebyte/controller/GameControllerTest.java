@@ -48,7 +48,7 @@ class GameControllerTest {
     @Autowired
     GameDao gameDao;
     
-    @MockBean
+    @Autowired
     private GameService gameService;
     
     @Transactional
@@ -61,11 +61,11 @@ class GameControllerTest {
         game.setDate(new Date());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(game);
-        doNothing().when(gameService).addGame(any(Game.class));
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/add")
+                        .post("/api/game/add")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -81,11 +81,11 @@ class GameControllerTest {
         game.setDate(new Date());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(game);
-        doNothing().when(gameService).updateGame(any(Game.class));
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/update")
+                        .post("/api/game/update")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -95,25 +95,45 @@ class GameControllerTest {
     @Rollback()
     @Test
     void getPlayer() throws Exception {
-        Page<UserGameDTO> mockPage = Mockito.mock(Page.class);
-        when(gameService.getPlayer(any(Integer.class), any(Pageable.class))).thenReturn(mockPage);
-        mockMvc.perform(MockMvcRequestBuilders.get("/player")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/game/player")
                         .param("id", "1")
                         .param("page", "1")
-                        .param("pageSize", "10"))
+                        .param("pageSize", "10")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
     
+    @Transactional
+    @Rollback()
+    @Test
+    void getGame() throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/game")
+                .param("id","1")
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+        );
+        resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());
+    }
+    
+    @Transactional
+    @Rollback()
     @Test
     void save() throws Exception {
-        doNothing().when(gameService).save(any(UserGameRecord.class));
-        mockMvc.perform(MockMvcRequestBuilders.get("/update-record")
-                        .param("gameId", "1")
-                        .param("userId", "1")
-                        .param("questionId", "1")
-                        .param("team", "1")
-                        .param("rank", "1")
+        UserGameRecord userGameRecord = new UserGameRecord();
+        userGameRecord.setGameId(1);
+        userGameRecord.setUserId(1);
+        userGameRecord.setQuestionId(1);
+        userGameRecord.setTeam(1);
+        userGameRecord.setRank(1);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(userGameRecord);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/game/update-record")
+                        .content(json.getBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());

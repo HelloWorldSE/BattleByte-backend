@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://81.70.241.166:3306/battlebyte?serverTimezone=GMT%2b8
     username: root
-    password: helloworld
+    password: helloBattleByte
   jpa:
     hibernate:
       ddl-auto: update
