@@ -23,7 +23,7 @@ public class OJService {
     public HashMap<Integer,Integer>problems=new HashMap<>();//<_id:id>
     public void login(){
 
-        String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
+        String filePath = "./token.txt";
         BufferedReader reader = null;
 
         File file = new File(filePath);
@@ -85,6 +85,7 @@ public class OJService {
     public JSONObject submit(String input)  {
         String url = "http://81.70.241.166:1233/api/submission";
         login();
+        updateProblems();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Csrftoken", X_Csrftoken);
         headers.add("Cookie", cookie);
@@ -93,7 +94,7 @@ public class OJService {
         JSONObject jsonObject = JSON.parseObject(input.replace(' ', ' '));
 
         // 将旧值改为新值
-        jsonObject.put("problem_id", problems.get(jsonObject.getString("problem_id")));
+        jsonObject.put("problem_id", problems.get(jsonObject.getInteger("problem_id")));
 
         // 将修改后的 JSONObject 转换回 JSON 字符串
         String newJsonString = jsonObject.toString();
