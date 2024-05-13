@@ -65,18 +65,18 @@ class OJControllerTest {
     }
     
     // 传输信息字段存在一定问题
-//    @Transactional
-//    @Rollback()
-//    @Test
-//    void submit() throws Exception {
-//        String requestBody = "{\"problem_id\": 746, \"language\": \"C\", \"code\": \"int main() {return 0;}\"}";
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .post("/api/oj/submit")
-//                        .content(requestBody)
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andDo(print());
-//    }
+    @Transactional
+    @Rollback()
+    @Test
+    void submit() throws Exception {
+        String requestBody = "{\"problem_id\": 1, \"language\": \"C\", \"code\": \"int main() {return 0;}\"}";
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/oj/submit")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
 }
