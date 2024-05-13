@@ -84,7 +84,7 @@ public class OJService {
         JSONObject jsonObject = JSON.parseObject(input.replace(' ', ' '));
 
         // 将旧值改为新值
-        jsonObject.put("id", problems.get(jsonObject.getString("id")));
+        jsonObject.put("problem_id", problems.get(jsonObject.getString("problem_id")));
 
         // 将修改后的 JSONObject 转换回 JSON 字符串
         String newJsonString = jsonObject.toString();
