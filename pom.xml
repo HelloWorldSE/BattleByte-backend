@@ -16,13 +16,9 @@
 	<properties>
 		<java.version>17</java.version>
 		<argLine>-Dfile.encoding=UTF-8</argLine>
+		<skip.it>false</skip.it>
 	</properties>
 	<dependencies>
-		<dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.7</version>
-        </dependency>
 <!--        jacoco依赖-->
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
@@ -178,6 +174,11 @@
 				<goals>
 					<goal>prepare-agent</goal>
 				</goals>
+				<configuration>
+					<skip>
+						${skip.it}
+					</skip>
+				</configuration>
 			</execution>
 			<execution>
 				<id>report</id>
@@ -185,6 +186,11 @@
 				<goals>
 					<goal>report</goal>
 				</goals>
+				<configuration>
+					<skip>
+						${skip.it}
+					</skip>
+				</configuration>
 			</execution>
 		</executions>
 		</plugin>
