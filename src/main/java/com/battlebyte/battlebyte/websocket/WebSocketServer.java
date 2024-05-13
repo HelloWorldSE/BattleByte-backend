@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,10 +134,17 @@ public class WebSocketServer {
     //处理登录
     private void onMessage_LOGIN_REQ(JSONObject data, int id) throws IOException {
         String token = data.getString("token");
-        //获取uid 测试
-//        Integer uid = Integer.valueOf(token);
-        //获取uid
-        Integer uid = getUserId(token);
+        String filePath = "/home/ubuntu";
+        File file = new File(filePath);
+        Integer uid;
+        if (file.exists()) {
+            //获取uid
+            uid = getUserId(token);
+        } else {
+            //获取uid 测试
+            uid = Integer.valueOf(token);
+        }
+
         this.uid = uid;
         if (webSocketMap.containsKey(uid)) {
             //断掉之前的
@@ -197,17 +206,43 @@ public class WebSocketServer {
             sendMsg(output.toJSONString());
         } else {
             //todo:根据rating进行匹配
-            MatchService.addPlayer(uid, 1000);
 
-            //输出逻辑
-            JSONObject output_MATCH_START = new JSONObject();
-            JSONObject dataOutput_MATCH_START = new JSONObject();
 
-            dataOutput_MATCH_START.put("type", type);
+            if (type.equals("ONE_VS_ONE")) {
+                MatchService.addPlayer1(uid, 1000);
+                //输出逻辑
+                JSONObject output_MATCH_START = new JSONObject();
+                JSONObject dataOutput_MATCH_START = new JSONObject();
 
-            output_MATCH_START.put("type", "MATCH_START");
-            output_MATCH_START.put("data", dataOutput_MATCH_START);
-            sendMsg(output_MATCH_START.toJSONString());
+                dataOutput_MATCH_START.put("type", type);
+
+                output_MATCH_START.put("type", "MATCH_START");
+                output_MATCH_START.put("data", dataOutput_MATCH_START);
+                sendMsg(output_MATCH_START.toJSONString());
+            } else if (type.equals("BATTLE_ROYALE")) {
+                MatchService.addPlayer2(uid, 1000);
+                //输出逻辑
+                JSONObject output_MATCH_START = new JSONObject();
+                JSONObject dataOutput_MATCH_START = new JSONObject();
+
+                dataOutput_MATCH_START.put("type", type);
+
+                output_MATCH_START.put("type", "MATCH_START");
+                output_MATCH_START.put("data", dataOutput_MATCH_START);
+                sendMsg(output_MATCH_START.toJSONString());
+            } else {
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("ack", id);
+                dataOutput.put("msg", "没有该游戏模式");
+
+                output.put("type", "ERROR");
+                output.put("data", dataOutput);
+
+                sendMsg(output.toJSONString());
+            }
+
         }
     }
 
@@ -425,7 +460,7 @@ public class WebSocketServer {
 
         for (UserGameDTO userGameDTO : players) {
             //如果不同队
-            if (userGameDTO.getTeam() != teamId){
+            if (userGameDTO.getTeam() != teamId) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -433,7 +468,7 @@ public class WebSocketServer {
 
                 output.put("type", "ITEM_USED");
                 output.put("data", dataOutput);
-                
+
                 sendMsg(userGameDTO.getId(), output.toJSONString());
             }
         }
@@ -486,9 +521,10 @@ public class WebSocketServer {
         }
     }
 
-    public static synchronized int getCurrentMatch(){
+    public static synchronized int getCurrentMatch() {
         return MatchService.matchingPool.getCurrentMatch();
     }
+
     public static synchronized int getOnlineCount() {
         return onlineCount;
     }

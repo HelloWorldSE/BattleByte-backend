@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,25 +22,33 @@ public class OJService {
     public String X_Csrftoken;
     public HashMap<Integer,Integer>problems=new HashMap<>();//<_id:id>
     public void login(){
+
         String filePath = "/home/ubuntu/BattleByte-backend/token.txt";
         BufferedReader reader = null;
-        try{
-            reader = new BufferedReader(new FileReader(filePath));
-            String line;
-            cookie = reader.readLine();
-            X_Csrftoken = reader.readLine();
 
-        }catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                // 关闭 BufferedReader
-                if (reader != null)
-                    reader.close();
-            } catch (IOException e) {
+        File file = new File(filePath);
+        if(file.exists()){
+            try{
+                reader = new BufferedReader(new FileReader(filePath));
+                String line;
+                cookie = reader.readLine();
+                X_Csrftoken = reader.readLine();
+            }catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    // 关闭 BufferedReader
+                    if (reader != null)
+                        reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+        }else{
+            cookie = "csrftoken=fJChgfOhjy7EoCUIS6ts2VwncFRv07vzHbGUoqZFQFlZURAIhAkN04peGihbvp0H;sessionid=tth5artv88ti77titydlf68r7r2qye9d";
+            X_Csrftoken = "fJChgfOhjy7EoCUIS6ts2VwncFRv07vzHbGUoqZFQFlZURAIhAkN04peGihbvp0H";
         }
+
     }
     public void updateProblems () {
         String url = "http://81.70.241.166:1233/api/admin/problem?limit=100&offset=0";
