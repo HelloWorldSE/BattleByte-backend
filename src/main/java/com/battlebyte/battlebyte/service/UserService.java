@@ -42,7 +42,7 @@ public class UserService {
             try {
                 user.setPassword(RsaUtils.decrypt(user.getPassword()));
             } catch (Exception e) {
-                throw new ServiceException(2, "无效的token");
+                throw new ServiceException(2, "密码无法解密");
             }
 
             User user1 = userDao.save(user);
@@ -54,18 +54,19 @@ public class UserService {
     public LoginDTO login(String username, String password) {
         User user = userDao.findByUserName(username);
 
-        try {
-            user.setPassword(RsaUtils.decrypt(user.getPassword()));
-        } catch (Exception e) {
-            throw new ServiceException(2, "无效的token");
-        }
-
         if (user == null) {
             throw new ServiceException("用户名不存在");
+        }
+
+        try {
+            password = RsaUtils.decrypt(password);
+        } catch (Exception e) {
+            throw new ServiceException(2, "密码无法解密");
         }
         String token = JwtUtil.createToken(user.getId(), password);
         UserToken userToken = new UserToken(token);
         Subject subject = SecurityUtils.getSubject();
+
         try {
             subject.login(userToken);
         } catch (UnknownAccountException e) {
@@ -75,6 +76,7 @@ public class UserService {
         } catch (ExpiredCredentialsException e) {
             throw new ServiceException("token过期");
         }
+
         List<String> roles = userDao.getRole(user.getId());
         return new LoginDTO(token, roles.get(0));
     }
