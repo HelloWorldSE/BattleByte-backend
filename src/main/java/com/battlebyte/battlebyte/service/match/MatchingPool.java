@@ -236,7 +236,7 @@ public class MatchingPool extends Thread {
             userGameRecord.setUserId(players.get(i).getUserId());
             //这个要改的有点多
             //userGameRecord.setQuestionId(questionIds);
-            userGameRecord.setQuestionId(questionIds.get(0));
+            // TODO: userGameRecord.setQuestionId(questionIds.get(0));
             userGameRecord.setGameId(game.getId());
             userGameRecord.setTeam(i); //todo:多人修改逻辑
             gameService.save(userGameRecord);
