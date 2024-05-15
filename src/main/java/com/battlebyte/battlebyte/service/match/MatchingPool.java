@@ -153,15 +153,12 @@ public class MatchingPool extends Thread {
                     Object[] values = ojService.problems.keySet().toArray();
                     int randomIndex = random.nextInt(values.length);
                     int randomQuestionId1 = (int) values[randomIndex];
-//                    int randomQuestionId2 = random.nextInt(50) + 1;
+                    ArrayList<Integer> questionIds = new ArrayList<>();
+                    questionIds.add(randomQuestionId1);
+
                     ArrayList<Player> players = new ArrayList<>();
                     players.add(a);
                     players.add(b);
-
-                    ArrayList<Integer> questionIds = new ArrayList<>();
-                    questionIds.add(randomQuestionId1);
-                    questionIds.add(randomQuestionId1);
-
 
                     sendResult(players, questionIds); // 匹配成功之后返回结果
                     break;
@@ -195,11 +192,18 @@ public class MatchingPool extends Thread {
             //随机
             Random random = new Random();
             Object[] values = ojService.problems.values().toArray();
-            int randomIndex = random.nextInt(values.length);
+            for (int i = 0; i < 5; i++) {
+                int randomIndex = random.nextInt(values.length);
+                int randomQuestionId = (int) values[randomIndex];
+                //不允许同样的题目
+                while (questionIds.contains(randomQuestionId)) {
+                    randomIndex = random.nextInt(values.length);
+                    randomQuestionId = (int) values[randomIndex];
+                }
+                questionIds.add(randomQuestionId);
+            }
             for (Player player : first8Players) {
                 players.add(player);
-                int randomQuestionId = (int) values[randomIndex];
-                questionIds.add(randomQuestionId);
             }
             //匹配完成
             sendResult(players, questionIds);
@@ -230,7 +234,9 @@ public class MatchingPool extends Thread {
         for (int i = 0; i < num; i++) {
             UserGameRecord userGameRecord = new UserGameRecord();
             userGameRecord.setUserId(players.get(i).getUserId());
-            userGameRecord.setQuestionId(questionIds.get(i));
+            //这个要改的有点多
+            //userGameRecord.setQuestionId(questionIds);
+            userGameRecord.setQuestionId(questionIds.get(0));
             userGameRecord.setGameId(game.getId());
             userGameRecord.setTeam(i); //todo:多人修改逻辑
             gameService.save(userGameRecord);
@@ -242,7 +248,7 @@ public class MatchingPool extends Thread {
             playerMap.put(Integer.toString(i), players.get(i).getUserId());
         }
         for (int i = 0; i < num; i++) {
-            returnMatchResult(players.get(i).getUserId(), questionIds.get(i), playerMap, game.getId());
+            returnMatchResult(players.get(i).getUserId(), questionIds, playerMap, game.getId());
         }
     }
 
