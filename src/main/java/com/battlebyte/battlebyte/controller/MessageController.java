@@ -2,7 +2,11 @@ package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.Message;
 import com.battlebyte.battlebyte.service.MessageService;
+import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,12 +18,13 @@ public class MessageController {
     private MessageService messageService;
     @PostMapping("/send")
     public void send(@RequestBody Integer receiver) {
-
+        messageService.send(JwtUtil.getUserId(), receiver);
     }
 
     @GetMapping()
-    public List<Message> receive(@RequestParam Integer receiver) {
-        return null;
+    public Page<Message> receive(@RequestParam Integer receiver, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return messageService.receive(receiver, pageable);
     }
 
 }

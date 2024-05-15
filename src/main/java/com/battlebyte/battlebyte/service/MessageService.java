@@ -5,6 +5,7 @@ import com.battlebyte.battlebyte.dao.MessageDao;
 import com.battlebyte.battlebyte.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,10 +29,10 @@ public class MessageService {
         messageDao.save(message);
     }
 
-    public Page<Message> findMessagesBySender(Integer sender) {
-        return messageDao.findMessagesBySender(sender);
+    public Page<Message> findMessagesBySender(Integer sender, Pageable pageable) {
+        return messageDao.findMessagesBySender(sender, pageable);
     }
-    public Page<Message> receive(Integer receiver) {
-        return messageDao.findMessagesByReceiver(receiver);
+    public Page<Message> receive(Integer receiver, Pageable pageable) {
+        return messageDao.findMessagesByReceiver(receiver, pageable);
     }
 }
