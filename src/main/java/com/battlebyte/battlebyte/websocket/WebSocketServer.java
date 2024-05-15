@@ -247,7 +247,7 @@ public class WebSocketServer {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, int questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
+    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
         //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
@@ -266,7 +266,7 @@ public class WebSocketServer {
         //更新当前比赛信息
         CurrentGame currentGame = new CurrentGame();
         currentGame.setGameId(gameId);
-        currentGame.setQuestionId(questionId);
+        currentGame.setQuestionId(questionId.get(0));
         currentGame.setPlayerMap(playerMap);
         currentGameMap.put(userId, currentGame);
     }

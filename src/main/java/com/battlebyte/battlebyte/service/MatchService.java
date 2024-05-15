@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -35,8 +36,8 @@ public class MatchService {
         matchingPool.removePlayer(userId);
     }
 
-    public static void returnMatchResult(Integer userId, int questionId, Map<String,Integer> playerMap,int gameId) throws IOException {
-        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap,gameId);
+    public static void returnMatchResult(Integer userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
+        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap, gameId);
     }
 
 }
