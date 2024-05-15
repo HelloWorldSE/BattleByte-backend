@@ -21,11 +21,12 @@ public class MessageService {
     @Autowired
     private FriendService friendService;
 
-    public void send(Integer sender, Integer receiver) {
+    public void send(Integer sender, Integer receiver, String content) {
         Message message = new Message();
         message.setDate(new Date());
         message.setSender(sender);
         message.setReceiver(receiver);
+        message.setMessage(content);
         messageDao.save(message);
     }
 
