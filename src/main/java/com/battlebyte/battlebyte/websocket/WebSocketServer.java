@@ -351,28 +351,33 @@ public class WebSocketServer {
         if (!(info.isEmpty() && statistic_info.isEmpty())) {
             //已结束
             if (dataResult.getInteger("result") == 0) {
-                Integer gameId = currentGameMap.get(uid).getGameId();
-                List<UserGameDTO> players = gameService.getPlayer(gameId);
-                //获取赢的队伍
-                int winTeamId = 0;
-                //todo:多人模式记得修改这部分逻辑
-                for (UserGameDTO userGameDTO : players) {
-                    if (userGameDTO.getId() == uid) {
-                        winTeamId = userGameDTO.getTeam();
-                        break;
-                    }
-                }
-                for (UserGameDTO userGameDTO : players) {
-                    //如果是赢
-                    if (userGameDTO.getTeam() == winTeamId) {
-                        returnGameEnd(userGameDTO.getId(), "win");
-                    } else {//假如是输
-                        returnGameEnd(userGameDTO.getId(), "lose");
-                    }
-                    //清楚当前比赛
-                    currentGameMap.remove(userGameDTO.getId());
-                }
+                winTeam(uid);
             }
+        }
+    }
+
+    //某个玩家赢了。
+    private void winTeam (int userId) throws IOException{
+        Integer gameId = currentGameMap.get(userId).getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        //获取赢的队伍
+        int winTeamId = 0;
+        //todo:多人模式记得修改这部分逻辑
+        for (UserGameDTO userGameDTO : players) {
+            if (userGameDTO.getId() == userId) {
+                winTeamId = userGameDTO.getTeam();
+                break;
+            }
+        }
+        for (UserGameDTO userGameDTO : players) {
+            //如果是赢
+            if (userGameDTO.getTeam() == winTeamId) {
+                returnGameEnd(userGameDTO.getId(), "win");
+            } else {//假如是输
+                returnGameEnd(userGameDTO.getId(), "lose");
+            }
+            //清楚当前比赛
+            currentGameMap.remove(userGameDTO.getId());
         }
     }
 
