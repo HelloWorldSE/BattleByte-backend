@@ -1,0 +1,17 @@
+ap 1 1 1
+ag 1
+am 1 2 1 1 1
+sm 1
+qsv 1
+
+
+ap 1 1 1
+at 1 1
+am 1 2 1 1 1
+sm 1
+qsv 1
+
+
+tag里没有人
+
+现在只是人有tag
