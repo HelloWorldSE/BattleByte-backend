@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.GameQuestionRecord;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.service.GameService;
@@ -50,8 +51,18 @@ public class GameController {
         gameService.save(userGameRecord);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/update-question")
+    public void save2(@RequestBody GameQuestionRecord gameQuestionRecord) {
+        gameService.save(gameQuestionRecord);
+    }
+
+    @DeleteMapping("/game/{id}")
     public void del(@PathVariable("id") Integer id) {
-        gameService.del(id);
+        gameService.delUserGameRecord(id);
+    }
+
+    @DeleteMapping("/question/{id}")
+    public void del2(@PathVariable("id") Integer id) {
+        gameService.delGameQuestionRecord(id);
     }
 }
