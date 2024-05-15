@@ -15,6 +15,7 @@ import java.util.List;
 public interface MessageDao extends JpaRepository<Message, Integer> {
 
     Page<Message> findMessagesBySender(Integer sender, Pageable pageable);
-    Page<Message> findMessagesByReceiver(Integer receiver, Pageable pageable);
 
+    @Query(value = "select * from message where receiver = ?1 or receiver = -1", nativeQuery = true)
+    Page<Message> findMessagesByReceiver(Integer receiver, Pageable pageable);
 }
