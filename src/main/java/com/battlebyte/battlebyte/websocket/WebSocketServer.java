@@ -190,7 +190,7 @@ public class WebSocketServer {
 
     //处理匹配
     private void onMessage_MATCH_REQ(JSONObject data, int id) throws IOException {
-        String type = data.getString("type");
+        Integer type = data.getInteger("type");
 
         //如果上局比赛没结束
         if (currentGameMap.containsKey(uid)) {
@@ -208,7 +208,7 @@ public class WebSocketServer {
             //todo:根据rating进行匹配
 
 
-            if (type.equals("ONE_VS_ONE")) {
+            if (type==1) {
                 MatchService.addPlayer1(uid, 1000);
                 //输出逻辑
                 JSONObject output_MATCH_START = new JSONObject();
@@ -219,7 +219,7 @@ public class WebSocketServer {
                 output_MATCH_START.put("type", "MATCH_START");
                 output_MATCH_START.put("data", dataOutput_MATCH_START);
                 sendMsg(output_MATCH_START.toJSONString());
-            } else if (type.equals("BATTLE_ROYALE")) {
+            } else if (type==2) {
                 MatchService.addPlayer2(uid, 1000);
                 //输出逻辑
                 JSONObject output_MATCH_START = new JSONObject();
