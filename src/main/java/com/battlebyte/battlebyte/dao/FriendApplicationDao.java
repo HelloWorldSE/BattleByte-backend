@@ -24,7 +24,7 @@ public interface FriendApplicationDao extends JpaRepository<FriendApplication, I
             "WHERE \n" +
             "    u.id = CASE WHEN ?1 != 0 THEN ?1 ELSE u.id END\n" +
             "    AND u.user_name LIKE CONCAT('%', ?2, '%')\n" +
-            "    AND f.id IN (SELECT receiver_id FROM friend_application WHERE sender_id = ?3)", nativeQuery = true)
+            "    AND f.receiver_id = ?3", nativeQuery = true)
     public Page<FriendDTO> getFriendApplication(Integer id, String name, Integer uid, Pageable pageable);
 
     @Query(value = "select * from friend_application where sender_id = ?1 and receiver_id = ?2", nativeQuery = true)
