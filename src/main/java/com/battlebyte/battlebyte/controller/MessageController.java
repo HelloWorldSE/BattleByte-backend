@@ -34,4 +34,9 @@ public class MessageController {
         return messageService.receive(JwtUtil.getUserId(), pageable);
     }
 
+    @GetMapping("/read")
+    public void read(@RequestBody Integer id) {
+        messageService.read(id);
+    }
+
 }
