@@ -1,8 +1,10 @@
 package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.dao.GameDao;
+import com.battlebyte.battlebyte.dao.GameQuestionDao;
 import com.battlebyte.battlebyte.dao.UserGameRecordDao;
 import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.GameQuestionRecord;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class GameService {
 
     @Autowired
     public UserGameRecordDao userGameRecordDao;
+
+    @Autowired
+    public GameQuestionDao gameQuestionDao;
 
     // 添加游戏
     public void addGame(Game game) {
@@ -52,7 +57,14 @@ public class GameService {
         userGameRecordDao.save(userGameRecord);
     }
 
-    public void del(Integer id) {
+    public void delUserGameRecord(Integer id) {
         userGameRecordDao.deleteById(id);
+    }
+
+    public void save(GameQuestionRecord gameQuestionRecord) {
+        gameQuestionDao.save(gameQuestionRecord);
+    }
+    public void delGameQuestionRecord(Integer id) {
+        gameQuestionDao.deleteById(id);
     }
 }

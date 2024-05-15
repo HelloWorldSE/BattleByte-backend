@@ -26,6 +26,16 @@ public class RsaUtils {
     private static final String public_key = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJshs/tkKtoWo1O8PPgXrlq8ab8XvRXtgmWGJoi90LR/sRq6elqx8/sbJu/oUWpyGBU14RwSRUJ/ybIY69iwGwMCAwEAAQ==";
     private static final String private_key = "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAmyGz+2Qq2hajU7w8+BeuWrxpvxe9Fe2CZYYmiL3QtH+xGrp6WrHz+xsm7+hRanIYFTXhHBJFQn/Jshjr2LAbAwIDAQABAkAE4cz69Z9wrkIaQT7BJzSRJlCrO3jAXZOZCBCeySwQD/HvXaHwUTzt0A80Dj847X6hZlhvUc86jOrMP6oz2AdBAiEA3o+oOndqpO1K4UXGotNd4KH/svJFhUChmieclYOvs2ECIQCycINQFoT+Bz6oNEIG75jvMLnYj1GeMV06ZMCyrKuM4wIgGwLwdfgcV1v9ZI3lZ8mjcSn4MK26xktr0ZvRI0xSPMECIFP2qXNoBVBbLFqNrHwDBh2W+fwzBB7B77Joclwg7+AtAiAhWzxsq8anShngcWHf6V4KnfQVnng+QguXb7EylfI7SQ==";
 
+    public static String encrypt(String text) throws Exception {
+        X509EncodedKeySpec x509EncodedKeySpec2 = new X509EncodedKeySpec(Base64.decodeBase64(public_key));
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec2);
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] result = cipher.doFinal(text.getBytes());
+        return Base64.encodeBase64String(result);
+    }
+
     public static String decrypt(String text) throws Exception {
         if (ObjectUtils.isEmpty(text)) {
             return null;
