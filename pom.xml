@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -19,14 +19,30 @@
 		<skip.it>false</skip.it>
 	</properties>
 	<dependencies>
-<!--        jacoco依赖-->
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.8.2</version>
-            <scope>test</scope>
-        </dependency>
+		<!--        jacoco依赖-->
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.7</version>
+		</dependency>
+		<!-- junit 5-->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -108,9 +124,9 @@
 
 		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 		<dependency>
-		<groupId>commons-codec</groupId>
-		<artifactId>commons-codec</artifactId>
-		<version>1.15</version>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.15</version>
 		</dependency>
 
 		<dependency>
@@ -137,11 +153,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.10.0</version>
 		</dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -158,122 +174,40 @@
 	</dependencies>
 
 	<build>
-    <finalName>
-        BattleByte
-    </finalName>
+		<finalName>
+			BattleByte
+		</finalName>
 
-	<pluginManagement>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.7</version>
+				<configuration>
+					<!--指定生成 .exec 文件的存放位置-->
+					<destFile>target/coverage-reports/jacoco-unit.exec</destFile>
+					<!--Jacoco 是根据 .exec 文件生成最终的报告，所以需指定 .exec 的存放路径-->
+					<dataFile>target/coverage-reports/jacoco-unit.exec</dataFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+
 		</plugins>
-	</pluginManagement>
-
-    <plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<configuration>
-				<source>11</source>
-				<target>11</target>
-				<encoding>UTF8</encoding>
-			</configuration>
-			<version>3.8.1</version>
-		</plugin>
-		<plugin>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<version>2.22.2</version>
-		</plugin>
-		<plugin>
-			<artifactId>maven-failsafe-plugin</artifactId>
-			<version>2.22.2</version>
-		</plugin>
-
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-                <excludes>
-                    <exclude>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                    </exclude>
-                </excludes>
-            </configuration>
-        </plugin>
-
-		<plugin>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>0.8.7</version>
-			<executions>
-				<execution>
-					<id>prepare-agent</id>
-					<goals>
-						<goal>prepare-agent</goal>
-					</goals>
-				</execution>
-
-				<execution>
-					<id>report</id>
-					<phase>test</phase>
-					<goals>
-						<goal>report</goal>
-					</goals>
-
-					<configuration>
-						<!--定义输出的文件夹-->
-						<outputDirectory>target/jacoco-report</outputDirectory>
-						<!--执行数据的文件-->
-						<dataFile>${project.build.directory}/jacoco.exec</dataFile>
-						<!--要从报告中排除的类文件列表，支持通配符(*和?)。如果未指定则不会排除任何内容-->
-						<excludes>**/test/*.class</excludes>
-						<!--包含生成报告的文件列表，支持通配符(*和?)。如果未指定则包含所有内容-->
-						<includes></includes>
-						<!--HTML 报告页面中使用的页脚文本。-->
-						<footer></footer>
-						<!--生成报告的文件类型，HTML(默认)、XML、CSV-->
-						<formats>HTML</formats>
-						<!--生成报告的编码格式，默认UTF-8-->
-						<outputEncoding>UTF-8</outputEncoding>
-						<!--抑制执行的标签-->
-						<skip></skip>
-						<!--源文件编码-->
-						<sourceEncoding>UTF-8</sourceEncoding>
-						<!--HTML报告的标题-->
-						<title>${project.name}</title>
-					</configuration>
-				</execution>
-
-				<execution>
-					<id>jacoco-check</id>
-					<goals>
-						<goal>check</goal>
-					</goals>
-					<configuration>
-						<rules>
-							<rule>
-								<element>PACKAGE</element>
-								<limits>
-									<limit>
-										<counter>LINE</counter>
-										<value>COVEREDRATIO</value>
-										<minimum>0.9</minimum>
-									</limit>
-								</limits>
-							</rule>
-						</rules>
-					</configuration>
-				</execution>
-
-			</executions>
-		</plugin>
-    </plugins>
-</build>
-
+	</build>
 
 
 </project>

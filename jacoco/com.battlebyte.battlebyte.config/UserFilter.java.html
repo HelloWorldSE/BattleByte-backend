@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BattleByte</a> &gt; <a href="index.source.html" class="el_package">com.battlebyte.battlebyte.config</a> &gt; <span class="el_source">UserFilter.java</span></div><h1>UserFilter.java</h1><pre class="source lang-java linenums">package com.battlebyte.battlebyte.config;
+
+import cn.hutool.json.JSONObject;
+import com.battlebyte.battlebyte.common.Result;
+import com.battlebyte.battlebyte.exception.ServiceException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
+
+<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L24">public class UserFilter extends BasicHttpAuthenticationFilter {</span>
+
+    @Override
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws ServiceException, IOException {
+<span class="fc" id="L28">        HttpServletRequest httpServletRequest = (HttpServletRequest) request;</span>
+<span class="fc" id="L29">        String token = httpServletRequest.getHeader(&quot;token&quot;);</span>
+<span class="fc" id="L30">        response.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="fc" id="L31">        response.setContentType(&quot;application/json; charset=UTF-8&quot;);</span>
+<span class="pc bpc" id="L32" title="2 of 4 branches missed.">        if (token == null || &quot;&quot;.equals(token)){</span>
+<span class="nc" id="L33">            Object result = Result.error(2, &quot;识别用户信息失败&quot;);</span>
+<span class="nc" id="L34">            OutputStream os = response.getOutputStream();</span>
+<span class="nc" id="L35">            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L36">            os.flush();</span>
+<span class="nc" id="L37">            os.close();</span>
+<span class="nc" id="L38">            return false;</span>
+        }
+<span class="fc" id="L40">        UserToken jwtToken = new UserToken(token);</span>
+        try {
+<span class="fc" id="L42">            SecurityUtils.getSubject().login(jwtToken);</span>
+<span class="fc" id="L43">            return true;</span>
+<span class="nc" id="L44">        } catch (UnknownAccountException e) {</span>
+<span class="nc" id="L45">            Object result = Result.error(2, &quot;用户名不存在&quot;);</span>
+<span class="nc" id="L46">            OutputStream os = response.getOutputStream();</span>
+<span class="nc" id="L47">            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L48">            os.flush();</span>
+<span class="nc" id="L49">            os.close();</span>
+<span class="nc" id="L50">            return false;</span>
+<span class="nc" id="L51">        } catch (IncorrectCredentialsException e) {</span>
+<span class="nc" id="L52">            Object result = Result.error(2, &quot;token密码错误&quot;);</span>
+<span class="nc" id="L53">            OutputStream os = response.getOutputStream();</span>
+<span class="nc" id="L54">            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L55">            os.flush();</span>
+<span class="nc" id="L56">            os.close();</span>
+<span class="nc" id="L57">            return false;</span>
+<span class="nc" id="L58">        } catch (ExpiredCredentialsException e){</span>
+<span class="nc" id="L59">            Object result = Result.error(2, &quot;token已过期&quot;);</span>
+<span class="nc" id="L60">            OutputStream os = response.getOutputStream();</span>
+<span class="nc" id="L61">            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L62">            os.flush();</span>
+<span class="nc" id="L63">            os.close();</span>
+<span class="nc" id="L64">            return false;</span>
+<span class="nc" id="L65">        } catch (Exception e){</span>
+<span class="nc" id="L66">            Object result = Result.error(2, &quot;未知错误&quot;);</span>
+<span class="nc" id="L67">            OutputStream os = response.getOutputStream();</span>
+<span class="nc" id="L68">            os.write(new ObjectMapper().writeValueAsString(result).getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L69">            os.flush();</span>
+<span class="nc" id="L70">            os.close();</span>
+<span class="nc" id="L71">            return false;</span>
+        }
+    }
+
+    @Override
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        try {
+<span class="fc" id="L78">            return executeLogin(request, response);</span>
+<span class="nc" id="L79">        } catch (IOException e) {</span>
+<span class="nc" id="L80">            throw new RuntimeException(e);</span>
+        }
+    }
+
+
+//    @Override
+//    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+//        throw new ServiceException(2, &quot;验证用户信息失败&quot;);
+//    }
+
+    /**
+     * token认证executeLogin成功后，进入此方法，可以进行token更新过期时间
+     */
+//    @Override
+//    protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
+
+//    }
+//    @Override
+//    protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
+//        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+//        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+//        httpServletResponse.setHeader(&quot;Access-control-Allow-Origin&quot;, httpServletRequest.getHeader(&quot;Origin&quot;));
+//        httpServletResponse.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET,POST,OPTIONS,PUT,DELETE&quot;);
+//        httpServletResponse.setHeader(&quot;Access-Control-Allow-Headers&quot;, httpServletRequest.getHeader(&quot;Access-Control-Request-Headers&quot;));
+//        // 跨域时会首先发送一个option请求，这里我们给option请求直接返回正常状态
+//        if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name())) {
+//            httpServletResponse.setStatus(HttpStatus.OK.value());
+//            return false;
+//        }
+//        return super.preHandle(request, response);
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

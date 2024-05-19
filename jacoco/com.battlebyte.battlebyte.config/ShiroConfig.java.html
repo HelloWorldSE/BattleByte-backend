@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShiroConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BattleByte</a> &gt; <a href="index.source.html" class="el_package">com.battlebyte.battlebyte.config</a> &gt; <span class="el_source">ShiroConfig.java</span></div><h1>ShiroConfig.java</h1><pre class="source lang-java linenums">package com.battlebyte.battlebyte.config;
+
+import com.battlebyte.battlebyte.realm.UserRealm;
+import jakarta.servlet.Filter;
+import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
+import org.apache.shiro.mgt.DefaultSubjectDAO;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.util.ThreadContext;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@Configuration
+<span class="fc" id="L22">public class ShiroConfig {</span>
+
+    @Bean(&quot;lifecycleBeanPostProcesser&quot;)
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+<span class="fc" id="L26">        return new LifecycleBeanPostProcessor();</span>
+    }
+
+    @Bean(&quot;SecurityManager&quot;)
+    public SecurityManager userSecurityManager(UserRealm realm) {
+<span class="fc" id="L31">        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();</span>
+<span class="fc" id="L32">        securityManager.setRealm(realm);</span>
+<span class="fc" id="L33">        securityManager.setRememberMeManager(null);</span>
+<span class="fc" id="L34">        return securityManager;</span>
+    }
+
+    @Bean(&quot;shiroFilter&quot;)
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier(&quot;SecurityManager&quot;) SecurityManager securityManager) {
+<span class="fc" id="L39">        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();</span>
+<span class="fc" id="L40">        shiroFilter.setSecurityManager(securityManager);</span>
+
+<span class="fc" id="L42">        Map&lt;String, Filter&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L43">        map.put(&quot;jwt&quot;, new UserFilter());</span>
+<span class="fc" id="L44">        shiroFilter.setFilters(map);</span>
+
+<span class="fc" id="L46">        Map&lt;String, String&gt; filterMap = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L48">        filterMap.put(&quot;/auth/**&quot;, &quot;anon&quot;);</span>
+<span class="fc" id="L49">        filterMap.put(&quot;/server&quot;, &quot;anon&quot;);</span>
+<span class="fc" id="L50">        filterMap.put(&quot;/server/**&quot;, &quot;anon&quot;);</span>
+<span class="fc" id="L51">        filterMap.put(&quot;/**&quot;, &quot;jwt&quot;);</span>
+
+//        filterMap.put(&quot;/**&quot;, &quot;anon&quot;);
+<span class="fc" id="L54">        shiroFilter.setFilterChainDefinitionMap(filterMap);</span>
+<span class="fc" id="L55">        return shiroFilter;</span>
+    }
+
+    @Bean(&quot;securityManager&quot;)
+    public DefaultWebSecurityManager getDefaultWebSecurityManager(UserRealm realm){
+<span class="fc" id="L60">        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();</span>
+<span class="fc" id="L61">        ThreadContext.bind(securityManager);</span>
+<span class="fc" id="L62">        securityManager.setRealm(realm);</span>
+
+<span class="fc" id="L64">        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();</span>
+<span class="fc" id="L65">        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();</span>
+<span class="fc" id="L66">        defaultSessionStorageEvaluator.setSessionStorageEnabled(false);</span>
+<span class="fc" id="L67">        subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);</span>
+<span class="fc" id="L68">        securityManager.setSubjectDAO(subjectDAO);</span>
+
+<span class="fc" id="L70">        return securityManager;</span>
+    }
+
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier(&quot;securityManager&quot;) SecurityManager securityManager){
+<span class="fc" id="L75">        AuthorizationAttributeSourceAdvisor advisor=new AuthorizationAttributeSourceAdvisor();</span>
+<span class="fc" id="L76">        advisor.setSecurityManager(securityManager);</span>
+<span class="fc" id="L77">        return advisor;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

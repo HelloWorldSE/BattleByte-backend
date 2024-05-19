@@ -11,6 +11,7 @@ import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.OJService;
 import com.battlebyte.battlebyte.service.UserService;
 import com.battlebyte.battlebyte.util.JwtUtil;
+import com.battlebyte.battlebyte.util.RsaUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -66,7 +67,7 @@ class UserControllerTest {
     void registerUser() throws Exception {
         User user = new User();
         user.setUserName("cbw");
-        user.setPassword("123123");
+        user.setPassword(RsaUtils.encrypt("123123"));
         user.setUserEmail("123@buaa.com");
         user.setAvatar("1");
         user.setRating(5);
@@ -77,7 +78,7 @@ class UserControllerTest {
                         .post("/auth/register")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -87,12 +88,13 @@ class UserControllerTest {
     @Rollback()
     @Test
     void loginUser() throws Exception {
-        String requestBody = "{\"userName\": \"user1\", \"password\": \"123456\"}";
+        String password = RsaUtils.encrypt("123456");
+        String requestBody = "{\"userName\": \"user1\", \"password\": \"" + password + "\"}";
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/auth/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4Mzk5ODIsInVzZXJJZCI6OH0.x0THVfs7DAG85T7l9uNshz5kSxk50K7plH9QbsN2tfk")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -110,7 +112,7 @@ class UserControllerTest {
                         .post("/api/user/update")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -126,8 +128,7 @@ class UserControllerTest {
                 .param("name", "userAdmin1")
                 .param("page", "1")
                 .param("pageSize", "5")
-                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
-        
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
         );
         resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
         resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());
@@ -140,7 +141,7 @@ class UserControllerTest {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/user/profile")
                 .param("id", "1")
-                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
         );
         resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
         resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());

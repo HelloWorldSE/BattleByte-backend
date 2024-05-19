@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BattleByte</a> &gt; <a href="index.source.html" class="el_package">com.battlebyte.battlebyte.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.battlebyte.battlebyte.service;
+
+import com.battlebyte.battlebyte.config.UserToken;
+import com.battlebyte.battlebyte.dao.UserDao;
+import com.battlebyte.battlebyte.entity.User;
+import com.battlebyte.battlebyte.entity.dto.*;
+import com.battlebyte.battlebyte.exception.ServiceException;
+import com.battlebyte.battlebyte.util.JwtUtil;
+import com.battlebyte.battlebyte.util.RsaUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L26">public class UserService {</span>
+    @Autowired
+    UserDao userDao;
+
+    @Transactional
+    public void register(User user) {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (userDao.findByUserName(user.getUserName()) != null) {</span>
+<span class="nc" id="L33">            throw new ServiceException(&quot;用户名已存在&quot;);</span>
+        } else {
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (user.getPassword().length() &lt;= 5) {</span>
+<span class="nc" id="L36">                throw new ServiceException(&quot;密码长度过短！&quot;);</span>
+            }
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            if (user.getUserName().length() &lt; 2) {</span>
+<span class="nc" id="L39">                throw new ServiceException(&quot;用户名长度过短！&quot;);</span>
+            }
+
+            try {
+<span class="nc" id="L43">                user.setPassword(RsaUtils.decrypt(user.getPassword()));</span>
+<span class="fc" id="L44">            } catch (Exception e) {</span>
+<span class="fc" id="L45">                throw new ServiceException(2, &quot;密码无法解密&quot;);</span>
+<span class="nc" id="L46">            }</span>
+
+<span class="nc" id="L48">            User user1 = userDao.save(user);</span>
+<span class="nc" id="L49">            userDao.setRole(user1.getId(), 1); // default set role = user</span>
+        }
+<span class="nc" id="L51">    }</span>
+
+    @Transactional
+    public LoginDTO login(String username, String password) {
+<span class="fc" id="L55">        User user = userDao.findByUserName(username);</span>
+
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L58">            throw new ServiceException(&quot;用户名不存在&quot;);</span>
+        }
+
+        try {
+<span class="nc" id="L62">            password = RsaUtils.decrypt(password);</span>
+<span class="fc" id="L63">        } catch (Exception e) {</span>
+<span class="fc" id="L64">            throw new ServiceException(2, &quot;密码无法解密&quot;);</span>
+<span class="nc" id="L65">        }</span>
+<span class="nc" id="L66">        String token = JwtUtil.createToken(user.getId(), password);</span>
+<span class="nc" id="L67">        UserToken userToken = new UserToken(token);</span>
+<span class="nc" id="L68">        Subject subject = SecurityUtils.getSubject();</span>
+
+        try {
+<span class="nc" id="L71">            subject.login(userToken);</span>
+<span class="nc" id="L72">        } catch (UnknownAccountException e) {</span>
+<span class="nc" id="L73">            throw new ServiceException(&quot;用户不存在&quot;);</span>
+<span class="nc" id="L74">        } catch (IncorrectCredentialsException e) {</span>
+<span class="nc" id="L75">            throw new ServiceException(&quot;密码错误&quot;);</span>
+<span class="nc" id="L76">        } catch (ExpiredCredentialsException e) {</span>
+<span class="nc" id="L77">            throw new ServiceException(&quot;token过期&quot;);</span>
+<span class="nc" id="L78">        }</span>
+
+<span class="nc" id="L80">        List&lt;String&gt; roles = userDao.getRole(user.getId());</span>
+<span class="nc" id="L81">        return new LoginDTO(token, roles.get(0));</span>
+    }
+
+    @Transactional
+    public void update(User user) {
+<span class="fc" id="L86">        user.setId(JwtUtil.getUserId());</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (!userDao.existsById(user.getId())) {</span>
+<span class="nc" id="L88">            throw new ServiceException(&quot;用户不存在！&quot;);</span>
+        } else {
+<span class="fc" id="L90">            userDao.save(user);</span>
+        }
+<span class="fc" id="L92">    }</span>
+
+    public User findById(Integer uid) {
+<span class="fc" id="L95">        Optional&lt;User&gt; op = userDao.findById(uid);</span>
+<span class="fc" id="L96">        return op.orElse(null);</span>
+    }
+
+    public UserProfileDTO findByUserId(Integer uid) {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (uid &lt;= 0) {</span>
+<span class="nc" id="L101">            uid = JwtUtil.getUserId();</span>
+        }
+<span class="fc" id="L103">        UserProfileDTO user = userDao.findByUserId(uid);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L105">            throw new ServiceException(&quot;用户未找到&quot;);</span>
+        } else {
+<span class="fc" id="L107">            return user;</span>
+        }
+    }
+
+    public List&lt;String&gt; getRole(Integer uid) {
+<span class="nc" id="L112">        return userDao.getRole(uid);</span>
+    }
+
+    public List&lt;String&gt; getPermission(Integer uid) {
+<span class="nc" id="L116">        return userDao.getPermission(uid);</span>
+    }
+
+
+    public Page&lt;UserInfoDTO&gt; getUser(Integer id, String name, Pageable pageable) {
+<span class="fc" id="L121">        return userDao.findUser(id, name, pageable);</span>
+    }
+
+    @Modifying
+    @Transactional
+    public void setRating(Integer uid, Integer rating) {
+<span class="nc" id="L127">        User user = findById(uid);</span>
+<span class="nc" id="L128">        user.setRating(rating);</span>
+<span class="nc" id="L129">        userDao.save(user);</span>
+<span class="nc" id="L130">    }</span>
+
+    public void addRating(Integer uid, Integer offset) {
+<span class="nc" id="L133">        User user = findById(uid);</span>
+<span class="nc" id="L134">        user.setRating(user.getRating() + offset);</span>
+<span class="nc" id="L135">        userDao.save(user);</span>
+<span class="nc" id="L136">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
