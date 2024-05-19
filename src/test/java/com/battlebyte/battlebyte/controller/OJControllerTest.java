@@ -47,7 +47,7 @@ class OJControllerTest {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/oj/problem")
                 .param("id","1")
-                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
         );
         resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
         resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());
@@ -74,7 +74,7 @@ class OJControllerTest {
                         .post("/api/oj/submit")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU4NDAyOTYsInVzZXJJZCI6OH0.5aOcN3sgO1IThZ4zzEgGSfengR_1tf-q6JT8zL-RASY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());

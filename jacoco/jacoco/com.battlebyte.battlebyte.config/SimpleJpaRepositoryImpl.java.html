@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleJpaRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BattleByte</a> &gt; <a href="index.source.html" class="el_package">com.battlebyte.battlebyte.config</a> &gt; <span class="el_source">SimpleJpaRepositoryImpl.java</span></div><h1>SimpleJpaRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.battlebyte.battlebyte.config;
+
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.util.StringUtils;
+
+import java.beans.PropertyDescriptor;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+
+public class SimpleJpaRepositoryImpl&lt;T, ID&gt; extends SimpleJpaRepository&lt;T, ID&gt; {
+
+    private final JpaEntityInformation&lt;T, ?&gt; entityInformation;
+    private final EntityManager em;
+
+    @Autowired
+    public SimpleJpaRepositoryImpl(JpaEntityInformation&lt;T, ?&gt; entityInformation, EntityManager entityManager) {
+<span class="fc" id="L26">        super(entityInformation, entityManager);</span>
+<span class="fc" id="L27">        this.entityInformation = entityInformation;</span>
+<span class="fc" id="L28">        this.em = entityManager;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * 通用save方法 ：新增/选择性更新
+     */
+    @Override
+    @Transactional
+    public &lt;S extends T&gt; S save(S entity) {
+        //获取ID
+<span class="fc" id="L38">        ID entityId = (ID) entityInformation.getId(entity);</span>
+        Optional&lt;T&gt; optionalT;
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (StringUtils.isEmpty(entityId)) {</span>
+<span class="fc" id="L41">            em.persist(entity); // 新增</span>
+<span class="fc" id="L42">            return entity;</span>
+        } else {
+<span class="fc" id="L44">            optionalT = findById(entityId);</span>
+        }
+        //获取空属性并处理成null
+<span class="fc" id="L47">        String[] nullProperties = getNullProperties(entity);</span>
+        //若根据ID查询结果为空
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (optionalT.isEmpty()) {</span>
+<span class="nc" id="L50">            em.persist(entity);//新增</span>
+<span class="nc" id="L51">            return entity;</span>
+        } else {
+<span class="fc" id="L53">            T target = optionalT.get();</span>
+<span class="fc" id="L54">            BeanUtils.copyProperties(entity, target, nullProperties);</span>
+<span class="fc" id="L55">            em.merge(target);</span>
+<span class="fc" id="L56">            return entity;</span>
+        }
+    }
+
+    /**
+     * 获取对象的空属性
+     */
+    private static String[] getNullProperties(Object src) {
+        //1.获取Bean
+<span class="fc" id="L65">        BeanWrapper srcBean = new BeanWrapperImpl(src);</span>
+        //2.获取Bean的属性描述
+<span class="fc" id="L67">        PropertyDescriptor[] pds = srcBean.getPropertyDescriptors();</span>
+        //3.获取Bean的空属性
+<span class="fc" id="L69">        Set&lt;String&gt; properties = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (PropertyDescriptor propertyDescriptor : pds) {</span>
+<span class="fc" id="L71">            String propertyName = propertyDescriptor.getName();</span>
+<span class="fc" id="L72">            Object propertyValue = srcBean.getPropertyValue(propertyName);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            if (StringUtils.isEmpty(propertyValue)) {</span>
+<span class="fc" id="L74">                srcBean.setPropertyValue(propertyName, null);</span>
+<span class="fc" id="L75">                properties.add(propertyName);</span>
+            }
+        }
+<span class="fc" id="L78">        return properties.toArray(new String[0]);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

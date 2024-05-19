@@ -36,7 +36,7 @@ class UploadControllerTest {
     @Autowired
     private UploadService uploadService;
     
-    // 后端暂时有问题先不测
+   
 //    @Transactional
 //    @Rollback()
 //    @Test

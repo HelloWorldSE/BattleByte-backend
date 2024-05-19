@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BattleByte</a> &gt; <a href="index.source.html" class="el_package">com.battlebyte.battlebyte.controller</a> &gt; <span class="el_source">MessageController.java</span></div><h1>MessageController.java</h1><pre class="source lang-java linenums">package com.battlebyte.battlebyte.controller;
+
+import com.battlebyte.battlebyte.entity.Message;
+import com.battlebyte.battlebyte.entity.dto.MessageDTO;
+import com.battlebyte.battlebyte.service.MessageService;
+import com.battlebyte.battlebyte.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RequestMapping(&quot;/api/message&quot;)
+@RestController
+<span class="fc" id="L17">public class MessageController {</span>
+    @Autowired
+    private MessageService messageService;
+    @PostMapping(&quot;/send&quot;)
+    public void send(@RequestBody MessageDTO messageDTO) {
+<span class="nc" id="L22">        messageService.send(JwtUtil.getUserId(), messageDTO.getId(), messageDTO.getContent());</span>
+<span class="nc" id="L23">    }</span>
+
+    // TODO: 目前该接口向所有人开放！
+    @PostMapping(&quot;/broadcast&quot;)
+    public void broadcast(@RequestBody String content) {
+<span class="nc" id="L28">        messageService.send(JwtUtil.getUserId(), -1, content);</span>
+<span class="nc" id="L29">    }</span>
+
+    @GetMapping()
+    public Page&lt;Message&gt; receive(@RequestParam(defaultValue = &quot;1&quot;) Integer page, @RequestParam(defaultValue = &quot;10&quot;) Integer pageSize) {
+<span class="nc" id="L33">        Pageable pageable = PageRequest.of(page - 1, pageSize);</span>
+<span class="nc" id="L34">        return messageService.receive(JwtUtil.getUserId(), pageable);</span>
+    }
+
+    @GetMapping(&quot;/read&quot;)
+    public void read(@RequestBody Integer id) {
+<span class="nc" id="L39">        messageService.read(id);</span>
+<span class="nc" id="L40">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
