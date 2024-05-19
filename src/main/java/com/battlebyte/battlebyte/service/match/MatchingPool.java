@@ -44,7 +44,7 @@ public class MatchingPool extends Thread {
     };
 
     //单人模式
-    public void addPlayer1(Integer userId, Integer botId, Integer rating) {
+    public void addPlayer1(Integer userId,  Integer rating) {
         lock.lock();
         try {
             oneToOnePlayers.add(new Player(userId, rating, 0));
@@ -54,7 +54,7 @@ public class MatchingPool extends Thread {
     }
 
     //大逃杀模式
-    public void addPlayer2(Integer userId, Integer botId, Integer rating) {
+    public void addPlayer2(Integer userId,  Integer rating) {
         lock.lock();
         try {
             royalePlayers.add(new Player(userId, rating, 0));
