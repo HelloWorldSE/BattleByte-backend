@@ -29,6 +29,9 @@ public class MatchingPool extends Thread {
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
 
+    private static int count1 = 0;
+    private static int count2 = 0;
+
     public MatchingPool() {
         this.gameService = BeanContext.getApplicationContext().getBean(GameService.class);
         this.ojService = BeanContext.getApplicationContext().getBean(OJService.class);
@@ -44,7 +47,7 @@ public class MatchingPool extends Thread {
     };
 
     //单人模式
-    public void addPlayer1(Integer userId,  Integer rating) {
+    public void addPlayer1(Integer userId, Integer rating) {
         lock.lock();
         try {
             oneToOnePlayers.add(new Player(userId, rating, 0));
@@ -54,7 +57,7 @@ public class MatchingPool extends Thread {
     }
 
     //大逃杀模式
-    public void addPlayer2(Integer userId,  Integer rating) {
+    public void addPlayer2(Integer userId, Integer rating) {
         lock.lock();
         try {
             royalePlayers.add(new Player(userId, rating, 0));
@@ -109,6 +112,25 @@ public class MatchingPool extends Thread {
                     increaseWaitingTime();
                     matchPlayersOneVsOne();
                     matchPlayersRoyale();
+                    //如果当前池子里有人，则加一个虚拟的
+                    if (oneToOnePlayers.size() > 0) {
+                        count1++;
+                        if (count1 == 10) {
+                            count1 = 0;
+                            addPlayer2(-1, 1000);
+                        }
+                    } else {
+                        count1 = 0;
+                    }
+                    if (royalePlayers.size() > 0) {
+                        count2++;
+                        if (count2 == 5) {
+                            count2 = 0;
+                            addPlayer2(-1, 1000);
+                        }
+                    } else {
+                        count2 = 0;
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {

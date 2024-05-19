@@ -261,7 +261,8 @@ public class WebSocketServer {
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
+        sendMsg(userId,output_MATCH_ENTER.toJSONString());
+//        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
 
         //更新当前比赛信息
         CurrentGame currentGame = new CurrentGame();
@@ -499,7 +500,7 @@ public class WebSocketServer {
             System.out.println("no session here");
     }
 
-    private void sendMsg(int uid, String msg) throws IOException {
+    private static void sendMsg(int uid, String msg) throws IOException {
         if (webSocketMap.containsKey(uid))
             webSocketMap.get(uid).session.getBasicRemote().sendText(msg);
         else
