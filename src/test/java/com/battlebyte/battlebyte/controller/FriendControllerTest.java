@@ -91,7 +91,7 @@ class FriendControllerTest {
     
     @Transactional
     @Rollback() // 使用数据库回滚可以不真实处理好友请求，否则这个函数只能测一次，因为请求被通过后就消失了
-    // 回滚后请求被处理后又被还原
+    // 请求被处理后由于回滚又被还原
     @Test
     void process() throws Exception {
         String requestBody = "2"; // 1号给3号的好友请求的id，请求的主码
