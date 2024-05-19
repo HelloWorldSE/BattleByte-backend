@@ -178,6 +178,7 @@ public class WebSocketServer {
             JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
             infoOutput_MATCH_ENTER.put("questionId", currentGame.getQuestionId());
+            infoOutput_MATCH_ENTER.put("currentQuestion", currentGame.getCurrentQuestion());
 
             dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
             dataOutput_MATCH_ENTER.put("playerMap", currentGame.getPlayerMap());
@@ -209,7 +210,7 @@ public class WebSocketServer {
             //todo:根据rating进行匹配
 
 
-            if (type==1) {
+            if (type == 1) {
                 MatchService.addPlayer1(uid, 1000);
                 //输出逻辑
                 JSONObject output_MATCH_START = new JSONObject();
@@ -220,7 +221,7 @@ public class WebSocketServer {
                 output_MATCH_START.put("type", "MATCH_START");
                 output_MATCH_START.put("data", dataOutput_MATCH_START);
                 sendMsg(output_MATCH_START.toJSONString());
-            } else if (type==2) {
+            } else if (type == 2) {
                 MatchService.addPlayer2(uid, 1000);
                 //输出逻辑
                 JSONObject output_MATCH_START = new JSONObject();
@@ -256,24 +257,25 @@ public class WebSocketServer {
         JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
         infoOutput_MATCH_ENTER.put("questionId", questionId);
+        infoOutput_MATCH_ENTER.put("currentQuestion", 0);
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
         dataOutput_MATCH_ENTER.put("playerMap", playerMap);
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-        sendMsg(userId,output_MATCH_ENTER.toJSONString());
+        sendMsg(userId, output_MATCH_ENTER.toJSONString());
 //        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
 
         //更新当前比赛信息
         CurrentGame currentGame = new CurrentGame();
         currentGame.setGameId(gameId);
-        currentGame.setQuestionId(questionId.get(0));
+        currentGame.setQuestionId(questionId);
         currentGame.setPlayerMap(playerMap);
         currentGame.setCurrentTime(LocalDateTime.now());
         Map<Integer, Integer> HPMAP = new HashMap<>();
         for (Integer eachUser : playerMap.values()) {
-            HPMAP.put(eachUser,100);
+            HPMAP.put(eachUser, 100);
         }
         currentGame.setHPMAP(HPMAP);
 
@@ -366,7 +368,7 @@ public class WebSocketServer {
     }
 
     //某个玩家赢了。
-    private void winTeam (int userId) throws IOException{
+    private void winTeam(int userId) throws IOException {
         Integer gameId = currentGameMap.get(userId).getGameId();
         List<UserGameDTO> players = gameService.getPlayer(gameId);
         //获取赢的队伍
