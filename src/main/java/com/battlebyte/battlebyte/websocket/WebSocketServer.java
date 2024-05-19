@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -269,6 +270,13 @@ public class WebSocketServer {
         currentGame.setGameId(gameId);
         currentGame.setQuestionId(questionId.get(0));
         currentGame.setPlayerMap(playerMap);
+        currentGame.setCurrentTime(LocalDateTime.now());
+        Map<Integer, Integer> HPMAP = new HashMap<>();
+        for (Integer eachUser : playerMap.values()) {
+            HPMAP.put(eachUser,100);
+        }
+        currentGame.setHPMAP(HPMAP);
+
         currentGameMap.put(userId, currentGame);
     }
 
