@@ -164,6 +164,19 @@ public class MatchingPool extends Thread {
     private void matchPlayersOneVsOne() throws IOException {
         ojService.updateProblems();
         boolean[] used = new boolean[oneToOnePlayers.size()]; // 当前玩家是否匹配
+
+        Boolean allFake = true;
+        for (int i = 0; i < oneToOnePlayers.size(); i++) {
+            if (oneToOnePlayers.get(i).getUserId()!=-1){
+                allFake=false;
+                break;
+            }
+        }
+        if (allFake){
+            oneToOnePlayers.clear();
+            return;
+        }
+
         for (int i = 0; i < oneToOnePlayers.size(); i++) {
             if (used[i]) continue;
             for (int j = i + 1; j < oneToOnePlayers.size(); j++) {
@@ -201,6 +214,18 @@ public class MatchingPool extends Thread {
     //匹配大逃杀模式
     private void matchPlayersRoyale() throws IOException {
         ojService.updateProblems();
+
+        Boolean allFake = true;
+        for (int i = 0; i < royalePlayers.size(); i++) {
+            if (royalePlayers.get(i).getUserId()!=-1){
+                allFake=false;
+                break;
+            }
+        }
+        if (allFake){
+            royalePlayers.clear();
+            return;
+        }
 
         //排序
         Collections.sort(royalePlayers, Collections.reverseOrder(playerComparator));
