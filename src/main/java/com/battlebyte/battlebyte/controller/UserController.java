@@ -3,7 +3,7 @@ package com.battlebyte.battlebyte.controller;
 import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.entity.dto.*;
 import com.battlebyte.battlebyte.exception.ServiceException;
-import com.battlebyte.battlebyte.service.EmailService;
+//import com.battlebyte.battlebyte.service.EmailService;
 import com.battlebyte.battlebyte.service.UserService;
 import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private EmailService emailService;
+//    @Autowired
+//    private EmailService emailService;
 
     // 注册用户
     @PostMapping("/auth/register")
@@ -37,7 +37,7 @@ public class UserController {
     @PostMapping("/auth/send")
     public void findPassword(@RequestBody Integer id) {
         User user = userService.findById(id);
-        emailService.sendPasswordEmail(id, user.getUserEmail());
+//        emailService.sendPasswordEmail(id, user.getUserEmail());
     }
 
     @PostMapping("/auth/find")

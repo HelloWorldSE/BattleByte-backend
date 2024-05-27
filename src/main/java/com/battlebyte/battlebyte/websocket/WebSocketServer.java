@@ -47,8 +47,8 @@ public class WebSocketServer {
     /**
      * 使用线程安全的ConcurrentHashMap来存放每个客户端对应的WebSocket对象
      */
-    private static ConcurrentHashMap<Integer, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<Integer, CurrentGame> currentGameMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<Integer, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<Integer, CurrentGame> currentGameMap = new ConcurrentHashMap<>();
 
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -62,9 +62,11 @@ public class WebSocketServer {
     /**
      * OJ服务
      */
-    private OJService ojService = new OJService();
+    private OJService ojService;
     private GameService gameService;
     private UserService userService;
+    private static MatchSocket matchSocket = new MatchSocket();
+    private static GameSocket gameSocket = new GameSocket();
 
     public WebSocketServer() {
         ojService = BeanContext.getApplicationContext().getBean(OJService.class);
@@ -114,17 +116,17 @@ public class WebSocketServer {
                 if (type.equals("LOGIN_REQ")) {
                     onMessage_LOGIN_REQ(data, id);
                 } else if (type.equals("MATCH_REQ")) {
-                    onMessage_MATCH_REQ(data, id);
+                    matchSocket.onMessage_MATCH_REQ(data, id, uid);
                 } else if (type.equals("CHAT_REQ")) {
-                    onMessage_CHAT_REQ(data, id);
+                    gameSocket.onMessage_CHAT_REQ(data, id, uid);
                 } else if (type.equals("ANSWER_REFRESH")) {
-                    onMessage_ANSWER_REFRESH(data, id);
+                    gameSocket.onMessage_ANSWER_REFRESH(data, id, uid);
                 } else if (type.equals("POS_UPDATE")) {
-                    onMessage_POS_UPDATE(data, id);
+                    gameSocket.onMessage_POS_UPDATE(data, id, uid);
                 } else if (type.equals("SURRENDER")) {
-                    onMessage_SURRENDER(data, id);
+                    gameSocket.onMessage_SURRENDER(data, id, uid);
                 } else if (type.equals("ITEM_SEND")) {
-                    onMessage_ITEM_SEND(data, id);
+                    gameSocket.onMessage_ITEM_SEND(data, id, uid);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
                 }
@@ -193,308 +195,14 @@ public class WebSocketServer {
         }
     }
 
-    //处理匹配
-    private void onMessage_MATCH_REQ(JSONObject data, int id) throws IOException {
-        Integer type = data.getInteger("type");
-
-        //如果上局比赛没结束
-        if (currentGameMap.containsKey(uid)) {
-            JSONObject output = new JSONObject();
-            JSONObject dataOutput = new JSONObject();
-
-            dataOutput.put("ack", id);
-            dataOutput.put("msg", "已在匹配对局中");
-
-            output.put("type", "ERROR");
-            output.put("data", dataOutput);
-
-            sendMsg(output.toJSONString());
-        } else {
-            //todo:根据rating进行匹配
-
-
-            if (type == 1) {
-                MatchService.addPlayer1(uid, 1000);
-                //输出逻辑
-                JSONObject output_MATCH_START = new JSONObject();
-                JSONObject dataOutput_MATCH_START = new JSONObject();
-
-                dataOutput_MATCH_START.put("type", type);
-
-                output_MATCH_START.put("type", "MATCH_START");
-                output_MATCH_START.put("data", dataOutput_MATCH_START);
-                sendMsg(output_MATCH_START.toJSONString());
-            } else if (type == 2) {
-                MatchService.addPlayer2(uid, 1000);
-                //输出逻辑
-                JSONObject output_MATCH_START = new JSONObject();
-                JSONObject dataOutput_MATCH_START = new JSONObject();
-
-                dataOutput_MATCH_START.put("type", type);
-
-                output_MATCH_START.put("type", "MATCH_START");
-                output_MATCH_START.put("data", dataOutput_MATCH_START);
-                sendMsg(output_MATCH_START.toJSONString());
-            } else {
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
-
-                dataOutput.put("ack", id);
-                dataOutput.put("msg", "没有该游戏模式");
-
-                output.put("type", "ERROR");
-                output.put("data", dataOutput);
-
-                sendMsg(output.toJSONString());
-            }
-
-        }
-    }
-
     //匹配成功
     public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
-        //更新信息
-        //输出逻辑
-        JSONObject output_MATCH_ENTER = new JSONObject();
-        JSONObject dataOutput_MATCH_ENTER = new JSONObject();
-        JSONObject infoOutput_MATCH_ENTER = new JSONObject();
-
-        infoOutput_MATCH_ENTER.put("questionId", questionId);
-        infoOutput_MATCH_ENTER.put("currentQuestion", 0);
-
-        dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
-        dataOutput_MATCH_ENTER.put("playerMap", playerMap);
-
-        output_MATCH_ENTER.put("type", "MATCH_ENTER");
-        output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-        sendMsg(userId, output_MATCH_ENTER.toJSONString());
-//        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
-        currentGameMap.put(userId, currentGame);
+        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, gameId, currentGame);
     }
 
-    // 处理聊天
-    private void onMessage_CHAT_REQ(JSONObject data, int id) throws IOException {
-        //读取json文件
-        String type = data.getString("type");
-        String message = data.getString("message");
-
-        //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取当前uid的队号
-        int teamId = 0;
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                teamId = userGameDTO.getTeam();
-                break;
-            }
-        }
-        if (type.equals("team")) { //队内聊天
-            for (UserGameDTO userGameDTO : players) {
-                if (userGameDTO.getTeam() == teamId) { //如果是同队的
-                    //输出逻辑
-                    JSONObject output = new JSONObject();
-                    JSONObject dataOutput = new JSONObject();
-
-                    //通过uid读取名字
-                    UserProfileDTO userProfileDTO = userService.findByUserId(uid);
-
-                    dataOutput.put("fromName", userProfileDTO.getUserName());
-                    dataOutput.put("fromId", uid);
-                    dataOutput.put("message", message);
-
-                    output.put("type", "CHAT_MSG");
-                    output.put("data", dataOutput);
-                    //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
-                    sendMsg(userGameDTO.getId(), output.toJSONString());
-                }
-            }
-        } else if (type.equals("global")) { //全局聊天
-            for (UserGameDTO userGameDTO : players) {
-                //输出逻辑
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
-
-                //通过uid读取名字
-                UserProfileDTO userProfileDTO = userService.findByUserId(uid);
-
-                dataOutput.put("fromName", userProfileDTO.getUserName());
-                dataOutput.put("fromId", uid);
-                dataOutput.put("message", message);
-
-                output.put("type", "CHAT_MSG");
-                output.put("data", dataOutput);
-                //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
-                sendMsg(userGameDTO.getId(), output.toJSONString());
-            }
-        }
-    }
-
-    // 刷新评测结果
-    private void onMessage_ANSWER_REFRESH(JSONObject data, int id) throws IOException {
-        String submit_id = data.getString("submit_id");
-
-        //输出逻辑
-        JSONObject output = new JSONObject();
-        JSONObject dataOutput = new JSONObject();
-        JSONObject result = ojService.getResult(submit_id);
-
-        dataOutput.put("result", result);
-        output.put("type", "ANSWER_RESULT");
-        output.put("data", dataOutput);
-        sendMsg(output.toJSONString());
-
-        //判断是否结束
-        JSONObject dataResult = result.getJSONObject("data");
-        JSONObject statistic_info = dataResult.getJSONObject("statistic_info");
-        JSONObject info = dataResult.getJSONObject("info");
-        //已评测完
-        if (!(info.isEmpty() && statistic_info.isEmpty())) {
-            //已结束
-            if (dataResult.getInteger("result") == 0) {
-                if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
-                    winTeam(uid);
-                } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
-                    acQuestion(uid);
-                }
-            }
-        }
-    }
-
-    //某个玩家赢了。
-    private void winTeam(int userId) throws IOException {
-        Integer gameId = currentGameMap.get(userId).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取赢的队伍
-        int winTeamId = 0;
-        //todo:多人模式记得修改这部分逻辑
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == userId) {
-                winTeamId = userGameDTO.getTeam();
-                break;
-            }
-        }
-        for (UserGameDTO userGameDTO : players) {
-            //如果是赢
-            if (userGameDTO.getTeam() == winTeamId) {
-                returnGameEnd(userGameDTO.getId(), "win");
-            } else {//假如是输
-                returnGameEnd(userGameDTO.getId(), "lose");
-            }
-            //清楚当前比赛
-            currentGameMap.remove(userGameDTO.getId());
-        }
-    }
-
-    //某个玩家AC了。
-    private void acQuestion(int userId) throws IOException {
-        CurrentGame currentGame = currentGameMap.get(userId);
-        currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
-        currentGame.getAcMAP().values().stream().max(Integer::compareTo);
-        log.info("用户 " + userId + " ac了一道题目，目前同局游戏中最多AC了" + currentGame.getAcMAP().get(userId));
-    }
-
-    public void returnGameEnd(int userId, String result) throws IOException {
-        JSONObject output = new JSONObject();
-        JSONObject dataOutput = new JSONObject();
-
-        dataOutput.put("result", result);
-        output.put("type", "GAME_END");
-        output.put("data", dataOutput);
-
-        //webSocketMap.get(userId).sendMsg(output.toJSONString());
-        sendMsg(userId, output.toJSONString());
-    }
-
-    //处理光标移动
-    private void onMessage_POS_UPDATE(JSONObject data, int id) throws IOException {
-        int row = data.getInteger("row");
-        int col = data.getInteger("col");
-        int total_rows = data.getInteger("total_rows");
-
-        //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() != uid) {
-                //输出逻辑
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
-
-                dataOutput.put("row", row);
-                dataOutput.put("col", col);
-                dataOutput.put("total_rows", total_rows);
-                dataOutput.put("user_id", uid);
-
-                output.put("type", "POS_SYNC");
-                output.put("data", dataOutput);
-                //webSocketMap.get(userGameDTO.getId()).sendMsg(output.toJSONString());
-                sendMsg(userGameDTO.getId(), output.toJSONString());
-            }
-        }
-    }
-
-    public void onMessage_SURRENDER(JSONObject data, int id) throws IOException {
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取赢的队伍
-        int surrenderTeamId = 0;
-        //todo:多人模式记得修改这部分逻辑
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                surrenderTeamId = userGameDTO.getTeam();
-                break;
-            }
-        }
-        for (UserGameDTO userGameDTO : players) {
-            //如果是赢
-            if (userGameDTO.getTeam() == surrenderTeamId) {
-                returnGameEnd(userGameDTO.getId(), "lose");
-            } else {//假如是输
-                returnGameEnd(userGameDTO.getId(), "win");
-            }
-            //清楚当前比赛
-            currentGameMap.remove(userGameDTO.getId());
-        }
-    }
-
-    //处理道具
-    private void onMessage_ITEM_SEND(JSONObject data, int id) throws IOException {
-        //读取json文件
-        String type = data.getString("type");
-
-        //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取当前uid的队号
-        int teamId = 0;
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                teamId = userGameDTO.getTeam();
-                break;
-            }
-        }
-
-        for (UserGameDTO userGameDTO : players) {
-            //如果不同队
-            if (userGameDTO.getTeam() != teamId) {
-                //输出逻辑
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
-                dataOutput.put("type", type);
-
-                output.put("type", "ITEM_USED");
-                output.put("data", dataOutput);
-
-                sendMsg(userGameDTO.getId(), output.toJSONString());
-            }
-        }
-
-    }
 
     private void test_AC_QUESTION(JSONObject data, int id) throws IOException {
-        acQuestion(uid);
+        gameSocket.acQuestion(uid);
     }
 
 
@@ -517,7 +225,7 @@ public class WebSocketServer {
             System.out.println("no session here");
     }
 
-    private static void sendMsg(int uid, String msg) throws IOException {
+    public static void sendMsg(int uid, String msg) throws IOException {
         if (webSocketMap.containsKey(uid))
             webSocketMap.get(uid).session.getBasicRemote().sendText(msg);
         else
@@ -590,8 +298,8 @@ public class WebSocketServer {
                             tmp = entry.getKey();
                         }
                     }
-                    if(count==1){
-                        winTeam(tmp);
+                    if (count == 1) {
+                        gameSocket.winTeam(tmp);
                     }
                 }
                 seenValues.add(currentGame);
