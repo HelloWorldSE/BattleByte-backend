@@ -545,15 +545,34 @@ public class WebSocketServer {
 
                     // 遍历HPMAP并进行计算
                     for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-                        Integer keyHP = entry.getKey();
+                        Integer userId = entry.getKey();
                         Integer hpValue = entry.getValue();
-                        Integer acValue = acMAP.get(keyHP);
+                        Integer acValue = acMAP.get(userId);
 
                         if (acValue != null) {
                             // 计算差距
                             int difference = maxAcValue - acValue;
                             // 更新HPMAP的值
-                            HPMAP.put(keyHP, max(hpValue - difference, 0));
+                            HPMAP.put(userId, max(hpValue - difference, 0));
+
+                            //获取同局人员
+                            Integer gameId = currentGameMap.get(userId).getGameId();
+                            List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+                            for (UserGameDTO userGameDTO : players) {
+                                if (userGameDTO.getId() != userId) {
+                                    //输出逻辑
+                                    JSONObject output = new JSONObject();
+                                    JSONObject dataOutput = new JSONObject();
+
+                                    dataOutput.put("change_id", userId);
+                                    dataOutput.put("hp", max(hpValue - difference, 0));
+
+                                    output.put("type", "HP_CHANGE");
+                                    output.put("data", dataOutput);
+                                    sendMsg(userGameDTO.getId(), output.toJSONString());
+                                }
+                            }
                         }
                     }
 
