@@ -29,7 +29,7 @@ public class UploadService {
         try {
             file.transferTo(new File(filePath + fileName));
         } catch (IOException e) {
-            throw new ServiceException("上传文件失败" + e.getMessage());
+            throw new ServiceException("上传文件失败：" + e.getMessage());
         }
         return fileName;
     }

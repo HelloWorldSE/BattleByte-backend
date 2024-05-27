@@ -4,6 +4,7 @@ import com.battlebyte.battlebyte.dao.FriendApplicationDao;
 import com.battlebyte.battlebyte.dao.FriendDao;
 import com.battlebyte.battlebyte.entity.Friend;
 import com.battlebyte.battlebyte.entity.FriendApplication;
+import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.entity.dto.FriendDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
@@ -19,6 +20,10 @@ public class FriendService {
     private FriendDao friendDao;
     @Autowired
     private FriendApplicationDao friendApplicationDao;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private MessageService messageService;
 
     @Transactional
     public Page<FriendDTO> getFriendApplications(Integer id, String name, Integer uid, Pageable pageable) {
@@ -31,6 +36,7 @@ public class FriendService {
 
     public void addFriend(Integer dest) {
         int sender = JwtUtil.getUserId();
+        User user = userService.findById(sender);
         FriendApplication application = new FriendApplication();
 
         int smallId = sender;
@@ -54,9 +60,10 @@ public class FriendService {
             processApply(friendApplication.getId(), true);
             return;
         }
-
         application.setSenderId(sender);
         application.setReceiverId(dest);
+        String text = user.getUserName() + "向你发送了好友申请！";
+        messageService.send(JwtUtil.getUserId(), dest, text, 1);
         friendApplicationDao.save(application);
     }
 
