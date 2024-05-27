@@ -9,6 +9,7 @@ import com.battlebyte.battlebyte.entity.dto.FriendDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,12 @@ public class FriendService {
     private FriendApplicationDao friendApplicationDao;
     @Autowired
     private UserService userService;
+    
+    private final MessageService messageService;
     @Autowired
-    private MessageService messageService;
+    public FriendService(@Lazy MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @Transactional
     public Page<FriendDTO> getFriendApplications(Integer id, String name, Integer uid, Pageable pageable) {

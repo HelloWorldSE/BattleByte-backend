@@ -5,6 +5,7 @@ import com.battlebyte.battlebyte.entity.Message;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,12 @@ import java.util.List;
 public class MessageService {
     @Autowired
     private MessageDao messageDao;
+    
+    private final FriendService friendService;
     @Autowired
-    private FriendService friendService;
+    public MessageService(@Lazy FriendService friendService) {
+        this.friendService = friendService;
+    }
 
     public void send(Integer sender, Integer receiver, String content) {
         Message message = new Message();
