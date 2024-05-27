@@ -77,13 +77,4 @@ public class GameService {
     public void delGameQuestionRecord(Integer id) {
         gameQuestionDao.deleteById(id);
     }
-
-    // 改变game的status
-    public void setStatus(Integer id, Integer status) {
-        Game game = gameDao.findById(id).orElse(null);
-        if (game != null) {
-            game.setStatus(status);
-            gameDao.save(game);
-        }
-    }
 }

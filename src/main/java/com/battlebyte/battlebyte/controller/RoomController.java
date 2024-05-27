@@ -37,4 +37,9 @@ public class RoomController {
         return roomService.findRoomByStatus(status, pageable);
     }
 
+    @GetMapping("/id")
+    public Room findRoomById(@RequestParam(defaultValue = "-1") Integer id) {
+        return roomService.findRoomById(id);
+    }
+
 }

@@ -22,6 +22,4 @@ public class Room {
      */
     @Column(name = "status")
     private Integer status;
-
-
 }

@@ -32,6 +32,7 @@ public class RoomService {
         if (findHolder(room.getId()) != JwtUtil.getUserId()) {
             throw new ServiceException("对该房间没有更改权限");
         }
+        room.setUid(null);
         roomDao.save(room);
     }
 
@@ -40,6 +41,18 @@ public class RoomService {
             return roomDao.findAll(pageable);
         }
         return roomDao.findAllByStatus(status, pageable);
+    }
+
+    public Room findRoomById(Integer id) {
+        return roomDao.findById(id).orElse(null);
+    }
+
+    public void setStatus(Integer id, Integer status) {
+        Room room = roomDao.findById(id).orElse(null);
+        if (room == null) {
+            throw new ServiceException("未找到此房间");
+        }
+        room.setStatus(status);
     }
 
     /* ------------------     以下为私有方法   ------------------------ */
