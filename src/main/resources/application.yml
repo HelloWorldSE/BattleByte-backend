@@ -18,6 +18,13 @@ spring:
     port: 587
     username: BattleByteTeam@outlook.com
     password: HelloWorld233
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 
 mybatis:
