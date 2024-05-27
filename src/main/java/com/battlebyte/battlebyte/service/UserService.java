@@ -89,7 +89,9 @@ public class UserService {
 
     @Transactional
     public void update(User user) {
-        user.setId(JwtUtil.getUserId());
+        if (user.getId() != JwtUtil.getUserId()) {
+            throw new ServiceException("");
+        }
         if (!userDao.existsById(user.getId())) {
             throw new ServiceException("用户不存在！");
         } else {

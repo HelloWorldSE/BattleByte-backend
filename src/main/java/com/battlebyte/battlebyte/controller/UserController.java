@@ -23,6 +23,7 @@ public class UserController {
     // 注册用户
     @PostMapping("/auth/register")
     public void registerUser(@RequestBody User user) {
+        user.setId(null);
         user.setRating(0);
         user.setAvatar("default1.jpg");
         userService.register(user);
