@@ -1,7 +1,9 @@
 package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.config.UserToken;
+import com.battlebyte.battlebyte.dao.FindPasswordDao;
 import com.battlebyte.battlebyte.dao.UserDao;
+import com.battlebyte.battlebyte.entity.FindPassword;
 import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.entity.dto.*;
 import com.battlebyte.battlebyte.exception.ServiceException;
@@ -19,13 +21,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class UserService {
     @Autowired
     UserDao userDao;
+    @Autowired
+    FindPasswordDao findPasswordDao;
 
     @Transactional
     public void register(User user) {
@@ -133,5 +139,19 @@ public class UserService {
         User user = findById(uid);
         user.setRating(user.getRating() + offset);
         userDao.save(user);
+    }
+
+    @Transactional
+    public void changePassword(PasswordDTO passwordDTO) {
+        FindPassword findPassword = findPasswordDao.findById(passwordDTO.getId()).orElse(null);
+        if (findPassword == null || !Objects.equals(findPassword.getVerify(), passwordDTO.getVerify()) ||
+            new Date().getTime() - findPassword.getDate().getTime() > 5 * 60 * 1000) {
+            throw new ServiceException("验证失败");
+        } else {
+            User user = new User();
+            user.setId(findPassword.getId());
+            user.setPassword(passwordDTO.getPassword());
+            this.update(user);
+        }
     }
 }
