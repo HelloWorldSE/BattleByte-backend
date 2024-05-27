@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.websocket;
 
 import com.battlebyte.battlebyte.config.BeanContext;
+import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.GameService;
@@ -14,16 +15,14 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
@@ -32,10 +31,12 @@ import com.alibaba.fastjson.JSONObject;
 
 import static com.battlebyte.battlebyte.service.MatchService.removePlayer;
 import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
+import static java.lang.Integer.max;
 
-@Component
+
 @ServerEndpoint("/server")
 @Slf4j
+@Component
 public class WebSocketServer {
 
     /**
@@ -124,6 +125,8 @@ public class WebSocketServer {
                     onMessage_SURRENDER(data, id);
                 } else if (type.equals("ITEM_SEND")) {
                     onMessage_ITEM_SEND(data, id);
+                } else if (type.equals("TEST_AC_QUESTION")) {
+                    test_AC_QUESTION(data, id);
                 }
 
             } catch (Exception e) {
@@ -249,7 +252,7 @@ public class WebSocketServer {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
+    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
         //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
@@ -266,19 +269,6 @@ public class WebSocketServer {
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
         sendMsg(userId, output_MATCH_ENTER.toJSONString());
 //        webSocketMap.get(userId).sendMsg(output_MATCH_ENTER.toJSONString());
-
-        //更新当前比赛信息
-        CurrentGame currentGame = new CurrentGame();
-        currentGame.setGameId(gameId);
-        currentGame.setQuestionId(questionId);
-        currentGame.setPlayerMap(playerMap);
-        currentGame.setCurrentTime(LocalDateTime.now());
-        Map<Integer, Integer> HPMAP = new HashMap<>();
-        for (Integer eachUser : playerMap.values()) {
-            HPMAP.put(eachUser, 100);
-        }
-        currentGame.setHPMAP(HPMAP);
-
         currentGameMap.put(userId, currentGame);
     }
 
@@ -362,7 +352,11 @@ public class WebSocketServer {
         if (!(info.isEmpty() && statistic_info.isEmpty())) {
             //已结束
             if (dataResult.getInteger("result") == 0) {
-                winTeam(uid);
+                if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
+                    winTeam(uid);
+                } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
+                    acQuestion(uid);
+                }
             }
         }
     }
@@ -390,6 +384,14 @@ public class WebSocketServer {
             //清楚当前比赛
             currentGameMap.remove(userGameDTO.getId());
         }
+    }
+
+    //某个玩家AC了。
+    private void acQuestion(int userId) throws IOException {
+        CurrentGame currentGame = currentGameMap.get(userId);
+        currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
+        currentGame.getAcMAP().values().stream().max(Integer::compareTo);
+        log.info("用户 " + userId + " ac了一道题目，目前同局游戏中最多AC了" + currentGame.getAcMAP().get(userId));
     }
 
     public void returnGameEnd(int userId, String result) throws IOException {
@@ -491,6 +493,11 @@ public class WebSocketServer {
 
     }
 
+    private void test_AC_QUESTION(JSONObject data, int id) throws IOException {
+        acQuestion(uid);
+    }
+
+
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户【" + this.uid + "】处理消息错误，原因:" + error.getMessage());
@@ -519,6 +526,58 @@ public class WebSocketServer {
 
     public Session getSession() {
         return this.session;
+    }
+
+    //处理大逃杀血量
+    public void manageGame() throws IOException {
+        // 使用Set来记录已经处理过的值
+        Set<CurrentGame> seenValues = new HashSet<>();
+
+        // 遍历Map的值
+        for (CurrentGame currentGame : currentGameMap.values()) {
+            if (!seenValues.contains(currentGame)) {
+                if (currentGame.getGameType() == 2) {
+                    Map<Integer, Integer> HPMAP = currentGame.getHPMAP();
+                    Map<Integer, Integer> acMAP = currentGame.getAcMAP();
+
+                    // 获取acMAP的最大值
+                    int maxAcValue = Collections.max(acMAP.values());
+
+                    // 遍历HPMAP并进行计算
+                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
+                        Integer keyHP = entry.getKey();
+                        Integer hpValue = entry.getValue();
+                        Integer acValue = acMAP.get(keyHP);
+
+                        if (acValue != null) {
+                            // 计算差距
+                            int difference = maxAcValue - acValue;
+                            // 更新HPMAP的值
+                            HPMAP.put(keyHP, max(hpValue - difference, 0));
+                        }
+                    }
+
+                    // 打印更新后的HPMAP
+                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
+                        System.out.println("id: " + entry.getKey() + ", hp: " + entry.getValue());
+                    }
+
+                    //判断是否结束
+                    int tmp = -100;
+                    int count = 0;
+                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
+                        if (entry.getValue() > 0) {
+                            count++;
+                            tmp = entry.getKey();
+                        }
+                    }
+                    if(count==1){
+                        winTeam(tmp);
+                    }
+                }
+                seenValues.add(currentGame);
+            }
+        }
     }
 
     /**

@@ -5,12 +5,14 @@ import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.OJService;
+import com.battlebyte.battlebyte.websocket.CurrentGame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -112,25 +114,25 @@ public class MatchingPool extends Thread {
                     increaseWaitingTime();
                     matchPlayersOneVsOne();
                     matchPlayersRoyale();
-                    //如果当前池子里有人，则加一个虚拟的
-                    if (oneToOnePlayers.size() > 0) {
-                        count1++;
-                        if (count1 == 10) {
-                            count1 = 0;
-                            addPlayer2(-1, 1000);
-                        }
-                    } else {
-                        count1 = 0;
-                    }
-                    if (royalePlayers.size() > 0) {
-                        count2++;
-                        if (count2 == 5) {
-                            count2 = 0;
-                            addPlayer2(-1, 1000);
-                        }
-                    } else {
-                        count2 = 0;
-                    }
+//                    //如果当前池子里有人，则加一个虚拟的
+//                    if (oneToOnePlayers.size() > 0) {
+//                        count1++;
+//                        if (count1 == 10) {
+//                            count1 = 0;
+//                            addPlayer2(-1, 1000);
+//                        }
+//                    } else {
+//                        count1 = 0;
+//                    }
+//                    if (royalePlayers.size() > 0) {
+//                        count2++;
+//                        if (count2 == 5) {
+//                            count2 = 0;
+//                            addPlayer2(-1, 1000);
+//                        }
+//                    } else {
+//                        count2 = 0;
+//                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -274,7 +276,12 @@ public class MatchingPool extends Thread {
 
         // Game加入数据库
         Game game = new Game();
-        game.setGameType(0);
+        if(num==2){ //单人模式
+            game.setGameType(1);
+        }else{ //大逃杀模式
+            game.setGameType(2);
+        }
+
         gameService.addGame(game);
 
         // UserGameRecord加入数据库
@@ -294,8 +301,32 @@ public class MatchingPool extends Thread {
         for (int i = 0; i < num; i++) {
             playerMap.put(Integer.toString(i), players.get(i).getUserId());
         }
+
+
+        //创建比赛
+        CurrentGame currentGame = new CurrentGame();
+        currentGame.setGameId(game.getId());
+        currentGame.setQuestionId(questionIds);
+        if(playerMap.size()==2){
+            currentGame.setGameType(1);
+        }else{
+            currentGame.setGameType(2);
+        }
+        currentGame.setPlayerMap(playerMap);
+        currentGame.setCurrentTime(LocalDateTime.now());
+        Map<Integer, Integer> HPMAP = new HashMap<>();
+        for (Integer eachUser : playerMap.values()) {
+            HPMAP.put(eachUser, 100);
+        }
+        currentGame.setHPMAP(HPMAP);
+        Map<Integer, Integer> acMAP = new HashMap<>();
+        for (Integer eachUser : playerMap.values()) {
+            acMAP.put(eachUser, 0);
+        }
+        currentGame.setAcMAP(acMAP);
+
         for (int i = 0; i < num; i++) {
-            returnMatchResult(players.get(i).getUserId(), questionIds, playerMap, game.getId());
+            returnMatchResult(players.get(i).getUserId(), questionIds, playerMap, game.getId(),currentGame);
         }
     }
 
