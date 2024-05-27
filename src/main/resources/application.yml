@@ -14,17 +14,24 @@ spring:
       ddl-auto: update
     show-sql: true
   mail:
-    host: smtp-mail.outlook.com
+    host: smtp.office365.com
     port: 587
     username: BattleByteTeam@outlook.com
     password: HelloWorld233
+    default-encoding: UTF-8
     properties:
       mail:
+        debug: true
         smtp:
           auth: true
           starttls:
             enable: true
             required: true
+          ssl:
+            socketFactory:
+              class: com.sun.mail.util.MailSSLSocketFactory
+              fallback: false
+
 
 
 mybatis:
