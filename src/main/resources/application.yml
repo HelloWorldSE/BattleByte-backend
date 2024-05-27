@@ -13,6 +13,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  mail:
+    host: smtp-mail.outlook.com
+    port: 587
+    username: BattleByteTeam@outlook.com
+    password: HelloWorld233
+
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
