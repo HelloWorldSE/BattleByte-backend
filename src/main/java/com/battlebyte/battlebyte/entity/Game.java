@@ -14,7 +14,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "gameType",nullable = false)
-    private Integer gameType;
+    private Integer gameType; //1是单人模式，2是大逃杀模式
     @CreationTimestamp
     @Column(name = "date", nullable = false, updatable = false)
     private Date date;

@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.service.match.MatchingPool;
+import com.battlebyte.battlebyte.websocket.CurrentGame;
 import com.battlebyte.battlebyte.websocket.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,8 @@ public class MatchService {
         matchingPool.removePlayer(userId);
     }
 
-    public static void returnMatchResult(Integer userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId) throws IOException {
-        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap, gameId);
+    public static void returnMatchResult(Integer userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
+        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap, gameId,currentGame);
     }
 
 }
