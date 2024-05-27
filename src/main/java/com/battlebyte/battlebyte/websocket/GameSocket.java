@@ -2,13 +2,16 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.config.BeanContext;
+import com.battlebyte.battlebyte.entity.Room;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.OJService;
+import com.battlebyte.battlebyte.service.RoomService;
 import com.battlebyte.battlebyte.service.UserService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.currentGameMap;
@@ -18,11 +21,13 @@ public class GameSocket {
     private OJService ojService;
     private GameService gameService;
     private UserService userService;
+    private RoomService roomService;
 
     public GameSocket() {
         ojService = BeanContext.getApplicationContext().getBean(OJService.class);
         gameService = BeanContext.getApplicationContext().getBean(GameService.class);
         userService = BeanContext.getApplicationContext().getBean(UserService.class);
+        roomService = BeanContext.getApplicationContext().getBean(RoomService.class);
     }
 
     // 处理聊天
@@ -82,7 +87,7 @@ public class GameSocket {
     }
 
     // 刷新评测结果
-    public void onMessage_ANSWER_REFRESH(JSONObject data, int id,int uid) throws IOException {
+    public void onMessage_ANSWER_REFRESH(JSONObject data, int id, int uid) throws IOException {
         String submit_id = data.getString("submit_id");
 
         //输出逻辑
@@ -93,7 +98,7 @@ public class GameSocket {
         dataOutput.put("result", result);
         output.put("type", "ANSWER_RESULT");
         output.put("data", dataOutput);
-        sendMsg(uid,output.toJSONString());
+        sendMsg(uid, output.toJSONString());
 
         //判断是否结束
         JSONObject dataResult = result.getJSONObject("data");
@@ -113,7 +118,7 @@ public class GameSocket {
     }
 
     //处理光标移动
-    public void onMessage_POS_UPDATE(JSONObject data, int id,int uid) throws IOException {
+    public void onMessage_POS_UPDATE(JSONObject data, int id, int uid) throws IOException {
         int row = data.getInteger("row");
         int col = data.getInteger("col");
         int total_rows = data.getInteger("total_rows");
@@ -141,7 +146,7 @@ public class GameSocket {
         }
     }
 
-    public void onMessage_SURRENDER(JSONObject data, int id,int uid) throws IOException {
+    public void onMessage_SURRENDER(JSONObject data, int id, int uid) throws IOException {
         Integer gameId = currentGameMap.get(uid).getGameId();
         List<UserGameDTO> players = gameService.getPlayer(gameId);
         //获取赢的队伍
@@ -166,7 +171,7 @@ public class GameSocket {
     }
 
     //处理道具
-    public void onMessage_ITEM_SEND(JSONObject data, int id,int uid) throws IOException {
+    public void onMessage_ITEM_SEND(JSONObject data, int id, int uid) throws IOException {
         //读取json文件
         String type = data.getString("type");
 
@@ -198,13 +203,49 @@ public class GameSocket {
         }
     }
 
+    //房间更新
+    public void onMessage_ROOM_REQUEST(JSONObject data, int id, int uid) throws IOException {
+        //读取json文件
+        Integer roomid = data.getInteger("roomid");
+        String type = data.getString("type");
+
+        //获取房间
+        Room room = roomService.findRoomById(roomid);
+
+        //修改人
+        if (type.equals("in")) {
+
+        } else if (type.equals("out")) {
+
+        }
+
+        Integer gameId = room.getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+        //输出
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput = new JSONObject();
+
+        dataOutput.put("roomid", roomid);
+        ArrayList<Integer> users = new ArrayList<>();
+        for (UserGameDTO userGameDTO : players) {
+            users.add(userGameDTO.getId());
+        }
+        dataOutput.put("users", users);
+
+        output.put("type", "ROOM_REFRESH");
+        output.put("data", dataOutput);
+        for (UserGameDTO userGameDTO : players) {
+            sendMsg(userGameDTO.getId(), output.toJSONString());
+        }
+    }
+
     //某个玩家赢了。
     public void winTeam(int userId) throws IOException {
         Integer gameId = currentGameMap.get(userId).getGameId();
         List<UserGameDTO> players = gameService.getPlayer(gameId);
         //获取赢的队伍
         int winTeamId = 0;
-        //todo:多人模式记得修改这部分逻辑
         for (UserGameDTO userGameDTO : players) {
             if (userGameDTO.getId() == userId) {
                 winTeamId = userGameDTO.getTeam();
@@ -227,8 +268,8 @@ public class GameSocket {
     public void acQuestion(int userId) throws IOException {
         CurrentGame currentGame = currentGameMap.get(userId);
         currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
-        currentGame.getAcMAP().values().stream().max(Integer::compareTo);
 
+        //currentGame.getAcMAP().values().stream().max(Integer::compareTo);
     }
 
     public void returnGameEnd(int userId, String result) throws IOException {
@@ -239,7 +280,6 @@ public class GameSocket {
         output.put("type", "GAME_END");
         output.put("data", dataOutput);
 
-        //webSocketMap.get(userId).sendMsg(output.toJSONString());
         sendMsg(userId, output.toJSONString());
     }
 }

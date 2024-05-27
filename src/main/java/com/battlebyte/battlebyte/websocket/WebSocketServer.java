@@ -62,16 +62,12 @@ public class WebSocketServer {
     /**
      * OJ服务
      */
-    private OJService ojService;
     private GameService gameService;
-    private UserService userService;
     private static MatchSocket matchSocket = new MatchSocket();
     private static GameSocket gameSocket = new GameSocket();
 
     public WebSocketServer() {
-        ojService = BeanContext.getApplicationContext().getBean(OJService.class);
         gameService = BeanContext.getApplicationContext().getBean(GameService.class);
-        userService = BeanContext.getApplicationContext().getBean(UserService.class);
     }
 
     @OnOpen
@@ -127,6 +123,8 @@ public class WebSocketServer {
                     gameSocket.onMessage_SURRENDER(data, id, uid);
                 } else if (type.equals("ITEM_SEND")) {
                     gameSocket.onMessage_ITEM_SEND(data, id, uid);
+                }else if (type.equals("ROOM_REQUEST")) {
+                    gameSocket.onMessage_ROOM_REQUEST(data, id, uid);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
                 }
