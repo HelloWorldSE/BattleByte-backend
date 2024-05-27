@@ -33,19 +33,23 @@ public class GameService {
         gameDao.save(game);
     }
 
+    // 删除游戏
     public void delGame(Integer gameId) {
         gameDao.deleteById(gameId);
     }
 
+    // 获取游戏
     public Game getGame(Integer id) {
         Optional<Game> op = gameDao.findById(id);
         return op.orElse(null);
     }
 
+    // 更新游戏
     public void updateGame(Game game) {
         gameDao.save(game);
     }
 
+    // 从游戏中获取玩家
     public Page<UserGameDTO> getPlayer(Integer id, Pageable pageable) {
         return gameDao.getPlayer(id, pageable);
     }
@@ -53,18 +57,33 @@ public class GameService {
     public List<UserGameDTO> getPlayer(Integer id) {
         return gameDao.getPlayer(id);
     }
+
+    // 保存userGameRecord记录
     public void save(UserGameRecord userGameRecord) {
         userGameRecordDao.save(userGameRecord);
     }
 
+    // 删除userGameRecord记录
     public void delUserGameRecord(Integer id) {
         userGameRecordDao.deleteById(id);
     }
 
+    // 保存gameQuestionRecord记录
     public void save(GameQuestionRecord gameQuestionRecord) {
         gameQuestionDao.save(gameQuestionRecord);
     }
+
+    // 删除gameQuestionRecord记录
     public void delGameQuestionRecord(Integer id) {
         gameQuestionDao.deleteById(id);
+    }
+
+    // 改变game的status
+    public void setStatus(Integer id, Integer status) {
+        Game game = gameDao.findById(id).orElse(null);
+        if (game != null) {
+            game.setStatus(status);
+            gameDao.save(game);
+        }
     }
 }

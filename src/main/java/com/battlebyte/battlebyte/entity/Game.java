@@ -19,4 +19,5 @@ public class Game {
     @Column(name = "date", nullable = false, updatable = false)
     private Date date;
 
+
 }
