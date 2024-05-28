@@ -54,7 +54,7 @@ class MessageControllerTest {
     @Rollback()
     @Test
     void broadcast() throws Exception {
-        String requestBody = "{\"content\": \"菜就多练\"}";
+        String requestBody = "菜就多练";
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/message/broadcast")
                         .content(requestBody)
