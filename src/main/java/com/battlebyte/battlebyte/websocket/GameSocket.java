@@ -219,7 +219,9 @@ public class GameSocket {
         if (type.equals("in")) {
             addUserInRoom(roomid, uid);
         } else if (type.equals("out")) {
-            //todo：删除房间人员
+            delUserInRoom(roomid, uid);
+        } else if (type.equals("get")) {
+            ;
         }
 
         //输出
