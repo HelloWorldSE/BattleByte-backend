@@ -38,6 +38,15 @@ public class RoomService {
             throw new ServiceException("对该房间没有更改权限");
         }
         room.setUid(null);
+        room.setStatus(null);
+        roomDao.save(room);
+    }
+
+    // 注意：这个方法不开放给controller！如果想要更新房间的所有信息，使用这个update！
+    @Modifying
+    @Transactional
+    public void update(Room room) {
+
         roomDao.save(room);
     }
 
