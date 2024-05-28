@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.dao.RoomDao;
+import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.Room;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class RoomService {
     @Autowired
     private RoomDao roomDao;
+    @Autowired
+    private GameService gameService;
 
     @Modifying
     @Transactional
@@ -23,6 +26,8 @@ public class RoomService {
         room.setId(null);
         room.setStatus(0);
         room.setUid(JwtUtil.getUserId());
+        Game game = gameService.addBlankGame();
+        room.setGameId(game.getId());
         roomDao.save(room);
     }
 

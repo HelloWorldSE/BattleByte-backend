@@ -35,6 +35,13 @@ public class GameService {
         gameDao.save(game);
     }
 
+    public Game addBlankGame() {
+        Game game = new Game();
+        game.setGameType(0);
+        game.setDate(new Date());
+        return gameDao.save(game);
+    }
+
     // 删除游戏
     public void delGame(Integer gameId) {
         gameDao.deleteById(gameId);
