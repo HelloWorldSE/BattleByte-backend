@@ -220,8 +220,6 @@ public class GameSocket {
             addUserInRoom(roomid, uid);
         } else if (type.equals("out")) {
             delUserInRoom(roomid, uid);
-        } else if (type.equals("get")) {
-            ;
         }
 
         //输出
@@ -237,6 +235,26 @@ public class GameSocket {
         for (Integer userId : users) {
             sendMsg(userId, output.toJSONString());
         }
+    }
+
+    //获取房间信息
+    public void onMessage_ROOM_GET_INFO(JSONObject data, int id, int uid) throws IOException {
+        //读取json文件
+        Integer roomid = data.getInteger("roomid");
+        String type = data.getString("type");
+
+        //输出
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput = new JSONObject();
+
+        dataOutput.put("roomid", roomid);
+        ArrayList<Integer> users = getRoomUsersId(roomid);
+        dataOutput.put("users", users);
+
+        output.put("type", "ROOM_REFRESH");
+        output.put("data", dataOutput);
+
+        sendMsg(uid, output.toJSONString());
     }
 
     //房间开始游戏
