@@ -3,6 +3,7 @@ package com.battlebyte.battlebyte.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -16,6 +17,7 @@ public class Message {
     private Integer sender;
     private Integer receiver;
     private String message;
+    @CreationTimestamp
     private Date date;
     private Integer tag;
     private boolean read;
