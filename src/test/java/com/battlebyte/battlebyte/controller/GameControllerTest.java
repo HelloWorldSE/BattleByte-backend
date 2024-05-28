@@ -65,7 +65,7 @@ class GameControllerTest {
                         .post("/api/game/add")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -85,7 +85,7 @@ class GameControllerTest {
                         .post("/api/game/update")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -99,7 +99,7 @@ class GameControllerTest {
                         .param("id", "1")
                         .param("page", "1")
                         .param("pageSize", "10")
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -112,7 +112,7 @@ class GameControllerTest {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/game")
                 .param("id","1")
-                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
         );
         resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
         resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());
@@ -132,7 +132,7 @@ class GameControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/game/update-record")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());

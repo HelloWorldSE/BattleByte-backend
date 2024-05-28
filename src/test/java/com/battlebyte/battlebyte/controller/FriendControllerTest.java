@@ -51,7 +51,7 @@ class FriendControllerTest {
                         .post("/api/user/friend/add-apply")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -68,7 +68,7 @@ class FriendControllerTest {
                         .post("/api/user/friend/add-apply")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -83,7 +83,7 @@ class FriendControllerTest {
                         .param("name", "newAdmin1")
                         .param("page", "1")
                         .param("pageSize", "5")
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -100,7 +100,7 @@ class FriendControllerTest {
                         .param("accept", "true")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -112,7 +112,7 @@ class FriendControllerTest {
     void delFriend() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/api/user/friend/4")
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
@@ -125,7 +125,7 @@ class FriendControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user/friend")
                         .param("page", "1")
                         .param("pageSize", "5")
-                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTYzNDcwOTIsInVzZXJJZCI6MX0.Bd2-YnlM8TdKcRMOMoo2IDCYhqsgoC-pZU73stZPRAY")
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
