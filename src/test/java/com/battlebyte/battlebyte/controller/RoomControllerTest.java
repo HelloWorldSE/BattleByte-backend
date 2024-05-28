@@ -96,7 +96,7 @@ class RoomControllerTest {
     @Test
     void findRoomById() throws Exception {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/room")
+                .get("/api/room/id")
                 .param("id", "4")
                 .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
         );

@@ -44,7 +44,7 @@ class FriendControllerTest {
     @Rollback()
     @Test
     void addFriend() throws Exception { // 测试未成为好友的
-        int dest = 7;
+        int dest = 3;
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(dest);
         mockMvc.perform(MockMvcRequestBuilders
@@ -94,7 +94,7 @@ class FriendControllerTest {
     // 请求被处理后由于回滚又被还原
     @Test
     void process() throws Exception {
-        String requestBody = "2"; // 1号给3号的好友请求的id，请求的主码
+        String requestBody = "213"; // 1号给11号的好友请求的id，请求的主码
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/user/friend/process")
                         .param("accept", "true")
