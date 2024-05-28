@@ -11,7 +11,7 @@ import java.util.Date;
 @Table(name = "message")
 public class Message {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer sender;
     private Integer receiver;

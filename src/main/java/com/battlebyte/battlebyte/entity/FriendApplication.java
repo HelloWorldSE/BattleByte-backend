@@ -8,7 +8,7 @@ import lombok.Data;
 @Table(name = "FriendApplication")
 public class FriendApplication {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "sender_id",nullable = false)
     private Integer senderId;
