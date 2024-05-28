@@ -20,5 +20,5 @@ public class Message {
     @CreationTimestamp
     private Date date;
     private Integer tag;
-    private boolean read;
+    private boolean isRead;
 }
