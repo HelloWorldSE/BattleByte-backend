@@ -228,7 +228,9 @@ public class GameSocket {
 
         dataOutput.put("roomid", roomid);
         ArrayList<Integer> users = getRoomUsersId(roomid);
-        dataOutput.put("users", users);
+        dataOutput.put("userid", users);
+        dataOutput.put("username", getRoomUsersName(roomid));
+        dataOutput.put("avatarUrl", getRoomUsersAvatar(roomid));
 
         output.put("type", "ROOM_REFRESH");
         output.put("data", dataOutput);
@@ -248,8 +250,9 @@ public class GameSocket {
         JSONObject dataOutput = new JSONObject();
 
         dataOutput.put("roomid", roomid);
-        ArrayList<Integer> users = getRoomUsersId(roomid);
-        dataOutput.put("users", users);
+        dataOutput.put("users", getRoomUsersId(roomid));
+        dataOutput.put("username", getRoomUsersName(roomid));
+        dataOutput.put("avatarUrl", getRoomUsersAvatar(roomid));
 
         output.put("type", "ROOM_REFRESH");
         output.put("data", dataOutput);
@@ -325,6 +328,32 @@ public class GameSocket {
             users.add(userGameDTO.getId());
         }
         System.out.println("There are " + users.size() + " people in room " + roomId);
+        return users;
+    }
+
+    //返回房间内所有userId
+    public ArrayList<String> getRoomUsersName(int roomId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+        ArrayList<String> users = new ArrayList<>();
+        for (UserGameDTO userGameDTO : players) {
+            users.add(userGameDTO.getUserName());
+        }
+        return users;
+    }
+
+    //返回房间内所有userId
+    public ArrayList<String> getRoomUsersAvatar(int roomId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+        ArrayList<String> users = new ArrayList<>();
+        for (UserGameDTO userGameDTO : players) {
+            users.add(userGameDTO.getAvatar());
+        }
         return users;
     }
 
