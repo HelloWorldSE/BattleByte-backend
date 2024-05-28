@@ -13,7 +13,7 @@ public class UserGameRecord {
     private Integer gameId;
     @Column(name = "userId",nullable = false)
     private Integer userId;
-    @Column(name = "team", nullable = false)
+    @Column(name = "team")
     private Integer team;
     @Column(name = "rank")
     private Integer rank;
