@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -19,5 +20,6 @@ public class FindPassword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer verify;
+    @CreationTimestamp
     private Date date;
 }
