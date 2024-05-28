@@ -2,7 +2,9 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.config.BeanContext;
+import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.Room;
+import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.GameService;
@@ -14,8 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.battlebyte.battlebyte.websocket.WebSocketServer.currentGameMap;
-import static com.battlebyte.battlebyte.websocket.WebSocketServer.sendMsg;
+import static com.battlebyte.battlebyte.websocket.WebSocketServer.*;
 
 public class GameSocket {
     private OJService ojService;
@@ -209,35 +210,87 @@ public class GameSocket {
         Integer roomid = data.getInteger("roomid");
         String type = data.getString("type");
 
-        //获取房间
-        Room room = roomService.findRoomById(roomid);
-
         //修改人
         if (type.equals("in")) {
-
+            addUserInRoom(roomid, uid);
         } else if (type.equals("out")) {
-
+            //todo：删除房间人员
         }
-
-        Integer gameId = room.getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
 
         //输出
         JSONObject output = new JSONObject();
         JSONObject dataOutput = new JSONObject();
 
         dataOutput.put("roomid", roomid);
-        ArrayList<Integer> users = new ArrayList<>();
-        for (UserGameDTO userGameDTO : players) {
-            users.add(userGameDTO.getId());
-        }
+        ArrayList<Integer> users = getRoomUsersId(roomid);
         dataOutput.put("users", users);
 
         output.put("type", "ROOM_REFRESH");
         output.put("data", dataOutput);
-        for (UserGameDTO userGameDTO : players) {
-            sendMsg(userGameDTO.getId(), output.toJSONString());
+        for (Integer userId : users) {
+            sendMsg(userId, output.toJSONString());
         }
+    }
+
+    //房间开始游戏
+    public void onMessage_ROOM_START(JSONObject data, int id) throws IOException {
+        //读取json文件
+        Integer roomid = data.getInteger("roomid");
+        String type = data.getString("type");
+
+        //获取房间
+        Room room = roomService.findRoomById(roomid);
+
+        //todo:修改currentGameMap+返回MatchEnter,数据库增加teamId
+        ArrayList<Integer> users = getRoomUsersId(roomid);
+        if (users.size() == 7) {
+            //增加teamId到数据库
+
+            //修改currentGameMap
+
+            //返回MatchEnter
+            for(int userdId :users){
+                return_MATCH_ENTER(userdId,questionId,playerMap,gameId,currentGame);
+            }
+
+        }else{
+            System.out.println("Room "+roomid+" size is not 7");
+        }
+    }
+
+    //返回房间内所有userId
+    public ArrayList<Integer> getRoomUsersId(int roomId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        List<UserGameDTO> players = gameService.getPlayer(gameId);
+
+        ArrayList<Integer> users = new ArrayList<>();
+        for (UserGameDTO userGameDTO : players) {
+            users.add(userGameDTO.getId());
+        }
+        System.out.println("There are " + users.size() + " people in room " + roomId);
+        return users;
+    }
+
+    //给房间新增用户
+    public void addUserInRoom(int roomId, int userId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        UserGameRecord userGameRecord = new UserGameRecord();
+
+        userGameRecord.setGameId(gameId);
+        userGameRecord.setUserId(userId);
+
+        gameService.save(userGameRecord);
+
+        System.out.println("Room " + roomId + " add user " + userId);
+    }
+
+    public void delUserInRoom(int roomId, int userId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        gameService.deleteByGameIdAndUserId(gameId, userId);
+        System.out.println("Room " + roomId + " delete user " + userId);
     }
 
     //某个玩家赢了。

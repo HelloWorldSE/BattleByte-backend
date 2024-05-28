@@ -123,8 +123,10 @@ public class WebSocketServer {
                     gameSocket.onMessage_SURRENDER(data, id, uid);
                 } else if (type.equals("ITEM_SEND")) {
                     gameSocket.onMessage_ITEM_SEND(data, id, uid);
-                }else if (type.equals("ROOM_REQUEST")) {
+                } else if (type.equals("ROOM_REQUEST")) {
                     gameSocket.onMessage_ROOM_REQUEST(data, id, uid);
+                } else if (type.equals("ROOM_START")) {
+                    gameSocket.onMessage_ROOM_START(data, id);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
                 }
