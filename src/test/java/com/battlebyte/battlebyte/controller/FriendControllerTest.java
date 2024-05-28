@@ -44,7 +44,7 @@ class FriendControllerTest {
     @Rollback()
     @Test
     void addFriend() throws Exception { // 测试未成为好友的
-        int dest = 3;
+        int dest = 7;
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(dest);
         mockMvc.perform(MockMvcRequestBuilders
