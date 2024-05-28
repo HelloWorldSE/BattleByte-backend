@@ -7,6 +7,7 @@ import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.GameQuestionRecord;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
+import com.battlebyte.battlebyte.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +61,9 @@ public class GameService {
 
     // 保存userGameRecord记录
     public void save(UserGameRecord userGameRecord) {
+        if (userGameRecordDao.findByGameIdAndUserId(userGameRecord.getGameId(), userGameRecord.getUserId()) != null) {
+            throw new ServiceException("已存在此用户，添加失败");
+        }
         userGameRecordDao.save(userGameRecord);
     }
 
@@ -76,5 +80,10 @@ public class GameService {
     // 删除gameQuestionRecord记录
     public void delGameQuestionRecord(Integer id) {
         gameQuestionDao.deleteById(id);
+    }
+
+/*  -----------------   复杂功能  ------------------- */
+    public void deleteByGameIdAndUserId(Integer gameId, Integer userId) {
+        userGameRecordDao.deleteByGameIdAndUserId(gameId, userId);
     }
 }
