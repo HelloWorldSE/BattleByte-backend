@@ -5,6 +5,7 @@ import com.battlebyte.battlebyte.dao.GameQuestionDao;
 import com.battlebyte.battlebyte.dao.UserGameRecordDao;
 import com.battlebyte.battlebyte.entity.Game;
 import com.battlebyte.battlebyte.entity.GameQuestionRecord;
+import com.battlebyte.battlebyte.entity.Question;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
@@ -85,5 +86,19 @@ public class GameService {
 /*  -----------------   复杂功能  ------------------- */
     public void deleteByGameIdAndUserId(Integer gameId, Integer userId) {
         userGameRecordDao.deleteByGameIdAndUserId(gameId, userId);
+    }
+
+    public UserGameRecord findByGameIdAndUserId(Integer gameId, Integer userId) {
+        return userGameRecordDao.findByGameIdAndUserId(gameId, userId);
+    }
+
+    public void setTeam(Integer gameId, Integer userId, Integer team) {
+        UserGameRecord userGameRecord = userGameRecordDao.findByGameIdAndUserId(gameId, userId);
+        userGameRecord.setTeam(team);
+        userGameRecordDao.save(userGameRecord);
+    }
+
+    public List<Question> findByGameId(Integer gameId) {
+        return gameQuestionDao.findByGameId(gameId);
     }
 }
