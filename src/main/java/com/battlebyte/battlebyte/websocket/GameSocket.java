@@ -3,6 +3,7 @@ package com.battlebyte.battlebyte.websocket;
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.Question;
 import com.battlebyte.battlebyte.entity.Room;
 import com.battlebyte.battlebyte.entity.UserGameRecord;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
@@ -14,7 +15,11 @@ import com.battlebyte.battlebyte.service.UserService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.time.LocalDateTime;
+
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.*;
 
@@ -240,21 +245,52 @@ public class GameSocket {
 
         //获取房间
         Room room = roomService.findRoomById(roomid);
+        int gameId = room.getGameId();
 
         //todo:修改currentGameMap+返回MatchEnter,数据库增加teamId
         ArrayList<Integer> users = getRoomUsersId(roomid);
         if (users.size() == 7) {
             //增加teamId到数据库
-
-            //修改currentGameMap
-
-            //返回MatchEnter
-            for(int userdId :users){
-                return_MATCH_ENTER(userdId,questionId,playerMap,gameId,currentGame);
+            for (int i = 0; i < users.size(); i++) {
+                gameService.setTeam(gameId, users.get(i), i);
             }
 
-        }else{
-            System.out.println("Room "+roomid+" size is not 7");
+            //创建比赛
+
+            Map<String, Integer> playerMap = new HashMap<>();
+            for (int i = 0; i < 7; i++) {
+                playerMap.put(Integer.toString(i), users.get(i));
+            }
+
+            CurrentGame currentGame = new CurrentGame();
+            currentGame.setGameId(gameId);
+            currentGame.setQuestionId(getRoomQuestionId(roomid));
+            if (playerMap.size() == 2) {
+                currentGame.setGameType(1);
+            } else {
+                currentGame.setGameType(2);
+            }
+            currentGame.setPlayerMap(playerMap);
+            currentGame.setCurrentTime(LocalDateTime.now());
+            Map<Integer, Integer> HPMAP = new HashMap<>();
+            for (Integer eachUser : playerMap.values()) {
+                HPMAP.put(eachUser, 100);
+            }
+            currentGame.setHPMAP(HPMAP);
+            Map<Integer, Integer> acMAP = new HashMap<>();
+            for (Integer eachUser : playerMap.values()) {
+                acMAP.put(eachUser, 0);
+            }
+            currentGame.setAcMAP(acMAP);
+
+
+            //返回MatchEnter
+            for (int userdId : users) {
+                return_MATCH_ENTER(userdId, getRoomQuestionId(roomid), playerMap, gameId, currentGame);
+            }
+
+        } else {
+            System.out.println("Room " + roomid + " size is not 7");
         }
     }
 
@@ -270,6 +306,19 @@ public class GameSocket {
         }
         System.out.println("There are " + users.size() + " people in room " + roomId);
         return users;
+    }
+
+    //返回房间内所有userId
+    public ArrayList<Integer> getRoomQuestionId(int roomId) {
+        Room room = roomService.findRoomById(roomId);
+        int gameId = room.getGameId();
+        List<Question> questions = gameService.findByGameId(gameId);
+
+        ArrayList<Integer> questionId = new ArrayList<>();
+        for (Question question : questions) {
+            questionId.add(question.getId());
+        }
+        return questionId;
     }
 
     //给房间新增用户
