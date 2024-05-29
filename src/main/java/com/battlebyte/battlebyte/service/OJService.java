@@ -76,7 +76,18 @@ public class OJService {
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         return getString(url, requestEntity);
     }
+    public JSONObject getAllProblems() {
+        String url = "http://81.70.241.166:1233/api/admin/problem?limit=100&offset=0";
+        login();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Csrftoken", X_Csrftoken);
+        headers.add("Cookie", cookie);
 
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        return getString(url, requestEntity);
+    }
     public JSONObject submit(String input)  {
         String url = "http://81.70.241.166:1233/api/submission";
         login();
