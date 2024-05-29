@@ -2,12 +2,16 @@ package com.battlebyte.battlebyte.websocket;
 
 import cn.hutool.core.collection.LineIter;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.time.LocalDateTime;
 
 @Data
+@Component
+@NoArgsConstructor
 public class CurrentGame {
     int gameId;
     ArrayList<Integer> questionId;

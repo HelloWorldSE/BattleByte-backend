@@ -63,11 +63,14 @@ public class WebSocketServer {
      * OJ服务
      */
     private GameService gameService;
-    private static MatchSocket matchSocket = new MatchSocket();
-    private static GameSocket gameSocket = new GameSocket();
+    private static MatchSocket matchSocket;
+    private static GameSocket gameSocket;
 
-    public WebSocketServer() {
-        gameService = BeanContext.getApplicationContext().getBean(GameService.class);
+    @Autowired
+    public WebSocketServer(GameService gameService, MatchSocket matchSocket, GameSocket gameSocket) {
+        this.gameService = gameService;
+        this.matchSocket = matchSocket;
+        this.gameSocket = gameSocket;
     }
 
     @OnOpen

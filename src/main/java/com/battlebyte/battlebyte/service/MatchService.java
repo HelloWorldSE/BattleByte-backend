@@ -14,9 +14,14 @@ import java.util.Map;
  * 匹配池
  */
 @Service
+
 public class MatchService {
 
-    public static MatchingPool matchingPool = new MatchingPool();
+    public static MatchingPool matchingPool;
+
+    public MatchService(MatchingPool matchingPool){
+        this.matchingPool=matchingPool;
+    }
 
     public static void start() {
         matchingPool.start();

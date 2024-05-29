@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 
 @Service
+
 public class EmailService {
 
     @Autowired

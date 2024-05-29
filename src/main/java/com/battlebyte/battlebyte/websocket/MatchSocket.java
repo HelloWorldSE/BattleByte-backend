@@ -2,6 +2,7 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.service.MatchService;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.currentGameMap;
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.sendMsg;
-
+@Component
 public class MatchSocket {
 
 
