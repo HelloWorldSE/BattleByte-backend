@@ -49,17 +49,14 @@ public class WebSocketServerTest {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
         }
-//        Map<String,String> requestMap=new HashMap<>();
-//        requestMap.put("HEART_CHECK","{\"module\":\"HEART_CHECK\",\"message\":\"请求心跳\"}");
-//        requestMap.put("KEY1","VALUE1");
-//        requestMap.put("KEY2","VALUE2");
-//        requestMap.put("KEY3","VALUE3");
-//
-//        for(String key: requestMap.keySet()){
-//            myWebSocketClient.send(requestMap.get(key));
-//        }
-        //测试 onError、onMessage、onClose
-        // ...  等等
-        myWebSocketClient.close();
+        myWebSocketClient.send("{\n" +
+                "    \"type\": \"LOGIN_REQ\",\n" +
+                "    \"data\": {\n" +
+                "        \"token\": \"1\"\n" +
+                "    },\n" +
+                "    \"id\": 1\n" +
+                "}");
+        Thread.sleep(500);
+
     }
 }
