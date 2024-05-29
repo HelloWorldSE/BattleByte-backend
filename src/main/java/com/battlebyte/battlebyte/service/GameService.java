@@ -89,6 +89,14 @@ public class GameService {
         gameQuestionDao.deleteById(id);
     }
 
+    public UserGameRecord findUGRById(Integer id) {
+        return userGameRecordDao.findById(id).orElse(null);
+    }
+
+    public GameQuestionRecord findGQRById(Integer id) {
+        return gameQuestionDao.findById(id).orElse(null);
+    }
+
 /*  -----------------   复杂功能  ------------------- */
     public Integer countByGameId(Integer id) {
         return gameDao.countById(id);
@@ -118,5 +126,24 @@ public class GameService {
 
     public List<Question> findByGameId(Integer gameId) {
         return gameQuestionDao.findByGameId(gameId);
+    }
+
+    /* ------------------  权限判断  -------------------- */
+    public boolean inGame(Integer uid, Integer gameId) {
+        try {
+            return userGameRecordDao.findByGameIdAndUserId(gameId, uid) != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean inRoom(Integer uid, Integer roomId) {
+        try {
+            Room room = roomDao.findById(roomId).orElse(null);
+            return inGame(uid, room.getGameId());
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }
