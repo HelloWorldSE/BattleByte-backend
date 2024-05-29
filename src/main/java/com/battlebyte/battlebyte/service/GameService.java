@@ -2,13 +2,12 @@ package com.battlebyte.battlebyte.service;
 
 import com.battlebyte.battlebyte.dao.GameDao;
 import com.battlebyte.battlebyte.dao.GameQuestionDao;
+import com.battlebyte.battlebyte.dao.RoomDao;
 import com.battlebyte.battlebyte.dao.UserGameRecordDao;
-import com.battlebyte.battlebyte.entity.Game;
-import com.battlebyte.battlebyte.entity.GameQuestionRecord;
-import com.battlebyte.battlebyte.entity.Question;
-import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.entity.*;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +21,12 @@ import java.util.Optional;
 public class GameService {
     @Autowired
     private GameDao gameDao;
-
     @Autowired
-    public UserGameRecordDao userGameRecordDao;
-
+    private UserGameRecordDao userGameRecordDao;
     @Autowired
-    public GameQuestionDao gameQuestionDao;
+    private GameQuestionDao gameQuestionDao;
+    @Autowired
+    private RoomDao roomDao;
 
     // 添加游戏
     public void addGame(Game game) {
@@ -91,6 +90,17 @@ public class GameService {
     }
 
 /*  -----------------   复杂功能  ------------------- */
+    public Integer countByGameId(Integer id) {
+        return gameDao.countById(id);
+    }
+
+    @Transactional
+    public Integer countByRoomId(Integer id) {
+        Room room = roomDao.findById(id).orElse(null);
+        Game game = gameDao.findById(room.getGameId()).orElse(null);
+        return gameDao.countById(id);
+    }
+
     public void deleteByGameIdAndUserId(Integer gameId, Integer userId) {
         userGameRecordDao.deleteByGameIdAndUserId(gameId, userId);
     }
@@ -99,6 +109,7 @@ public class GameService {
         return userGameRecordDao.findByGameIdAndUserId(gameId, userId);
     }
 
+    @Transactional
     public void setTeam(Integer gameId, Integer userId, Integer team) {
         UserGameRecord userGameRecord = userGameRecordDao.findByGameIdAndUserId(gameId, userId);
         userGameRecord.setTeam(team);
