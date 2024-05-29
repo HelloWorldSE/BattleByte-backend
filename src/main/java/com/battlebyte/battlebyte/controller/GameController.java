@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * TODO: 该类可能有严重的权限问题！
  */
@@ -40,11 +42,7 @@ public class GameController {
 //        gameService.updateGame(game);
 //    }
 //
-//    @GetMapping("/player")
-//    public Page<UserGameDTO> getPlayer(@RequestParam Integer id, @RequestParam(defaultValue = "1") Integer page,
-//                                       @RequestParam(defaultValue = "10") Integer pageSize) {
-//        return gameService.getPlayer(id, PageRequest.of(page - 1, pageSize));
-//    }
+
 //
 //    @PostMapping("/update-record")
 //    public void save(@RequestBody UserGameRecord userGameRecord) {
@@ -67,6 +65,17 @@ public class GameController {
 //    }
 
     /* 通过room_id查询房间人数 */
+//    @GetMapping("/player")
+//    public Page<UserGameDTO> getPlayer(@RequestParam Integer id, @RequestParam(defaultValue = "1") Integer page,
+//                                       @RequestParam(defaultValue = "10") Integer pageSize) {
+//        return gameService.getPlayer(id, PageRequest.of(page - 1, pageSize));
+//    }
+
+    // TODO: 注意权限问题！
+    @GetMapping("/player")
+    public List<UserGameDTO> getPlayer(@RequestParam Integer id) {
+        return gameService.getPlayer(id);
+    }
 
     @GetMapping("/count")
     public Integer count(Integer id) {
