@@ -1,7 +1,9 @@
 package com.battlebyte.battlebyte.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.battlebyte.battlebyte.oj.ProblemContainer;
 import com.battlebyte.battlebyte.service.OJService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
@@ -21,10 +23,13 @@ public class OJController {
     public JSONObject get(){
         return ojService.getAllProblems();
     }
-
-
     @PostMapping("/submit")
     public JSONObject submit(@RequestBody String input) {
         return ojService.submit(input);
+    }
+
+    @GetMapping("/search")
+    public ProblemContainer search(@RequestParam String tag) throws JsonProcessingException {
+        return ojService.search(tag);
     }
 }

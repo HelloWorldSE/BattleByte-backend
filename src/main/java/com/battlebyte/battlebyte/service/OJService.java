@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.exception.ServiceException;
+import com.battlebyte.battlebyte.oj.OJProcessor;
+import com.battlebyte.battlebyte.oj.ProblemContainer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -145,8 +148,15 @@ public class OJService {
         }
     }
 
+    public ProblemContainer search(String tag) throws JsonProcessingException {
+        OJProcessor ojProcessor = new OJProcessor(getAllProblems().toString());
+        return ojProcessor.search(tag);
+    }
+
     public static void main(String[] args) {
         OJService ojService=new OJService();
         ojService.updateProblems();
+
+        System.out.println(ojService.getAllProblems());
     }
 }
