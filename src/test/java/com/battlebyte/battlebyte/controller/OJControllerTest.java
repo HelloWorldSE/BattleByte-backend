@@ -79,4 +79,15 @@ class OJControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    void search() throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/oj/search")
+                .param("tag","middle")
+                .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
+        );
+        resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk()).andDo(print());
+    }
 }
