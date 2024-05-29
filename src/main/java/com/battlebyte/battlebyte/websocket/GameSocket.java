@@ -12,6 +12,8 @@ import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.service.OJService;
 import com.battlebyte.battlebyte.service.RoomService;
 import com.battlebyte.battlebyte.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,18 +24,19 @@ import java.time.LocalDateTime;
 
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.*;
-
+@Component
 public class GameSocket {
-    private OJService ojService;
-    private GameService gameService;
-    private UserService userService;
-    private RoomService roomService;
+    private final OJService ojService;
+    private final GameService gameService;
+    private final UserService userService;
+    private final RoomService roomService;
 
-    public GameSocket() {
-        ojService = BeanContext.getApplicationContext().getBean(OJService.class);
-        gameService = BeanContext.getApplicationContext().getBean(GameService.class);
-        userService = BeanContext.getApplicationContext().getBean(UserService.class);
-        roomService = BeanContext.getApplicationContext().getBean(RoomService.class);
+    @Autowired
+    public GameSocket(OJService ojService, GameService gameService, UserService userService, RoomService roomService) {
+        this.ojService = ojService;
+        this.gameService = gameService;
+        this.userService = userService;
+        this.roomService = roomService;
     }
 
     // 处理聊天

@@ -9,6 +9,7 @@ import com.battlebyte.battlebyte.oj.ProblemContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 @Service
+@Component
 public class OJService {
     public String cookie;
     public String X_Csrftoken;

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class GameService {
     @Autowired
     private GameDao gameDao;

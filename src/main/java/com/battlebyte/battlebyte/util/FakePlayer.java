@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.util;
 
 import com.battlebyte.battlebyte.websocket.CurrentGame;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.time.Duration;
