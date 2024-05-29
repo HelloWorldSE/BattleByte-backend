@@ -2,9 +2,6 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.service.MatchService;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +9,10 @@ import java.util.Map;
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.currentGameMap;
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.sendMsg;
-@Component
-@NoArgsConstructor
+
 public class MatchSocket {
+
+
     //处理匹配
     public void onMessage_MATCH_REQ(JSONObject data, int id, int uid) throws IOException {
         Integer type = data.getInteger("type");

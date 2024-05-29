@@ -22,7 +22,6 @@ import static com.battlebyte.battlebyte.service.MatchService.returnMatchResult;
  * 匹配池
  */
 @Configurable
-@Component
 public class MatchingPool extends Thread {
 
     private GameService gameService;
@@ -34,10 +33,10 @@ public class MatchingPool extends Thread {
 
     private static int count1 = 0;
     private static int count2 = 0;
-    @Autowired
-    public MatchingPool(GameService gameService,OJService ojService) {
-        this.gameService = gameService;
-        this.ojService = ojService;
+
+    public MatchingPool() {
+        this.gameService = BeanContext.getApplicationContext().getBean(GameService.class);
+        this.ojService = BeanContext.getApplicationContext().getBean(OJService.class);
     }
 
     //排序
@@ -332,7 +331,7 @@ public class MatchingPool extends Thread {
     }
 
     public static void main(String[] args) throws IOException {
-        //MatchingPool matchingPool = new MatchingPool();
-        //matchingPool.matchPlayersOneVsOne();
+        MatchingPool matchingPool = new MatchingPool();
+        matchingPool.matchPlayersOneVsOne();
     }
 }

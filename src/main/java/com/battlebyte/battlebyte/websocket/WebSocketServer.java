@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +28,6 @@ import java.util.concurrent.SynchronousQueue;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.web.socket.client.WebSocketClient;
 
 import static com.battlebyte.battlebyte.service.MatchService.removePlayer;
 import static com.battlebyte.battlebyte.util.JwtUtil.getUserId;
@@ -39,7 +37,7 @@ import static java.lang.Integer.max;
 @ServerEndpoint("/server")
 @Slf4j
 @Component
-public class WebSocketServer{
+public class WebSocketServer {
 
     /**
      * 记录当前在线连接数
@@ -65,17 +63,13 @@ public class WebSocketServer{
      * OJ服务
      */
     private GameService gameService;
-    private MatchSocket matchSocket;
-    private GameSocket gameSocket;
-    @Autowired
-    public WebSocketServer(GameService gameService, MatchSocket matchSocket, GameSocket gameSocket) {
-        this.gameService = gameService;
-        this.matchSocket = matchSocket;
-        this.gameSocket = gameSocket;
-    }
-    public WebSocketServer() {
+    private static MatchSocket matchSocket = new MatchSocket();
+    private static GameSocket gameSocket = new GameSocket();
 
+    public WebSocketServer() {
+        gameService = BeanContext.getApplicationContext().getBean(GameService.class);
     }
+
     @OnOpen
     public void onOpen(Session session) {
     }
@@ -205,7 +199,7 @@ public class WebSocketServer{
 
     //匹配成功
     public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
-        MatchSocket.return_MATCH_ENTER(userId, questionId, playerMap, gameId, currentGame);
+        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, gameId, currentGame);
     }
 
 
