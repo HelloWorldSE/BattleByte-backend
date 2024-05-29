@@ -17,6 +17,11 @@ public class OJController {
     public JSONObject get(@RequestParam Integer id){
         return ojService.getProblem(id);
     }
+    @GetMapping("/problems")
+    public JSONObject get(){
+        return ojService.getAllProblems();
+    }
+
 
     @PostMapping("/submit")
     public JSONObject submit(@RequestBody String input) {
