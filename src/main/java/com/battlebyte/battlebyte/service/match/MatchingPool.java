@@ -217,17 +217,17 @@ public class MatchingPool extends Thread {
     private void matchPlayersRoyale() throws IOException {
         ojService.updateProblems();
 
-        Boolean allFake = true;
-        for (int i = 0; i < royalePlayers.size(); i++) {
-            if (royalePlayers.get(i).getUserId()!=-1){
-                allFake=false;
-                break;
-            }
-        }
-        if (allFake){
-            royalePlayers.clear();
-            return;
-        }
+//        Boolean allFake = true;
+//        for (int i = 0; i < royalePlayers.size(); i++) {
+//            if (royalePlayers.get(i).getUserId()!=-1){
+//                allFake=false;
+//                break;
+//            }
+//        }
+//        if (allFake){
+//            royalePlayers.clear();
+//            return;
+//        }
 
         //排序
         Collections.sort(royalePlayers, Collections.reverseOrder(playerComparator));
@@ -240,7 +240,7 @@ public class MatchingPool extends Thread {
             ArrayList<Integer> questionIds = new ArrayList<>();
             //随机
             Random random = new Random();
-            Object[] values = ojService.problems.values().toArray();
+            Object[] values = ojService.problems.keySet().toArray();
             for (int i = 0; i < 5; i++) {
                 int randomIndex = random.nextInt(values.length);
                 int randomQuestionId = (int) values[randomIndex];
