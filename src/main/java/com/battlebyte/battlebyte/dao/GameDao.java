@@ -21,4 +21,6 @@ public interface GameDao extends JpaRepository<Game, Integer> {
             "from user, user_game_record where user.id = user_game_record.user_id and user_game_record.game_id = ?1",
             nativeQuery = true)
     public List<UserGameDTO> getPlayer(Integer id);
+
+    public Integer countById(Integer id);
 }

@@ -1,25 +1,25 @@
-//package com.battlebyte.battlebyte.controller;
-//
-//import com.battlebyte.battlebyte.entity.Game;
-//import com.battlebyte.battlebyte.entity.GameQuestionRecord;
-//import com.battlebyte.battlebyte.entity.UserGameRecord;
-//import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
-//import com.battlebyte.battlebyte.service.GameService;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.web.bind.annotation.*;
-//
-///**
-// * TODO: 该类可能有严重的权限问题！
-// */
-//
-//@RequestMapping("/api/game")
-//@RestController
-//public class GameController {
-//    @Autowired
-//    private GameService gameService;
-//
+package com.battlebyte.battlebyte.controller;
+
+import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.GameQuestionRecord;
+import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
+import com.battlebyte.battlebyte.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * TODO: 该类可能有严重的权限问题！
+ */
+
+@RequestMapping("/api/game")
+@RestController
+public class GameController {
+    @Autowired
+    private GameService gameService;
+
 //    @PostMapping("/add")
 //    public void addGame(@RequestBody Game game) {
 //        gameService.addGame(game);
@@ -65,4 +65,11 @@
 //    public void del2(@PathVariable("id") Integer id) {
 //        gameService.delGameQuestionRecord(id);
 //    }
-//}
+
+    /* 通过room_id查询房间人数 */
+
+    @GetMapping("/count")
+    public Integer count(Integer id) {
+        return gameService.countByRoomId(id);
+    }
+}
