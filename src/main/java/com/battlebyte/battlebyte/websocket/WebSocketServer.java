@@ -189,6 +189,8 @@ public class WebSocketServer {
 
             dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
             dataOutput_MATCH_ENTER.put("playerMap", currentGame.getPlayerMap());
+            dataOutput_MATCH_ENTER.put("acMap", currentGame.getAc());
+            dataOutput_MATCH_ENTER.put("hpMap", currentGame.getHP());
 
             output_MATCH_ENTER.put("type", "MATCH_ENTER");
             output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
@@ -268,9 +270,8 @@ public class WebSocketServer {
                             //获取同局人员
                             Integer gameId = currentGameMap.get(userId).getGameId();
                             List<UserGameDTO> players = gameService.getPlayer(gameId);
-
-                            for (UserGameDTO userGameDTO : players) {
-                                if (userGameDTO.getId() != userId) {
+                            if (difference != 0) {
+                                for (UserGameDTO userGameDTO : players) {
                                     //输出逻辑
                                     JSONObject output = new JSONObject();
                                     JSONObject dataOutput = new JSONObject();
@@ -281,15 +282,16 @@ public class WebSocketServer {
                                     output.put("type", "HP_CHANGE");
                                     output.put("data", dataOutput);
                                     sendMsg(userGameDTO.getId(), output.toJSONString());
+
                                 }
                             }
                         }
                     }
 
-                    // 打印更新后的HPMAP
-                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-                        System.out.println("id: " + entry.getKey() + ", hp: " + entry.getValue());
-                    }
+//                    // 打印更新后的HPMAP
+//                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
+//                        System.out.println("id: " + entry.getKey() + ", hp: " + entry.getValue());
+//                    }
 
                     //判断是否结束
                     int tmp = -100;

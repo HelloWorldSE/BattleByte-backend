@@ -4,6 +4,7 @@ import cn.hutool.core.collection.LineIter;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.time.LocalDateTime;
 
@@ -24,4 +25,21 @@ public class CurrentGame {
     Map<Integer, Integer> acMAP;
 
     int currentQuestion = 0;
+
+    Map<String, Integer> getHP(){
+        Map<String, Integer> hpMap = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
+            hpMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        return hpMap;
+    }
+
+    Map<String, Integer> getAc(){
+        Map<String, Integer> aMap = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : acMAP.entrySet()) {
+            aMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        return aMap;
+    }
+
 }
