@@ -203,6 +203,9 @@ public class WebSocketServerTest {
     @Test
     @Rollback
     public void roomTest() throws Exception { // 经测试，room_request的out无法移除房间内用户
+        MyWebSocketClient myWebSocketClient2 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 2); // client能和server通信，主要通过这个url，能找到彼此
+        myWebSocketClient2.connect();
+
         MyWebSocketClient myWebSocketClient1 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 5); // client能和server通信，主要通过这个url，能找到彼此
         myWebSocketClient1.connect();
         while (!myWebSocketClient1.getReadyState().equals(ReadyState.OPEN)) {
@@ -218,6 +221,16 @@ public class WebSocketServerTest {
         output_LOGIN_REQ.put("id", "1");
     
         myWebSocketClient1.send(output_LOGIN_REQ.toJSONString());
+        Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
+
+        JSONObject output_LOGIN_REQ2 = new JSONObject();
+        JSONObject dataOutput_LOGIN_REQ2 = new JSONObject();
+        dataOutput_LOGIN_REQ2.put("token", 2);
+        output_LOGIN_REQ2.put("type", "LOGIN_REQ");
+        output_LOGIN_REQ2.put("data", dataOutput_LOGIN_REQ2);
+        output_LOGIN_REQ2.put("id", "1");
+
+        myWebSocketClient2.send(output_LOGIN_REQ2.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
         
         JSONObject output_ROOM_REQUEST = new JSONObject();
