@@ -32,19 +32,4 @@ public class MyWebSocketClient extends WebSocketClient {
     public void onError(Exception ex) {
         log.error("客户端出错", ex);
     }
-    
-    public static void main(String[] args) {
-        try {
-            MyWebSocketClient myWebSocketClient = new MyWebSocketClient(new URI("ws://localhost:9000/user1"));
-            myWebSocketClient.connect();
-            while (!myWebSocketClient.getReadyState().equals(ReadyState.OPEN)) {
-                log.info("WebSocket客户端连接中，请稍等...");
-                Thread.sleep(500);
-            }
-            myWebSocketClient.send("{\"module\":\"HEART_CHECK\",\"message\":\"请求心跳\"}");
-            myWebSocketClient.close();
-        } catch (Exception e) {
-            log.error("error", e);
-        }
-    }
 }
