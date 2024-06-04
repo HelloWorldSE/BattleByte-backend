@@ -83,6 +83,8 @@ public class MatchSocket {
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
         dataOutput_MATCH_ENTER.put("playerMap", playerMap);
+        dataOutput_MATCH_ENTER.put("acMap", currentGame.getAc());
+        dataOutput_MATCH_ENTER.put("hpMap", currentGame.getHP());
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
