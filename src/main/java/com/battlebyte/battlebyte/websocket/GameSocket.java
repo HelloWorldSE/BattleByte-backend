@@ -164,15 +164,19 @@ public class GameSocket {
                 break;
             }
         }
-        for (UserGameDTO userGameDTO : players) {
-            //如果是赢
-            if (userGameDTO.getTeam() == surrenderTeamId) {
-                returnGameEnd(userGameDTO.getId(), "lose");
-            } else {//假如是输
-                returnGameEnd(userGameDTO.getId(), "win");
+        if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
+            for (UserGameDTO userGameDTO : players) {
+                //如果是赢
+                if (userGameDTO.getTeam() == surrenderTeamId) {
+                    returnGameEnd(userGameDTO.getId(), "lose");
+                } else {//假如是输
+                    returnGameEnd(userGameDTO.getId(), "win");
+                }
+                //清楚当前比赛
+                currentGameMap.remove(userGameDTO.getId());
             }
-            //清楚当前比赛
-            currentGameMap.remove(userGameDTO.getId());
+        } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
+            currentGameMap.get(uid).getHPMAP().put(uid, 0);
         }
     }
 
