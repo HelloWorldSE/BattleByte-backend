@@ -42,4 +42,13 @@ public class RoomController {
         return roomService.findRoomById(id);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteRoom(@PathVariable("id") Integer id) {
+        if (roomService.findHolder(id) == JwtUtil.getUserId()) {
+            roomService.deleteById(id);
+        } else {
+            throw new ServiceException("无权限！");
+        }
+    }
+
 }
