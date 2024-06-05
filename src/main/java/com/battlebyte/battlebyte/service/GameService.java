@@ -85,6 +85,10 @@ public class GameService {
         gameQuestionDao.save(gameQuestionRecord);
     }
 
+    public void saveBatch(List<GameQuestionRecord> gameQuestionRecords) {
+        gameQuestionDao.saveAll(gameQuestionRecords);
+    }
+
     // 删除gameQuestionRecord记录
     public void delGameQuestionRecord(Integer id) {
         gameQuestionDao.deleteById(id);
