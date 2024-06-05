@@ -177,6 +177,20 @@ public class GameSocket {
             }
         } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
             currentGameMap.get(uid).getHPMAP().put(uid, 0);
+            //获取同局人员
+            for (UserGameDTO userGameDTO : players) {
+                //输出逻辑
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("change_id", uid);
+                dataOutput.put("hp", 0);
+
+                output.put("type", "HP_CHANGE");
+                output.put("data", dataOutput);
+                sendMsg(userGameDTO.getId(), output.toJSONString());
+
+            }
         }
     }
 
