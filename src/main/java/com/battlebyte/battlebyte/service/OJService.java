@@ -155,6 +155,7 @@ public class OJService {
         return ojProcessor.search(tag);
     }
 
+
     public static void main(String[] args) {
         OJService ojService=new OJService();
         ojService.updateProblems();
