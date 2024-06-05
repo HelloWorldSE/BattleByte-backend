@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Random;
+
 @RestController
 public class UserController {
 
@@ -25,7 +27,8 @@ public class UserController {
     public void registerUser(@RequestBody User user) {
         user.setId(null);
         user.setRating(0);
-        user.setAvatar("default1.jpg");
+        int randomNumber = new Random().nextInt(3) + 1;
+        user.setAvatar("default" + randomNumber + ".jpg");
         userService.register(user);
     }
 

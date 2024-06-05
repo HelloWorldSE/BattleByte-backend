@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequestMapping("/api/game")
@@ -56,5 +57,24 @@ public class GameController {
             throw new ServiceException("无权限");
         }
         gameService.delGameQuestionRecord(id);
+    }
+
+    @PostMapping("/gameaddbatch")
+    public void gameAddBatch(@RequestBody List<Integer> games, @RequestParam Integer id) {
+        if (!gameService.inGame(JwtUtil.getUserId(), id)) {
+            throw new ServiceException("无权限");
+        }
+        List<GameQuestionRecord> gameQuestionRecords = games.stream()
+                .map(element -> transform(id, element)).toList();
+        gameService.saveBatch(gameQuestionRecords);
+    }
+
+    /* ----------  */
+
+    private GameQuestionRecord transform(Integer gameId, Integer id) {
+        GameQuestionRecord gameQuestionRecord = new GameQuestionRecord();
+        gameQuestionRecord.setGameId(gameId);
+        gameQuestionRecord.setQuestionId(id);
+        return gameQuestionRecord;
     }
 }
