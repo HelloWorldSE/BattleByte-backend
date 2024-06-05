@@ -46,8 +46,13 @@ public class RoomService {
     @Modifying
     @Transactional
     public void update(Room room) {
-
         roomDao.save(room);
+    }
+
+    @Modifying
+    @Transactional
+    public void deleteById(Integer id) {
+        roomDao.deleteById(id);
     }
 
     public Page<Room> findRoomByStatus(Integer status, Pageable pageable) {
@@ -69,9 +74,9 @@ public class RoomService {
         room.setStatus(status);
     }
 
-    /* ------------------     以下为私有方法   ------------------------ */
+    /* ------------------     以下为辅助方法   ------------------------ */
 
-    private Integer findHolder(Integer integer) {
+    public Integer findHolder(Integer integer) {
         Room room = roomDao.findById(integer).orElse(null);
         if (room == null) {
             throw new ServiceException("未找到此房间");
