@@ -274,11 +274,6 @@ public class WebSocketServer {
                         }
                     }
 
-//                    // 打印更新后的HPMAP
-//                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-//                        System.out.println("id: " + entry.getKey() + ", hp: " + entry.getValue());
-//                    }
-
                     //判断是否结束
                     int tmp = -100;
                     int count = 0;

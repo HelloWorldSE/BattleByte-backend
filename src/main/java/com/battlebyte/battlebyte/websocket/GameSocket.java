@@ -47,20 +47,22 @@ public class GameSocket {
 
         if (type.equals("global")) { //全局聊天
             for (Integer player : playerMap.values()) {
-                //输出逻辑
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
+                if (currentGameMap.get(uid).isInGame(player)) {
+                    //输出逻辑
+                    JSONObject output = new JSONObject();
+                    JSONObject dataOutput = new JSONObject();
 
-                //通过uid读取名字
-                UserProfileDTO userProfileDTO = userService.findByUserId(uid);
+                    //通过uid读取名字
+                    UserProfileDTO userProfileDTO = userService.findByUserId(uid);
 
-                dataOutput.put("fromName", userProfileDTO.getUserName());
-                dataOutput.put("fromId", uid);
-                dataOutput.put("message", message);
+                    dataOutput.put("fromName", userProfileDTO.getUserName());
+                    dataOutput.put("fromId", uid);
+                    dataOutput.put("message", message);
 
-                output.put("type", "CHAT_MSG");
-                output.put("data", dataOutput);
-                sendMsg(player, output.toJSONString());
+                    output.put("type", "CHAT_MSG");
+                    output.put("data", dataOutput);
+                    sendMsg(player, output.toJSONString());
+                }
             }
         }
     }
@@ -105,8 +107,8 @@ public class GameSocket {
         //获取同局人员
         Map<String, Integer> playerMap = currentGameMap.get(uid).getPlayerMap();
 
-        for (Integer player : playerMap.values()){
-            if (player != uid) {
+        for (Integer player : playerMap.values()) {
+            if (player != uid && currentGameMap.get(uid).isInGame(player)) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -142,16 +144,18 @@ public class GameSocket {
         } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
             currentGameMap.get(uid).getHPMAP().put(uid, 0);
             for (Integer player : playerMap.values()) {
-                //输出逻辑
-                JSONObject output = new JSONObject();
-                JSONObject dataOutput = new JSONObject();
+                if (currentGameMap.get(uid).isInGame(player)) {
+                    //输出逻辑
+                    JSONObject output = new JSONObject();
+                    JSONObject dataOutput = new JSONObject();
 
-                dataOutput.put("change_id", uid);
-                dataOutput.put("hp", 0);
+                    dataOutput.put("change_id", uid);
+                    dataOutput.put("hp", 0);
 
-                output.put("type", "HP_CHANGE");
-                output.put("data", dataOutput);
-                sendMsg(player, output.toJSONString());
+                    output.put("type", "HP_CHANGE");
+                    output.put("data", dataOutput);
+                    sendMsg(player, output.toJSONString());
+                }
             }
         }
     }
@@ -166,7 +170,7 @@ public class GameSocket {
 
         for (Integer player : playerMap.values()) {
             //如果不同队
-            if (player != uid) {
+            if (player != uid && currentGameMap.get(uid).isInGame(player)) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();

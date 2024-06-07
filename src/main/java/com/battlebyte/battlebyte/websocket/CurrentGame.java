@@ -37,7 +37,7 @@ public class CurrentGame {
         userService = BeanContext.getApplicationContext().getBean(UserService.class);
     }
 
-    Map<String, Integer> getHP(){
+    Map<String, Integer> getHP() {
         Map<String, Integer> hpMap = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
             hpMap.put(String.valueOf(entry.getKey()), entry.getValue());
@@ -45,7 +45,7 @@ public class CurrentGame {
         return hpMap;
     }
 
-    Map<String, Integer> getAc(){
+    Map<String, Integer> getAc() {
         Map<String, Integer> aMap = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : acMAP.entrySet()) {
             aMap.put(String.valueOf(entry.getKey()), entry.getValue());
@@ -53,13 +53,20 @@ public class CurrentGame {
         return aMap;
     }
 
-    Map<String, String> getName(){
+    Map<String, String> getName() {
         Map<String, String> nameMap = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : playerMap.entrySet()){
+        for (Map.Entry<String, Integer> entry : playerMap.entrySet()) {
             UserProfileDTO user = userService.findByUserId(entry.getValue());
-            nameMap.put(entry.getKey(),user.getUserName());
+            nameMap.put(entry.getKey(), user.getUserName());
         }
         return nameMap;
+    }
+
+    public boolean isInGame(int playerId) {
+        if (HPMAP.get(playerId) != 0)
+            return true;
+        else
+            return false;
     }
 
 
