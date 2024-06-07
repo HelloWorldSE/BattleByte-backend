@@ -131,7 +131,7 @@ public class WebSocketServerTest {
     
     @Test
     public void gameTwo() throws Exception { // 该局以玩家3的投降结束，具体指SURRENDER请求
-        MatchService.start(); // MatchService线程负责匹配1V1玩家
+//        MatchService.start(); // MatchService线程负责匹配1V1玩家
         MyWebSocketClient myWebSocketClient1 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 3); // client能和server通信，主要通过这个url，能找到彼此
         MyWebSocketClient myWebSocketClient2 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 4);
         myWebSocketClient1.connect();
@@ -199,7 +199,7 @@ public class WebSocketServerTest {
     
     @Test
     public void roomTest() throws Exception {
-        MatchService.start(); // MatchService线程负责匹配1V1玩家
+//        MatchService.start(); // MatchService线程负责匹配1V1玩家
         MyWebSocketClient myWebSocketClient1 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 5); // client能和server通信，主要通过这个url，能找到彼此
         myWebSocketClient1.connect();
         while (!myWebSocketClient1.getReadyState().equals(ReadyState.OPEN)) {
