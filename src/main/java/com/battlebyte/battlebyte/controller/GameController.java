@@ -69,6 +69,11 @@ public class GameController {
         gameService.saveBatch(gameQuestionRecords);
     }
 
+    @GetMapping("/history")
+    public List<UserGameRecord> findUGRByUserId() {
+        return gameService.findUGRByUserId(JwtUtil.getUserId());
+    }
+
     /* ----------  */
 
     private GameQuestionRecord transform(Integer gameId, Integer id) {

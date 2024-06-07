@@ -1,5 +1,6 @@
 package com.battlebyte.battlebyte.realm;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.battlebyte.battlebyte.config.UserToken;
 import com.battlebyte.battlebyte.entity.User;
 import com.battlebyte.battlebyte.exception.ServiceException;
@@ -49,7 +50,12 @@ public class UserRealm extends AuthorizingRealm {
             throw new UnknownAccountException();
         }
 
-        if (!JwtUtil.verifierToken(accessToken, userId, user.getPassword())) {
+//        if (!JwtUtil.verifierToken(accessToken, userId, user.getPassword())) {
+//            throw new IncorrectCredentialsException();
+//        }
+        try {
+            JwtUtil.verifierToken(accessToken, userId, user.getPassword());
+        } catch (JWTVerificationException e) {
             throw new IncorrectCredentialsException();
         }
 
