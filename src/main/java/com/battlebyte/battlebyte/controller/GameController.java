@@ -1,13 +1,11 @@
 package com.battlebyte.battlebyte.controller;
 
-import com.battlebyte.battlebyte.entity.Game;
-import com.battlebyte.battlebyte.entity.GameQuestionRecord;
-import com.battlebyte.battlebyte.entity.Room;
-import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.entity.*;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.GameService;
 import com.battlebyte.battlebyte.util.JwtUtil;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -72,6 +70,11 @@ public class GameController {
     @GetMapping("/history")
     public List<UserGameRecord> findUGRByUserId() {
         return gameService.findUGRByUserId(JwtUtil.getUserId());
+    }
+
+    @GetMapping("/getquestion")
+    public List<Question> getquestion(@RequestParam Integer id) {
+        return gameService.findByGameId(id);
     }
 
     /* ----------  */
