@@ -74,7 +74,7 @@ public class GameController {
 
     @GetMapping("/getquestion")
     public List<Question> getquestion(Integer gameId) {
-        gameService.findByGameId(gameId);
+        return gameService.findByGameId(gameId);
     }
 
     /* ----------  */
