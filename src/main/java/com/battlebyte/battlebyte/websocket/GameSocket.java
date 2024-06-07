@@ -280,7 +280,7 @@ public class GameSocket {
 
             //返回MatchEnter
             for (int userdId : users) {
-                return_MATCH_ENTER(userdId, getRoomQuestionId(roomid), playerMap, gameId, currentGame);
+                return_MATCH_ENTER(userdId, getRoomQuestionId(roomid), playerMap, currentGame);
             }
 
         } else {

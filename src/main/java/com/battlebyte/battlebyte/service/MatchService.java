@@ -37,8 +37,8 @@ public class MatchService {
         matchingPool.removePlayer(userId);
     }
 
-    public static void returnMatchResult(Integer userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
-        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap, gameId,currentGame);
+    public static void returnMatchResult(Integer userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, CurrentGame currentGame) throws IOException {
+        WebSocketServer.return_MATCH_ENTER(userId, questionId, playerMap, currentGame);
     }
 
 }
