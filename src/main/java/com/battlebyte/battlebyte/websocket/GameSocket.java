@@ -394,8 +394,25 @@ public class GameSocket {
     public void acQuestion(int userId) throws IOException {
         CurrentGame currentGame = currentGameMap.get(userId);
         currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
+        currentGame.setCurrentQuestion(currentGame.getCurrentQuestion() + 1);
 
-        //currentGame.getAcMAP().values().stream().max(Integer::compareTo);
+        //获取同局人员
+        Map<String, Integer> playerMap = currentGameMap.get(userId).getPlayerMap();
+
+
+        for (Integer player : playerMap.values()) {
+            if (currentGameMap.get(userId).isInGame(player)) {
+                //输出逻辑
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("currentQuestion", currentGame.getCurrentQuestion());
+                output.put("type", "GAME_ADD");
+                output.put("data", dataOutput);
+                sendMsg(player, output.toJSONString());
+            }
+        }
+
     }
 
     public void returnGameEnd(int userId, String result) throws IOException {

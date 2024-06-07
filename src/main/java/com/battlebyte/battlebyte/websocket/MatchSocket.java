@@ -79,7 +79,7 @@ public class MatchSocket {
         JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
         infoOutput_MATCH_ENTER.put("questionId", questionId);
-        infoOutput_MATCH_ENTER.put("currentQuestion", 0);
+        infoOutput_MATCH_ENTER.put("currentQuestion", currentGame.getCurrentQuestion());
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
         dataOutput_MATCH_ENTER.put("playerMap", playerMap);
