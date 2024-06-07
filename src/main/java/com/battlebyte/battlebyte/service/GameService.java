@@ -98,6 +98,10 @@ public class GameService {
         return userGameRecordDao.findById(id).orElse(null);
     }
 
+    public List<UserGameRecord> findUGRByUserId(Integer userId) {
+        return userGameRecordDao.findByUserId(userId);
+    }
+
     public GameQuestionRecord findGQRById(Integer id) {
         return gameQuestionDao.findById(id).orElse(null);
     }
