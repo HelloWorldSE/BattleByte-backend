@@ -43,37 +43,10 @@ public class GameSocket {
         String message = data.getString("message");
 
         //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取当前uid的队号
-        int teamId = 0;
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                teamId = userGameDTO.getTeam();
-                break;
-            }
-        }
-        if (type.equals("team")) { //队内聊天
-            for (UserGameDTO userGameDTO : players) {
-                if (userGameDTO.getTeam() == teamId) { //如果是同队的
-                    //输出逻辑
-                    JSONObject output = new JSONObject();
-                    JSONObject dataOutput = new JSONObject();
+        Map<String, Integer> playerMap = currentGameMap.get(uid).getPlayerMap();
 
-                    //通过uid读取名字
-                    UserProfileDTO userProfileDTO = userService.findByUserId(uid);
-
-                    dataOutput.put("fromName", userProfileDTO.getUserName());
-                    dataOutput.put("fromId", uid);
-                    dataOutput.put("message", message);
-
-                    output.put("type", "CHAT_MSG");
-                    output.put("data", dataOutput);
-                    sendMsg(userGameDTO.getId(), output.toJSONString());
-                }
-            }
-        } else if (type.equals("global")) { //全局聊天
-            for (UserGameDTO userGameDTO : players) {
+        if (type.equals("global")) { //全局聊天
+            for (Integer player : playerMap.values()) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -87,7 +60,7 @@ public class GameSocket {
 
                 output.put("type", "CHAT_MSG");
                 output.put("data", dataOutput);
-                sendMsg(userGameDTO.getId(), output.toJSONString());
+                sendMsg(player, output.toJSONString());
             }
         }
     }
@@ -130,11 +103,10 @@ public class GameSocket {
         int total_rows = data.getInteger("total_rows");
 
         //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        Map<String, Integer> playerMap = currentGameMap.get(uid).getPlayerMap();
 
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() != uid) {
+        for (Integer player : playerMap.values()){
+            if (player != uid) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -147,38 +119,29 @@ public class GameSocket {
                 output.put("type", "POS_SYNC");
                 output.put("data", dataOutput);
 
-                sendMsg(userGameDTO.getId(), output.toJSONString());
+                sendMsg(player, output.toJSONString());
             }
         }
     }
 
     public void onMessage_SURRENDER(JSONObject data, int id, int uid) throws IOException {
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
+        //获取同局人员
+        Map<String, Integer> playerMap = currentGameMap.get(uid).getPlayerMap();
         //获取赢的队伍
-        int surrenderTeamId = 0;
-        //todo:多人模式记得修改这部分逻辑
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                surrenderTeamId = userGameDTO.getTeam();
-                break;
-            }
-        }
         if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
-            for (UserGameDTO userGameDTO : players) {
+            for (Integer player : playerMap.values()) {
                 //如果是赢
-                if (userGameDTO.getTeam() == surrenderTeamId) {
-                    returnGameEnd(userGameDTO.getId(), "lose");
+                if (player == uid) {
+                    returnGameEnd(player, "lose");
                 } else {//假如是输
-                    returnGameEnd(userGameDTO.getId(), "win");
+                    returnGameEnd(player, "win");
                 }
-                //清楚当前比赛
-                currentGameMap.remove(userGameDTO.getId());
+                //清除当前比赛
+                currentGameMap.remove(player);
             }
         } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
             currentGameMap.get(uid).getHPMAP().put(uid, 0);
-            //获取同局人员
-            for (UserGameDTO userGameDTO : players) {
+            for (Integer player : playerMap.values()) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -188,8 +151,7 @@ public class GameSocket {
 
                 output.put("type", "HP_CHANGE");
                 output.put("data", dataOutput);
-                sendMsg(userGameDTO.getId(), output.toJSONString());
-
+                sendMsg(player, output.toJSONString());
             }
         }
     }
@@ -200,20 +162,11 @@ public class GameSocket {
         String type = data.getString("type");
 
         //获取同局人员
-        Integer gameId = currentGameMap.get(uid).getGameId();
-        List<UserGameDTO> players = gameService.getPlayer(gameId);
-        //获取当前uid的队号
-        int teamId = 0;
-        for (UserGameDTO userGameDTO : players) {
-            if (userGameDTO.getId() == uid) {
-                teamId = userGameDTO.getTeam();
-                break;
-            }
-        }
+        Map<String, Integer> playerMap = currentGameMap.get(uid).getPlayerMap();
 
-        for (UserGameDTO userGameDTO : players) {
+        for (Integer player : playerMap.values()) {
             //如果不同队
-            if (userGameDTO.getTeam() != teamId) {
+            if (player != uid) {
                 //输出逻辑
                 JSONObject output = new JSONObject();
                 JSONObject dataOutput = new JSONObject();
@@ -222,7 +175,7 @@ public class GameSocket {
                 output.put("type", "ITEM_USED");
                 output.put("data", dataOutput);
 
-                sendMsg(userGameDTO.getId(), output.toJSONString());
+                sendMsg(player, output.toJSONString());
             }
         }
     }
