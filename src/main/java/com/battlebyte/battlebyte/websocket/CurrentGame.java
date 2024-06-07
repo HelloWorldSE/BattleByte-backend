@@ -1,6 +1,11 @@
 package com.battlebyte.battlebyte.websocket;
 
 import cn.hutool.core.collection.LineIter;
+import com.battlebyte.battlebyte.config.BeanContext;
+import com.battlebyte.battlebyte.entity.User;
+import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
+import com.battlebyte.battlebyte.service.GameService;
+import com.battlebyte.battlebyte.service.UserService;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -26,6 +31,12 @@ public class CurrentGame {
 
     int currentQuestion = 0;
 
+    private UserService userService;
+
+    public CurrentGame() {
+        userService = BeanContext.getApplicationContext().getBean(UserService.class);
+    }
+
     Map<String, Integer> getHP(){
         Map<String, Integer> hpMap = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
@@ -41,5 +52,15 @@ public class CurrentGame {
         }
         return aMap;
     }
+
+    Map<String, String> getName(){
+        Map<String, String> nameMap = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : playerMap.entrySet()){
+            UserProfileDTO user = userService.findByUserId(entry.getValue());
+            nameMap.put(entry.getKey(),user.getUserName());
+        }
+        return nameMap;
+    }
+
 
 }

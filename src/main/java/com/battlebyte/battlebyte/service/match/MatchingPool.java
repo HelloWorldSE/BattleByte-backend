@@ -326,7 +326,7 @@ public class MatchingPool extends Thread {
         currentGame.setAcMAP(acMAP);
 
         for (int i = 0; i < num; i++) {
-            returnMatchResult(players.get(i).getUserId(), questionIds, playerMap, game.getId(),currentGame);
+            returnMatchResult(players.get(i).getUserId(), questionIds, playerMap, currentGame);
         }
     }
 

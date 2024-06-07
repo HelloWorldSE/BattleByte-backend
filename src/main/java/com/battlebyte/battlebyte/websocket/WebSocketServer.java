@@ -180,28 +180,14 @@ public class WebSocketServer {
         //如果上局比赛没结束
         if (currentGameMap.containsKey(uid)) {
             CurrentGame currentGame = currentGameMap.get(uid);
-            JSONObject output_MATCH_ENTER = new JSONObject();
-            JSONObject dataOutput_MATCH_ENTER = new JSONObject();
-            JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
-            infoOutput_MATCH_ENTER.put("questionId", currentGame.getQuestionId());
-            infoOutput_MATCH_ENTER.put("currentQuestion", currentGame.getCurrentQuestion());
-
-            dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
-            dataOutput_MATCH_ENTER.put("playerMap", currentGame.getPlayerMap());
-            dataOutput_MATCH_ENTER.put("acMap", currentGame.getAc());
-            dataOutput_MATCH_ENTER.put("hpMap", currentGame.getHP());
-
-            output_MATCH_ENTER.put("type", "MATCH_ENTER");
-            output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-            //webSocketMap.get(uid).sendMsg(output_MATCH_ENTER.toJSONString());
-            sendMsg(uid, output_MATCH_ENTER.toJSONString());
+            return_MATCH_ENTER(uid,currentGame.getQuestionId(),currentGame.getPlayerMap(),currentGame);
         }
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
-        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, gameId, currentGame);
+    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, CurrentGame currentGame) throws IOException {
+        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, currentGame);
     }
 
 
