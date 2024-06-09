@@ -181,7 +181,7 @@ public class WebSocketServer {
         if (currentGameMap.containsKey(uid)) {
             CurrentGame currentGame = currentGameMap.get(uid);
 
-            return_MATCH_ENTER(uid,currentGame.getQuestionId(),currentGame.getPlayerMap(),currentGame);
+            return_MATCH_ENTER(uid, currentGame.getQuestionId(), currentGame.getPlayerMap(), currentGame);
         }
     }
 
@@ -258,19 +258,28 @@ public class WebSocketServer {
                             List<UserGameDTO> players = gameService.getPlayer(gameId);
                             if (difference != 0) {
                                 for (UserGameDTO userGameDTO : players) {
-                                    //输出逻辑
-                                    JSONObject output = new JSONObject();
-                                    JSONObject dataOutput = new JSONObject();
+                                    //如果对方还在同一局游戏内
+                                    if (currentGameMap.containsKey(userGameDTO.getId()) && currentGameMap.get(userGameDTO.getId()).getGameId() == currentGame.getGameId()) {
+                                        //输出逻辑
+                                        JSONObject output = new JSONObject();
+                                        JSONObject dataOutput = new JSONObject();
 
-                                    dataOutput.put("change_id", userId);
-                                    dataOutput.put("hp", max(hpValue - difference, 0));
+                                        dataOutput.put("change_id", userId);
+                                        dataOutput.put("hp", max(hpValue - difference, 0));
 
-                                    output.put("type", "HP_CHANGE");
-                                    output.put("data", dataOutput);
-                                    sendMsg(userGameDTO.getId(), output.toJSONString());
-
+                                        output.put("type", "HP_CHANGE");
+                                        output.put("data", dataOutput);
+                                        sendMsg(userGameDTO.getId(), output.toJSONString());
+                                    }
                                 }
                             }
+
+
+                            //血量为0且还在同一场游戏内就结束
+                            if (HPMAP.get(userId) == 0 && currentGameMap.containsKey(userId) && currentGameMap.get(userId).getGameId() == currentGame.getGameId()) {
+                                gameSocket.returnGameEnd(userId, "win");
+                            }
+
                         }
                     }
 
