@@ -87,7 +87,7 @@ public class GameSocket {
         JSONObject info = dataResult.getJSONObject("info");
         //已评测完
         if (!(info.isEmpty() && statistic_info.isEmpty())) {
-            //已结束
+            //AC了本道题目
             if (dataResult.getInteger("result") == 0) {
                 if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
                     winTeam(uid);
@@ -393,8 +393,14 @@ public class GameSocket {
     public void acQuestion(int userId) throws IOException {
         CurrentGame currentGame = currentGameMap.get(userId);
         currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
-        currentGame.setCurrentQuestion(currentGame.getCurrentQuestion() + 1);
+        if (currentGame.getAcMAP().get(userId) > currentGame.getCurrentQuestion())
+            currentGame.setCurrentQuestion(currentGame.getAcMAP().get(userId));
 
+        //如果第五题了直接结束
+        if (currentGame.getCurrentQuestion() == 6) {
+            winTeam(userId);
+            return;
+        }
         //获取同局人员
         Map<String, Integer> playerMap = currentGameMap.get(userId).getPlayerMap();
 
