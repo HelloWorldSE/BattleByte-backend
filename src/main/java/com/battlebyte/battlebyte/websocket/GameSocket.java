@@ -138,8 +138,6 @@ public class GameSocket {
                 } else {//假如是输
                     returnGameEnd(player, "win");
                 }
-                //清除当前比赛
-                currentGameMap.remove(player);
             }
         } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
             currentGameMap.get(uid).getHPMAP().put(uid, 0);
@@ -379,14 +377,15 @@ public class GameSocket {
             }
         }
         for (UserGameDTO userGameDTO : players) {
-            //如果是赢
-            if (userGameDTO.getTeam() == winTeamId) {
-                returnGameEnd(userGameDTO.getId(), "win");
-            } else {//假如是输
-                returnGameEnd(userGameDTO.getId(), "lose");
+            //如果还在游戏内
+            if(currentGameMap.containsKey(userGameDTO.getId())){
+                //如果是赢
+                if (userGameDTO.getTeam() == winTeamId) {
+                    returnGameEnd(userGameDTO.getId(), "win");
+                } else {//假如是输
+                    returnGameEnd(userGameDTO.getId(), "lose");
+                }
             }
-            //清楚当前比赛
-            currentGameMap.remove(userGameDTO.getId());
         }
     }
 
@@ -424,5 +423,8 @@ public class GameSocket {
         output.put("data", dataOutput);
 
         sendMsg(userId, output.toJSONString());
+
+        //清除当前比赛
+        currentGameMap.remove(userId);
     }
 }
