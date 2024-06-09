@@ -129,6 +129,8 @@ public class WebSocketServer {
                     gameSocket.onMessage_ROOM_START(data, id);
                 } else if (type.equals("ROOM_GET_INFO")) {
                     gameSocket.onMessage_ROOM_GET_INFO(data, id, uid);
+                }else if (type.equals("ROOM_INVITE")) {
+                    gameSocket.onMessage_ROOM_INVITE(data, id, uid);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
                 }

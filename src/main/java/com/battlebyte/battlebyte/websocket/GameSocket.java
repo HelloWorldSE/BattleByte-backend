@@ -233,6 +233,26 @@ public class GameSocket {
         sendMsg(uid, output.toJSONString());
     }
 
+    //邀请对方进入房间
+    public void onMessage_ROOM_INVITE(JSONObject data, int id, int uid) throws IOException {
+        //读取json文件
+        Integer roomid = data.getInteger("roomid");
+        Integer friendid = data.getInteger("friendid");
+        String type = data.getString("type");
+
+        //输出
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput = new JSONObject();
+
+        dataOutput.put("roomid", roomid);
+        dataOutput.put("friendid", uid);
+
+        output.put("type", "ROOM_INVITED");
+        output.put("data", dataOutput);
+
+        sendMsg(friendid, output.toJSONString());
+    }
+
     //房间开始游戏
     public void onMessage_ROOM_START(JSONObject data, int id) throws IOException {
         //读取json文件
