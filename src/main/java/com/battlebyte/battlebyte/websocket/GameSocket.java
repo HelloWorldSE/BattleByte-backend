@@ -378,7 +378,7 @@ public class GameSocket {
         }
         for (UserGameDTO userGameDTO : players) {
             //如果还在游戏内
-            if(currentGameMap.containsKey(userGameDTO.getId())){
+            if (currentGameMap.containsKey(userGameDTO.getId())) {
                 //如果是赢
                 if (userGameDTO.getTeam() == winTeamId) {
                     returnGameEnd(userGameDTO.getId(), "win");
@@ -424,6 +424,25 @@ public class GameSocket {
 
         sendMsg(userId, output.toJSONString());
 
+        CurrentGame currentGame = currentGameMap.get(userId);
+        //加入数据库中
+        UserGameRecord userGameRecord = gameService.findByGameIdAndUserId(currentGame.gameId, userId);
+        int rank = 0;
+        if (currentGame.getGameType() == 1) {
+            if (result.equals("win")) {
+                rank = 1;
+            } else if (result.equals("lose")) {
+                rank = 2;
+            }
+        } else if (currentGame.getGameType() == 2) {
+            Map<Integer, Integer> HPMAP = currentGame.getHPMAP();
+            for (Integer hp : HPMAP.values()) {
+                if (hp > 0) {
+                    rank++;
+                }
+            }
+        }
+        userGameRecord.setRank(rank);
         //清除当前比赛
         currentGameMap.remove(userId);
     }

@@ -273,13 +273,6 @@ public class WebSocketServer {
                                     }
                                 }
                             }
-
-
-                            //血量为0且还在同一场游戏内就结束
-                            if (HPMAP.get(userId) == 0 && currentGameMap.containsKey(userId) && currentGameMap.get(userId).getGameId() == currentGame.getGameId()) {
-                                gameSocket.returnGameEnd(userId, "win");
-                            }
-
                         }
                     }
 
@@ -287,9 +280,15 @@ public class WebSocketServer {
                     int tmp = -100;
                     int count = 0;
                     for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-                        if (entry.getValue() > 0) {
+                        int userId = entry.getKey();
+                        int hp = entry.getValue();
+                        if (hp > 0) {
                             count++;
-                            tmp = entry.getKey();
+                            tmp = userId;
+                        }
+                        //血量为0且还在同一场游戏内就结束
+                        if (hp == 0 && currentGameMap.containsKey(userId) && currentGameMap.get(userId).getGameId() == currentGame.getGameId()) {
+                            gameSocket.returnGameEnd(userId, "lose");
                         }
                     }
                     if (count == 1) {
