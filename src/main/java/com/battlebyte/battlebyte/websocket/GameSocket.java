@@ -188,9 +188,34 @@ public class GameSocket {
         Integer roomid = data.getInteger("roomid");
         String type = data.getString("type");
 
+        //如果不存在房间
+        if (!isRoom(roomid)) {
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput = new JSONObject();
+
+            dataOutput.put("ack", id);
+            dataOutput.put("msg", "不存在该房间");
+
+            output.put("type", "ERROR");
+            output.put("data", dataOutput);
+
+            sendMsg(uid, output.toJSONString());
+        }
         //修改人
         if (type.equals("in")) {
-            addUserInRoom(roomid, uid);
+            if (getRoomUsersId(roomid).size() == 8) {
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("ack", id);
+                dataOutput.put("msg", "该房间人已满");
+
+                output.put("type", "ERROR");
+                output.put("data", dataOutput);
+
+                sendMsg(uid, output.toJSONString());
+            } else
+                addUserInRoom(roomid, uid);
         } else if (type.equals("out")) {
             delUserInRoom(roomid, uid);
         }
@@ -310,6 +335,11 @@ public class GameSocket {
         }
     }
 
+    //返回是否存在房间
+    public boolean isRoom(int roomId) {
+        return roomService.findRoomById(roomId) != null;
+    }
+
     //返回房间内所有userId
     public ArrayList<Integer> getRoomUsersId(int roomId) {
         Room room = roomService.findRoomById(roomId);
@@ -324,7 +354,7 @@ public class GameSocket {
         return users;
     }
 
-    //返回房间内所有userId
+    //返回房间内所有userName
     public ArrayList<String> getRoomUsersName(int roomId) {
         Room room = roomService.findRoomById(roomId);
         int gameId = room.getGameId();
@@ -337,7 +367,7 @@ public class GameSocket {
         return users;
     }
 
-    //返回房间内所有userId
+    //返回房间内所有user头像
     public ArrayList<String> getRoomUsersAvatar(int roomId) {
         Room room = roomService.findRoomById(roomId);
         int gameId = room.getGameId();
