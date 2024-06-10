@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/user/friend")
 public class FriendController {
@@ -31,7 +33,7 @@ public class FriendController {
 
     // 发送好友申请
     @PostMapping("/add-apply")
-    public void addFriend(@RequestBody Integer dest) {
+    public void addFriend(@RequestBody Integer dest) throws IOException {
         friendService.addFriend(dest);
         new WebSocketServer().sendFriendInvitation(JwtUtil.getUserId(), dest);
     }
