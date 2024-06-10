@@ -15,4 +15,7 @@ public interface RoomDao extends JpaRepository<Room, Integer> {
 
     @Query(value = "select * from room where status = ?2 and exists(select * from user_game_record where user_game_record.user_id = ?1 and room.game_id = user_game_record.game_id)", nativeQuery = true)
     public List<Room> findAllByUserAndStatus(Integer userid, Integer status);
+
+    // TODO: 只有一个？
+    public Room findByGameId(Integer gid);
 }
