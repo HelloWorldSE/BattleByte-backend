@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RoomService {
     @Autowired
@@ -60,6 +62,10 @@ public class RoomService {
             return roomDao.findAll(pageable);
         }
         return roomDao.findAllByStatus(status, pageable);
+    }
+
+    public List<Room> findRoomByUserAndStatus(Integer userid, Integer status) {
+        return roomDao.findAllByUserAndStatus(userid, status);
     }
 
     public Room findRoomById(Integer id) {

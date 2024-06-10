@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api/room")
 @RestController
 public class RoomController {
@@ -36,6 +38,12 @@ public class RoomController {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         return roomService.findRoomByStatus(status, pageable);
     }
+
+    @GetMapping("/myroom")
+    public List<Room> findRoomByUserAndStatus(@RequestParam(defaultValue = "0") Integer status) {
+        return roomService.findRoomByUserAndStatus(JwtUtil.getUserId(), status);
+    }
+
 
     @GetMapping("/id")
     public Room findRoomById(@RequestParam(defaultValue = "-1") Integer id) {
