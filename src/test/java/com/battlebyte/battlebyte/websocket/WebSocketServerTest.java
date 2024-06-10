@@ -28,14 +28,14 @@ import java.util.Map;
 @Slf4j
 public class WebSocketServerTest {
     public WebSocketServerTest() {
-    
+
     }
-    
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
-    
+
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -44,7 +44,7 @@ public class WebSocketServerTest {
     }
 
 // ...  等等
-    
+
     /**
      * 创建 WebSocket 的客户端做测试
      *
@@ -61,37 +61,37 @@ public class WebSocketServerTest {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
         }
-        
+
         JSONObject output_LOGIN_REQ = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ = new JSONObject();
         dataOutput_LOGIN_REQ.put("token", 1);
         output_LOGIN_REQ.put("type", "LOGIN_REQ");
         output_LOGIN_REQ.put("data", dataOutput_LOGIN_REQ);
         output_LOGIN_REQ.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ2 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ2 = new JSONObject();
         dataOutput_LOGIN_REQ2.put("token", 2);
         output_LOGIN_REQ2.put("type", "LOGIN_REQ");
         output_LOGIN_REQ2.put("data", dataOutput_LOGIN_REQ2);
         output_LOGIN_REQ2.put("id", "1");
-        
+
         JSONObject output_MATCH_REQ = new JSONObject();
         JSONObject dataOutput_MATCH_REQ = new JSONObject();
         dataOutput_MATCH_REQ.put("type", 1);
         output_MATCH_REQ.put("type", "MATCH_REQ");
         output_MATCH_REQ.put("data", dataOutput_MATCH_REQ);
         output_MATCH_REQ.put("id", "1");
-        
+
         myWebSocketClient1.send(output_LOGIN_REQ.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
         myWebSocketClient1.send(output_MATCH_REQ.toJSONString());
-        
+
         myWebSocketClient2.send(output_LOGIN_REQ2.toJSONString());
         Thread.sleep(500);
         myWebSocketClient2.send(output_MATCH_REQ.toJSONString());
         Thread.sleep(3000); // 等待MATCH_START
-        
+
         JSONObject output_CHAT_REQ = new JSONObject();
         JSONObject dataOutput_CHAT_REQ = new JSONObject();
         dataOutput_CHAT_REQ.put("type", "global"); // MATCH_START后才可以发送该类型请求
@@ -99,7 +99,7 @@ public class WebSocketServerTest {
         output_CHAT_REQ.put("type", "CHAT_REQ");
         output_CHAT_REQ.put("data", dataOutput_CHAT_REQ);
         output_CHAT_REQ.put("id", "1");
-        
+
         JSONObject output_CHAT_REQ2 = new JSONObject();
         JSONObject dataOutput_CHAT_REQ2 = new JSONObject();
         dataOutput_CHAT_REQ2.put("type", "team"); // MATCH_START后才可以发送该类型请求
@@ -109,7 +109,7 @@ public class WebSocketServerTest {
         output_CHAT_REQ2.put("id", "1");
         myWebSocketClient1.send(output_CHAT_REQ.toJSONString());
         myWebSocketClient1.send(output_CHAT_REQ2.toJSONString());
-        
+
         JSONObject output_POS_UPDATE = new JSONObject();
         JSONObject dataOutput_POS_UPDATE = new JSONObject();
         dataOutput_POS_UPDATE.put("row", "2");
@@ -120,7 +120,7 @@ public class WebSocketServerTest {
         output_POS_UPDATE.put("id", "1");
         myWebSocketClient1.send(output_POS_UPDATE.toJSONString());
         Thread.sleep(1000);
-        
+
         JSONObject output_ANSWER_REFRESH = new JSONObject();
         JSONObject dataOutput_ANSWER_REFRESH = new JSONObject();
         dataOutput_ANSWER_REFRESH.put("submit_id", "5cb27cbb60bdcf0ab6a4ddad2412d4e7"); // MATCH_START后才可以发送该类型请求
@@ -128,12 +128,12 @@ public class WebSocketServerTest {
         output_ANSWER_REFRESH.put("data", dataOutput_ANSWER_REFRESH);
         output_ANSWER_REFRESH.put("id", "1");
         myWebSocketClient1.send(output_ANSWER_REFRESH.toJSONString());
-        
-        
+
+
         Thread.sleep(5000); // 需要等待 游戏匹配需要时间
-        
+
     }
-    
+
     @Test
     public void gameTwo() throws Exception { // 该局以玩家3的投降结束，具体指SURRENDER请求
         MyWebSocketClient myWebSocketClient1 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 3); // client能和server通信，主要通过这个url，能找到彼此
@@ -144,37 +144,37 @@ public class WebSocketServerTest {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
         }
-        
+
         JSONObject output_LOGIN_REQ = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ = new JSONObject();
         dataOutput_LOGIN_REQ.put("token", 1);
         output_LOGIN_REQ.put("type", "LOGIN_REQ");
         output_LOGIN_REQ.put("data", dataOutput_LOGIN_REQ);
         output_LOGIN_REQ.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ2 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ2 = new JSONObject();
         dataOutput_LOGIN_REQ2.put("token", 2);
         output_LOGIN_REQ2.put("type", "LOGIN_REQ");
         output_LOGIN_REQ2.put("data", dataOutput_LOGIN_REQ2);
         output_LOGIN_REQ2.put("id", "1");
-        
+
         JSONObject output_MATCH_REQ = new JSONObject();
         JSONObject dataOutput_MATCH_REQ = new JSONObject();
         dataOutput_MATCH_REQ.put("type", 1);
         output_MATCH_REQ.put("type", "MATCH_REQ");
         output_MATCH_REQ.put("data", dataOutput_MATCH_REQ);
         output_MATCH_REQ.put("id", "1");
-        
+
         myWebSocketClient1.send(output_LOGIN_REQ.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
         myWebSocketClient1.send(output_MATCH_REQ.toJSONString());
-        
+
         myWebSocketClient2.send(output_LOGIN_REQ2.toJSONString());
         Thread.sleep(500);
         myWebSocketClient2.send(output_MATCH_REQ.toJSONString());
         Thread.sleep(3000); // 等待MATCH_START
-        
+
         JSONObject output_ITEM_SEND = new JSONObject();
         JSONObject dataOutput_ITEM_SEND = new JSONObject();
         dataOutput_ITEM_SEND.put("type", "tomato");
@@ -182,7 +182,7 @@ public class WebSocketServerTest {
         output_ITEM_SEND.put("data", dataOutput_ITEM_SEND);
         output_ITEM_SEND.put("id", "1");
         myWebSocketClient1.send(output_ITEM_SEND.toJSONString());
-        
+
         JSONObject output_ITEM_SEND2 = new JSONObject();
         JSONObject dataOutput_ITEM_SEND2 = new JSONObject();
         dataOutput_ITEM_SEND2.put("type", "tomato3");
@@ -191,7 +191,7 @@ public class WebSocketServerTest {
         output_ITEM_SEND2.put("id", "1");
         myWebSocketClient2.send(output_ITEM_SEND2.toJSONString());
         Thread.sleep(1000);
-        
+
         JSONObject output_SURRENDER = new JSONObject();
         JSONObject dataOutput_SURRENDER = new JSONObject();
         output_SURRENDER.put("type", "SURRENDER");
@@ -200,41 +200,41 @@ public class WebSocketServerTest {
         myWebSocketClient1.send(output_SURRENDER.toJSONString());
         Thread.sleep(5000);
     }
-    
+
     @Transactional
     @Test
     @Rollback()
     public void roomTest() throws Exception { // 经测试，room_request的out无法移除房间内用户
         MyWebSocketClient myWebSocketClient2 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 2); // client能和server通信，主要通过这个url，能找到彼此
         myWebSocketClient2.connect();
-        
+
         MyWebSocketClient myWebSocketClient1 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 5); // client能和server通信，主要通过这个url，能找到彼此
         myWebSocketClient1.connect();
         while (!myWebSocketClient1.getReadyState().equals(ReadyState.OPEN)) {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
         }
-        
+
         JSONObject output_LOGIN_REQ = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ = new JSONObject();
         dataOutput_LOGIN_REQ.put("token", 1);
         output_LOGIN_REQ.put("type", "LOGIN_REQ");
         output_LOGIN_REQ.put("data", dataOutput_LOGIN_REQ);
         output_LOGIN_REQ.put("id", "1");
-        
+
         myWebSocketClient1.send(output_LOGIN_REQ.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
-        
+
         JSONObject output_LOGIN_REQ2 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ2 = new JSONObject();
         dataOutput_LOGIN_REQ2.put("token", 2);  // 2号id在之前的测试中已存在多个房间内，包括本函数测试的15号房间，所以不需要发room_request也在房间内
         output_LOGIN_REQ2.put("type", "LOGIN_REQ");
         output_LOGIN_REQ2.put("data", dataOutput_LOGIN_REQ2);
         output_LOGIN_REQ2.put("id", "1");
-        
+
         myWebSocketClient2.send(output_LOGIN_REQ2.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
-        
+
         JSONObject output_ROOM_REQUEST = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST = new JSONObject();
         dataOutput_ROOM_REQUEST.put("roomid", 15);
@@ -244,7 +244,7 @@ public class WebSocketServerTest {
         output_ROOM_REQUEST.put("id", "1");
         myWebSocketClient1.send(output_ROOM_REQUEST.toJSONString());
         Thread.sleep(500);
-        
+
         JSONObject output_ROOM_REQUEST2 = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST2 = new JSONObject();
         dataOutput_ROOM_REQUEST2.put("roomid", 15);
@@ -254,10 +254,10 @@ public class WebSocketServerTest {
         output_ROOM_REQUEST2.put("id", "1");
         myWebSocketClient1.send(output_ROOM_REQUEST2.toJSONString());
         Thread.sleep(500);
-        
+
         Thread.sleep(5000);
     }
-    
+
     @Transactional
     @Test
     @Rollback()
@@ -283,63 +283,63 @@ public class WebSocketServerTest {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
         }
-        
+
         JSONObject output_LOGIN_REQ = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ = new JSONObject();
         dataOutput_LOGIN_REQ.put("token", 1);
         output_LOGIN_REQ.put("type", "LOGIN_REQ");
         output_LOGIN_REQ.put("data", dataOutput_LOGIN_REQ);
         output_LOGIN_REQ.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ2 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ2 = new JSONObject();
         dataOutput_LOGIN_REQ2.put("token", 2);
         output_LOGIN_REQ2.put("type", "LOGIN_REQ");
         output_LOGIN_REQ2.put("data", dataOutput_LOGIN_REQ2);
         output_LOGIN_REQ2.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ3 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ3 = new JSONObject();
         dataOutput_LOGIN_REQ3.put("token", 3);
         output_LOGIN_REQ3.put("type", "LOGIN_REQ");
         output_LOGIN_REQ3.put("data", dataOutput_LOGIN_REQ3);
         output_LOGIN_REQ3.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ4 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ4 = new JSONObject();
         dataOutput_LOGIN_REQ4.put("token", 4);
         output_LOGIN_REQ4.put("type", "LOGIN_REQ");
         output_LOGIN_REQ4.put("data", dataOutput_LOGIN_REQ4);
         output_LOGIN_REQ4.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ5 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ5 = new JSONObject();
         dataOutput_LOGIN_REQ5.put("token", 5);
         output_LOGIN_REQ5.put("type", "LOGIN_REQ");
         output_LOGIN_REQ5.put("data", dataOutput_LOGIN_REQ5);
         output_LOGIN_REQ5.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ6 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ6 = new JSONObject();
         dataOutput_LOGIN_REQ6.put("token", 6);
         output_LOGIN_REQ6.put("type", "LOGIN_REQ");
         output_LOGIN_REQ6.put("data", dataOutput_LOGIN_REQ6);
         output_LOGIN_REQ6.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ7 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ7 = new JSONObject();
         dataOutput_LOGIN_REQ7.put("token", 7);
         output_LOGIN_REQ7.put("type", "LOGIN_REQ");
         output_LOGIN_REQ7.put("data", dataOutput_LOGIN_REQ7);
         output_LOGIN_REQ7.put("id", "1");
-        
+
         JSONObject output_LOGIN_REQ8 = new JSONObject();
         JSONObject dataOutput_LOGIN_REQ8 = new JSONObject();
         dataOutput_LOGIN_REQ8.put("token", 8);
         output_LOGIN_REQ8.put("type", "LOGIN_REQ");
         output_LOGIN_REQ8.put("data", dataOutput_LOGIN_REQ8);
         output_LOGIN_REQ8.put("id", "1");
-        
+
         myWebSocketClient1.send(output_LOGIN_REQ.toJSONString());
         Thread.sleep(500); // 需要等待server端给client发回信息，不能让client提前结束
         myWebSocketClient2.send(output_LOGIN_REQ2.toJSONString());
@@ -356,7 +356,7 @@ public class WebSocketServerTest {
         Thread.sleep(500);
         myWebSocketClient8.send(output_LOGIN_REQ8.toJSONString());
         Thread.sleep(500);
-        
+
         JSONObject output_ROOM_REQUEST_OUT = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST_OUT = new JSONObject();
         dataOutput_ROOM_REQUEST_OUT.put("roomid", 30);
@@ -380,7 +380,7 @@ public class WebSocketServerTest {
         Thread.sleep(500);
         myWebSocketClient8.send(output_ROOM_REQUEST_OUT.toJSONString());
         Thread.sleep(500);
-        
+
         JSONObject output_ROOM_REQUEST = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST = new JSONObject();
         dataOutput_ROOM_REQUEST.put("roomid", 30);
@@ -404,7 +404,7 @@ public class WebSocketServerTest {
         Thread.sleep(500);
         myWebSocketClient8.send(output_ROOM_REQUEST.toJSONString());
         Thread.sleep(500);
-        
+
         JSONObject output_ROOM_GET_INFO = new JSONObject();
         JSONObject dataOutput_ROOM_GET_INFO = new JSONObject();
         dataOutput_ROOM_GET_INFO.put("roomid", 30);
@@ -413,7 +413,7 @@ public class WebSocketServerTest {
         output_ROOM_GET_INFO.put("id", "1");
         myWebSocketClient1.send(output_ROOM_GET_INFO.toJSONString());
         Thread.sleep(1000);
-        
+
         JSONObject output_ROOM_START = new JSONObject();
         JSONObject dataOutput_ROOM_START = new JSONObject();
         dataOutput_ROOM_START.put("roomid", 30);

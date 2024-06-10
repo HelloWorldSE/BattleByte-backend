@@ -129,6 +129,10 @@ public class WebSocketServer {
                     gameSocket.onMessage_ROOM_START(data, id);
                 } else if (type.equals("ROOM_GET_INFO")) {
                     gameSocket.onMessage_ROOM_GET_INFO(data, id, uid);
+                } else if (type.equals("ROOM_INVITE")) {
+                    gameSocket.onMessage_ROOM_INVITE(data, id, uid);
+                } else if (type.equals("ROOM_KICK")) {
+                    gameSocket.onMessage_ROOM_KICK(data, id, uid);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
                 }
@@ -180,28 +184,27 @@ public class WebSocketServer {
         //如果上局比赛没结束
         if (currentGameMap.containsKey(uid)) {
             CurrentGame currentGame = currentGameMap.get(uid);
-            JSONObject output_MATCH_ENTER = new JSONObject();
-            JSONObject dataOutput_MATCH_ENTER = new JSONObject();
-            JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
-            infoOutput_MATCH_ENTER.put("questionId", currentGame.getQuestionId());
-            infoOutput_MATCH_ENTER.put("currentQuestion", currentGame.getCurrentQuestion());
-
-            dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
-            dataOutput_MATCH_ENTER.put("playerMap", currentGame.getPlayerMap());
-            dataOutput_MATCH_ENTER.put("acMap", currentGame.getAc());
-            dataOutput_MATCH_ENTER.put("hpMap", currentGame.getHP());
-
-            output_MATCH_ENTER.put("type", "MATCH_ENTER");
-            output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
-            //webSocketMap.get(uid).sendMsg(output_MATCH_ENTER.toJSONString());
-            sendMsg(uid, output_MATCH_ENTER.toJSONString());
+            return_MATCH_ENTER(uid, currentGame.getQuestionId(), currentGame.getPlayerMap(), currentGame);
         }
     }
 
+    //收到好友申请
+    public void sendFriendInvitation(int fromId, int toId) throws IOException {
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput = new JSONObject();
+
+        dataOutput.put("friendid", fromId);
+
+        output.put("type", "FRIEND_INVITATION");
+        output.put("data", dataOutput);
+
+        sendMsg(toId, output.toJSONString());
+    }
+
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
-        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, gameId, currentGame);
+    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, CurrentGame currentGame) throws IOException {
+        matchSocket.return_MATCH_ENTER(userId, questionId, playerMap, currentGame);
     }
 
 
@@ -272,34 +275,37 @@ public class WebSocketServer {
                             List<UserGameDTO> players = gameService.getPlayer(gameId);
                             if (difference != 0) {
                                 for (UserGameDTO userGameDTO : players) {
-                                    //输出逻辑
-                                    JSONObject output = new JSONObject();
-                                    JSONObject dataOutput = new JSONObject();
+                                    //如果对方还在同一局游戏内
+                                    if (currentGameMap.containsKey(userGameDTO.getId()) && currentGameMap.get(userGameDTO.getId()).getGameId() == currentGame.getGameId()) {
+                                        //输出逻辑
+                                        JSONObject output = new JSONObject();
+                                        JSONObject dataOutput = new JSONObject();
 
-                                    dataOutput.put("change_id", userId);
-                                    dataOutput.put("hp", max(hpValue - difference, 0));
+                                        dataOutput.put("change_id", userId);
+                                        dataOutput.put("hp", max(hpValue - difference, 0));
 
-                                    output.put("type", "HP_CHANGE");
-                                    output.put("data", dataOutput);
-                                    sendMsg(userGameDTO.getId(), output.toJSONString());
-
+                                        output.put("type", "HP_CHANGE");
+                                        output.put("data", dataOutput);
+                                        sendMsg(userGameDTO.getId(), output.toJSONString());
+                                    }
                                 }
                             }
                         }
                     }
 
-//                    // 打印更新后的HPMAP
-//                    for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-//                        System.out.println("id: " + entry.getKey() + ", hp: " + entry.getValue());
-//                    }
-
                     //判断是否结束
                     int tmp = -100;
                     int count = 0;
                     for (Map.Entry<Integer, Integer> entry : HPMAP.entrySet()) {
-                        if (entry.getValue() > 0) {
+                        int userId = entry.getKey();
+                        int hp = entry.getValue();
+                        if (hp > 0) {
                             count++;
-                            tmp = entry.getKey();
+                            tmp = userId;
+                        }
+                        //血量为0且还在同一场游戏内就结束
+                        if (hp == 0 && currentGameMap.containsKey(userId) && currentGameMap.get(userId).getGameId() == currentGame.getGameId()) {
+                            gameSocket.returnGameEnd(userId, "lose");
                         }
                     }
                     if (count == 1) {

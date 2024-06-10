@@ -71,7 +71,7 @@ public class MatchSocket {
     }
 
     //匹配成功
-    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, int gameId, CurrentGame currentGame) throws IOException {
+    public static void return_MATCH_ENTER(int userId, ArrayList<Integer> questionId, Map<String, Integer> playerMap, CurrentGame currentGame) throws IOException {
         //更新信息
         //输出逻辑
         JSONObject output_MATCH_ENTER = new JSONObject();
@@ -79,12 +79,13 @@ public class MatchSocket {
         JSONObject infoOutput_MATCH_ENTER = new JSONObject();
 
         infoOutput_MATCH_ENTER.put("questionId", questionId);
-        infoOutput_MATCH_ENTER.put("currentQuestion", 0);
+        infoOutput_MATCH_ENTER.put("currentQuestion", currentGame.getCurrentQuestion());
 
         dataOutput_MATCH_ENTER.put("info", infoOutput_MATCH_ENTER);
         dataOutput_MATCH_ENTER.put("playerMap", playerMap);
         dataOutput_MATCH_ENTER.put("acMap", currentGame.getAc());
         dataOutput_MATCH_ENTER.put("hpMap", currentGame.getHP());
+        dataOutput_MATCH_ENTER.put("nameMap",currentGame.getName());
 
         output_MATCH_ENTER.put("type", "MATCH_ENTER");
         output_MATCH_ENTER.put("data", dataOutput_MATCH_ENTER);
