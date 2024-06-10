@@ -129,7 +129,7 @@ public class WebSocketServer {
                     gameSocket.onMessage_ROOM_START(data, id);
                 } else if (type.equals("ROOM_GET_INFO")) {
                     gameSocket.onMessage_ROOM_GET_INFO(data, id, uid);
-                }else if (type.equals("ROOM_INVITE")) {
+                } else if (type.equals("ROOM_INVITE")) {
                     gameSocket.onMessage_ROOM_INVITE(data, id, uid);
                 } else if (type.equals("TEST_AC_QUESTION")) {
                     test_AC_QUESTION(data, id);
@@ -185,6 +185,19 @@ public class WebSocketServer {
 
             return_MATCH_ENTER(uid, currentGame.getQuestionId(), currentGame.getPlayerMap(), currentGame);
         }
+    }
+
+    //收到好友申请
+    public void sendFriendInvitation(int fromId, int toId) throws IOException {
+        JSONObject output = new JSONObject();
+        JSONObject dataOutput = new JSONObject();
+
+        dataOutput.put("friendid", fromId);
+
+        output.put("type", "FRIEND_INVITATION");
+        output.put("data", dataOutput);
+
+        sendMsg(toId, output.toJSONString());
     }
 
     //匹配成功
