@@ -7,6 +7,7 @@ import com.battlebyte.battlebyte.entity.dto.UserInfoDTO;
 import com.battlebyte.battlebyte.service.FriendService;
 import com.battlebyte.battlebyte.service.UserService;
 import com.battlebyte.battlebyte.util.JwtUtil;
+import com.battlebyte.battlebyte.websocket.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,11 +29,14 @@ public class FriendController {
         return friendService.getFriend(id, name, JwtUtil.getUserId(), pageable);
     }
 
+    // 发送好友申请
     @PostMapping("/add-apply")
     public void addFriend(@RequestBody Integer dest) {
         friendService.addFriend(dest);
+        new WebSocketServer().sendFriendInvitation(JwtUtil.getUserId(), dest);
     }
 
+    // 获取所有好友申请
     @GetMapping("/apply")
     public Page<FriendDTO> getFriendApplications(@RequestParam(defaultValue = "0") Integer id, @RequestParam(defaultValue = "") String name,
                                                    @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
