@@ -7,6 +7,7 @@ import com.battlebyte.battlebyte.dao.UserGameRecordDao;
 import com.battlebyte.battlebyte.entity.*;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
+import com.battlebyte.battlebyte.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -140,7 +142,8 @@ public class GameService {
     /* ------------------  权限判断  -------------------- */
     public boolean inGame(Integer uid, Integer gameId) {
         try {
-            return userGameRecordDao.findByGameIdAndUserId(gameId, uid) != null;
+            Room room = roomDao.findByGameId(gameId);
+            return Objects.equals(room.getUid(), uid);
         } catch (Exception e) {
             return false;
         }
@@ -149,10 +152,12 @@ public class GameService {
     public boolean inRoom(Integer uid, Integer roomId) {
         try {
             Room room = roomDao.findById(roomId).orElse(null);
-            return inGame(uid, room.getGameId());
+            if (room != null) {
+                return room.getUid() == JwtUtil.getUserId();
+            }
         } catch (Exception e) {
             return false;
         }
-
+        return false;
     }
 }
