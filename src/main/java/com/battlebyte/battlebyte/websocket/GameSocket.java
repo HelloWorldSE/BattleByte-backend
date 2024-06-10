@@ -217,7 +217,20 @@ public class GameSocket {
             } else
                 addUserInRoom(roomid, uid);
         } else if (type.equals("out")) {
-            delUserInRoom(roomid, uid);
+
+            if (!getRoomUsersId(roomid).contains(uid)) {
+                JSONObject output = new JSONObject();
+                JSONObject dataOutput = new JSONObject();
+
+                dataOutput.put("ack", id);
+                dataOutput.put("msg", "该user不在该房间内");
+
+                output.put("type", "ERROR");
+                output.put("data", dataOutput);
+
+                sendMsg(uid, output.toJSONString());
+            } else
+                delUserInRoom(roomid, uid);
         }
 
         //输出
@@ -276,6 +289,53 @@ public class GameSocket {
         output.put("data", dataOutput);
 
         sendMsg(friendid, output.toJSONString());
+    }
+
+    //房主将对方踢出房间
+    public void onMessage_ROOM_KICK(JSONObject data, int id, int uid) throws IOException {
+        //读取json文件
+        Integer roomid = data.getInteger("roomid");
+        Integer userid = data.getInteger("userid");
+
+        //如果不存在房间
+        if (!isRoom(roomid)) {
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput = new JSONObject();
+
+            dataOutput.put("ack", id);
+            dataOutput.put("msg", "不存在该房间");
+
+            output.put("type", "ERROR");
+            output.put("data", dataOutput);
+
+            sendMsg(uid, output.toJSONString());
+        } else if (!getRoomUsersId(roomid).contains(userid)) {
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput = new JSONObject();
+
+            dataOutput.put("ack", id);
+            dataOutput.put("msg", "该user不在该房间内");
+
+            output.put("type", "ERROR");
+            output.put("data", dataOutput);
+
+            sendMsg(uid, output.toJSONString());
+        } else {
+            delUserInRoom(roomid, userid);
+            //输出
+            JSONObject output = new JSONObject();
+            JSONObject dataOutput = new JSONObject();
+
+            dataOutput.put("roomid", roomid);
+            dataOutput.put("users", getRoomUsersId(roomid));
+            dataOutput.put("username", getRoomUsersName(roomid));
+            dataOutput.put("avatarUrl", getRoomUsersAvatar(roomid));
+
+            output.put("type", "ROOM_REFRESH");
+            output.put("data", dataOutput);
+
+            sendMsg(uid, output.toJSONString());
+        }
     }
 
     //房间开始游戏
