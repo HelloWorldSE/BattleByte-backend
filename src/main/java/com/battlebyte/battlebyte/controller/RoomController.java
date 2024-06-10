@@ -17,13 +17,13 @@ public class RoomController {
     private RoomService roomService;
 
     @PostMapping("/add")
-    public void addRoom(@RequestBody Room room) {
-        roomService.addRoom(room);
+    public Room addRoom(@RequestBody Room room) {
+        return roomService.addRoom(room);
     }
 
     @PostMapping("update")
-    public void updateRoom(@RequestBody Room room) {
-        roomService.updateRoom(room);
+    public Room updateRoom(@RequestBody Room room) {
+        return roomService.updateRoom(room);
     }
 
     /**

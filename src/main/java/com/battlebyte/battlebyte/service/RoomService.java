@@ -22,24 +22,24 @@ public class RoomService {
 
     @Modifying
     @Transactional
-    public void addRoom(Room room) {
+    public Room addRoom(Room room) {
         room.setId(null);
         room.setStatus(0);
         room.setUid(JwtUtil.getUserId());
         Game game = gameService.addBlankGame();
         room.setGameId(game.getId());
-        roomDao.save(room);
+        return roomDao.save(room);
     }
 
     @Modifying
     @Transactional
-    public void updateRoom(Room room) {
+    public Room updateRoom(Room room) {
         if (findHolder(room.getId()) != JwtUtil.getUserId()) {
             throw new ServiceException("对该房间没有更改权限");
         }
         room.setUid(null);
         room.setStatus(null);
-        roomDao.save(room);
+        return roomDao.save(room);
     }
 
     // 注意：这个方法不开放给controller！如果想要更新房间的所有信息，使用这个update！
