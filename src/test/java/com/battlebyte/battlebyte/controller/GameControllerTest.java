@@ -111,7 +111,7 @@ class GameControllerTest {
     void getGame() throws Exception {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/game")
-                .param("id","1")
+                .param("id", "1")
                 .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
         );
         resultActions.andReturn().getResponse().setCharacterEncoding("UTF-8");
@@ -132,6 +132,20 @@ class GameControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/game/update-record")
                         .content(json.getBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+    
+    @Transactional
+    @Rollback()
+    @Test
+    void gameAddBatch() throws Exception {
+        String res = "[954,955,956,957,958]";
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/game/gameaddbatch")
+                        .content(res)
+                        .param("id", "30")
                         .header("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI3MjA4MjMsInVzZXJJZCI6MX0.rC0g8WEjYYWOr1pquxRg6tx5sXwZmo-v4091f_Ci-kU")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())

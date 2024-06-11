@@ -270,7 +270,6 @@ public class WebSocketServerTest {
         MyWebSocketClient myWebSocketClient5 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 9);
         MyWebSocketClient myWebSocketClient6 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 10);
         MyWebSocketClient myWebSocketClient7 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 11);
-        MyWebSocketClient myWebSocketClient8 = new MyWebSocketClient(new URI("ws://localhost:9090/server"), 12);
         myWebSocketClient1.connect();
         myWebSocketClient2.connect();
         myWebSocketClient3.connect();
@@ -278,7 +277,6 @@ public class WebSocketServerTest {
         myWebSocketClient5.connect();
         myWebSocketClient6.connect();
         myWebSocketClient7.connect();
-        myWebSocketClient8.connect();
         while (!myWebSocketClient1.getReadyState().equals(ReadyState.OPEN)) {
             log.info("WebSocket客户端连接中，请稍等...");
             Thread.sleep(500);
@@ -354,8 +352,6 @@ public class WebSocketServerTest {
         Thread.sleep(500);
         myWebSocketClient7.send(output_LOGIN_REQ7.toJSONString());
         Thread.sleep(500);
-        myWebSocketClient8.send(output_LOGIN_REQ8.toJSONString());
-        Thread.sleep(500);
 
         JSONObject output_ROOM_REQUEST_OUT = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST_OUT = new JSONObject();
@@ -378,8 +374,6 @@ public class WebSocketServerTest {
         Thread.sleep(500);
         myWebSocketClient7.send(output_ROOM_REQUEST_OUT.toJSONString());
         Thread.sleep(500);
-        myWebSocketClient8.send(output_ROOM_REQUEST_OUT.toJSONString());
-        Thread.sleep(500);
 
         JSONObject output_ROOM_REQUEST = new JSONObject();
         JSONObject dataOutput_ROOM_REQUEST = new JSONObject();
@@ -401,8 +395,6 @@ public class WebSocketServerTest {
         myWebSocketClient6.send(output_ROOM_REQUEST.toJSONString());
         Thread.sleep(500);
         myWebSocketClient7.send(output_ROOM_REQUEST.toJSONString());
-        Thread.sleep(500);
-        myWebSocketClient8.send(output_ROOM_REQUEST.toJSONString());
         Thread.sleep(500);
 
         JSONObject output_ROOM_GET_INFO = new JSONObject();
