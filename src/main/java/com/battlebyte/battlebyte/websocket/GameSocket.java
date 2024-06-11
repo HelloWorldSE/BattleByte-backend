@@ -89,7 +89,7 @@ public class GameSocket {
                 if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
                     winTeam(uid);
                 } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
-                    acQuestion(uid);
+                    acQuestion(uid,dataResult.getInteger("problem"));
                 }
             }
         }
@@ -501,14 +501,25 @@ public class GameSocket {
     }
 
     //某个玩家AC了。
-    public void acQuestion(int userId) throws IOException {
+    public void acQuestion(int userId, int questionIdBig) throws IOException {
         CurrentGame currentGame = currentGameMap.get(userId);
-        currentGame.getAcMAP().put(userId, currentGame.getAcMAP().get(userId) + 1);
+
+        //如果不包含用户，创建
+        if (!currentGame.getAcRecord().containsKey(userId)) {
+            ArrayList<Integer> acQuestions = new ArrayList<>();
+            currentGame.getAcRecord().put(userId, acQuestions);
+        }
+        //加入ac的题目
+        if (!currentGame.getAcRecord().get(userId).contains(questionIdBig)) {
+            currentGame.getAcRecord().get(userId).add(questionIdBig);
+        }
+        currentGame.getAcMAP().put(userId, currentGame.getAcRecord().get(userId).size());
+
         if (currentGame.getAcMAP().get(userId) > currentGame.getCurrentQuestion())
             currentGame.setCurrentQuestion(currentGame.getAcMAP().get(userId));
 
-        //如果第五题了直接结束
-        if (currentGame.getCurrentQuestion() == 6) {
+        //如果题目做完了直接结束
+        if (currentGame.getCurrentQuestion() == currentGame.getQuestionId().size()) {
             winTeam(userId);
             return;
         }
