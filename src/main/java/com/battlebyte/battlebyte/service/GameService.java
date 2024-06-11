@@ -124,6 +124,10 @@ public class GameService {
         userGameRecordDao.deleteByGameIdAndUserId(gameId, userId);
     }
 
+    public void deleteByGameIdAndQuestionId(Integer gid, Integer qid) {
+        gameQuestionDao.deleteByGameIdAndQuestionId(gid, qid);
+    }
+
     public UserGameRecord findByGameIdAndUserId(Integer gameId, Integer userId) {
         return userGameRecordDao.findByGameIdAndUserId(gameId, userId);
     }

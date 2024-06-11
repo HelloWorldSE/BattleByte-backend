@@ -77,6 +77,14 @@ public class GameController {
         return gameService.findByGameId(id);
     }
 
+    @DeleteMapping("/delquestion/{id}")
+    public void delQuestion(@RequestParam Integer gid, @PathVariable("id") Integer qid) {
+        if (!gameService.inGame(JwtUtil.getUserId(), qid)) {
+            throw new ServiceException("无权限");
+        }
+        gameService.deleteByGameIdAndQuestionId(gid, qid);
+    }
+
     /* ----------  */
 
     private GameQuestionRecord transform(Integer gameId, Integer id) {
