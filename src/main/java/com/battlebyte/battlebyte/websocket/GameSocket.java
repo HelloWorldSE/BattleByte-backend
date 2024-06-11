@@ -347,7 +347,7 @@ public class GameSocket {
 
         //todo:修改currentGameMap+返回MatchEnter,数据库增加teamId
         ArrayList<Integer> users = getRoomUsersId(roomid);
-        if (users.size() == 7) {
+        if (users.size() > 2) {
             //增加teamId到数据库
             for (int i = 0; i < users.size(); i++) {
                 gameService.setTeam(gameId, users.get(i), i);
@@ -387,8 +387,10 @@ public class GameSocket {
                 return_MATCH_ENTER(userdId, getRoomQuestionId(roomid), playerMap, currentGame);
             }
 
+            room.setStatus(1);
+            roomService.updateRoom(room);
         } else {
-            System.out.println("Room " + roomid + " size is not 7");
+            System.out.println("Room " + roomid + " size is less than 2");
         }
     }
 
@@ -444,7 +446,7 @@ public class GameSocket {
 
         List<GameQuestionRecord> gameQuestionRecords = gameService.findByGameId(gameId);
         ArrayList<Integer> questionId = new ArrayList<>();
-        for (GameQuestionRecord gameQuestionRecord: gameQuestionRecords) {
+        for (GameQuestionRecord gameQuestionRecord : gameQuestionRecords) {
             questionId.add(gameQuestionRecord.getQuestionId());
         }
 
