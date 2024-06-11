@@ -34,8 +34,9 @@ public class FriendController {
     // 发送好友申请
     @PostMapping("/add-apply")
     public void addFriend(@RequestBody Integer dest) throws IOException {
-        friendService.addFriend(dest);
-        new WebSocketServer().sendFriendInvitation(JwtUtil.getUserId(), dest);
+        FriendApplication friendApplication = friendService.addFriend(dest);
+        String name = userService.findById(JwtUtil.getUserId()).getUserName();
+        new WebSocketServer().sendFriendInvitation(friendApplication.getId(), JwtUtil.getUserId(), dest, name);
     }
 
     // 获取所有好友申请
