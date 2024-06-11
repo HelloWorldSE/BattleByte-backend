@@ -2,12 +2,10 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.battlebyte.battlebyte.config.BeanContext;
 import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.Room;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
-import com.battlebyte.battlebyte.service.GameService;
-import com.battlebyte.battlebyte.service.MatchService;
-import com.battlebyte.battlebyte.service.OJService;
-import com.battlebyte.battlebyte.service.UserService;
+import com.battlebyte.battlebyte.service.*;
 import com.battlebyte.battlebyte.service.match.Player;
 import io.micrometer.common.util.StringUtils;
 import jakarta.websocket.*;
@@ -63,11 +61,13 @@ public class WebSocketServer {
      * OJ服务
      */
     private GameService gameService;
+    private RoomService roomService;
     private static MatchSocket matchSocket = new MatchSocket();
     private static GameSocket gameSocket = new GameSocket();
 
     public WebSocketServer() {
         gameService = BeanContext.getApplicationContext().getBean(GameService.class);
+        roomService = BeanContext.getApplicationContext().getBean(RoomService.class);
     }
 
     @OnOpen
@@ -85,6 +85,11 @@ public class WebSocketServer {
             removePlayer(uid);
             //从set中删除
             subOnlineCount();
+            //退出房间
+            List<Room> roomList = roomService.findRoomByUserAndStatus(uid, 0);
+            for (Room room : roomList) {
+                gameSocket.delUserInRoom(room.getId(), uid);
+            }
             log.info("用户【" + uid + "】退出，当前在线人数为:" + getOnlineCount());
         }
     }
