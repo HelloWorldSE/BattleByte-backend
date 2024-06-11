@@ -73,7 +73,7 @@ public class GameController {
     }
 
     @GetMapping("/getquestion")
-    public List<Question> getquestion(@RequestParam Integer id) {
+    public List<GameQuestionRecord> getquestion(@RequestParam Integer id) {
         return gameService.findByGameId(id);
     }
 
