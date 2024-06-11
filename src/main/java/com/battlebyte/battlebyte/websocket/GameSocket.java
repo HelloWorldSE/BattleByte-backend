@@ -558,6 +558,10 @@ public class GameSocket {
                     rank++;
                 }
             }
+            rank += 1;
+            if (HPMAP.get(userId) > 0) {
+                rank = 1;
+            }
         }
         userGameRecord.setRank(rank);
         gameService.save(userGameRecord);
