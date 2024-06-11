@@ -29,12 +29,15 @@ public class CurrentGame {
     //用户id，ac的题目数
     Map<Integer, Integer> acMAP;
 
+    Map<Integer, ArrayList<Integer>> acRecord = new HashMap<>();
+
     int currentQuestion = 0;
 
     private UserService userService;
 
     public CurrentGame() {
         userService = BeanContext.getApplicationContext().getBean(UserService.class);
+
     }
 
     Map<String, Integer> getHP() {
@@ -68,6 +71,4 @@ public class CurrentGame {
         else
             return false;
     }
-
-
 }

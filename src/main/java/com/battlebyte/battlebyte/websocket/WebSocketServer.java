@@ -216,7 +216,7 @@ public class WebSocketServer {
 
 
     private void test_AC_QUESTION(JSONObject data, int id) throws IOException {
-        gameSocket.acQuestion(uid);
+        gameSocket.acQuestion(uid,1);
     }
 
 
