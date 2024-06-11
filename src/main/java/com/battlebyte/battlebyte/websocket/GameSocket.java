@@ -2,10 +2,7 @@ package com.battlebyte.battlebyte.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.battlebyte.battlebyte.config.BeanContext;
-import com.battlebyte.battlebyte.entity.Game;
-import com.battlebyte.battlebyte.entity.Question;
-import com.battlebyte.battlebyte.entity.Room;
-import com.battlebyte.battlebyte.entity.UserGameRecord;
+import com.battlebyte.battlebyte.entity.*;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserProfileDTO;
 import com.battlebyte.battlebyte.service.GameService;
@@ -444,12 +441,14 @@ public class GameSocket {
     public ArrayList<Integer> getRoomQuestionId(int roomId) {
         Room room = roomService.findRoomById(roomId);
         int gameId = room.getGameId();
-        List<Question> questions = gameService.findByGameId(gameId);
 
+        List<GameQuestionRecord> gameQuestionRecords = gameService.findByGameId(gameId);
         ArrayList<Integer> questionId = new ArrayList<>();
-        for (Question question : questions) {
-            questionId.add(question.getId());
+        for (GameQuestionRecord gameQuestionRecord: gameQuestionRecords) {
+            questionId.add(gameQuestionRecord.getQuestionId());
         }
+
+
         return questionId;
     }
 

@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface GameQuestionDao extends JpaRepository<GameQuestionRecord, Integer> {
-    List<Question> findByGameId(Integer gameId);
+    List<GameQuestionRecord> findByGameId(Integer gameId);
 }

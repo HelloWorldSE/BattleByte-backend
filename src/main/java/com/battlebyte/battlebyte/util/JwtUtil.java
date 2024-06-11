@@ -15,6 +15,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    public static void main(String[] args) {
+        System.out.println(createToken(1, "123456"));
+    }
+
     public static String createToken(int userId, String secret){
         Date date = new Date(System.currentTimeMillis() + 72 * 3600 * 1000);
         Algorithm algorithm = Algorithm.HMAC256(secret);

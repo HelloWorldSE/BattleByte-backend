@@ -135,7 +135,7 @@ public class GameService {
         userGameRecordDao.save(userGameRecord);
     }
 
-    public List<Question> findByGameId(Integer gameId) {
+    public List<GameQuestionRecord> findByGameId(Integer gameId) {
         return gameQuestionDao.findByGameId(gameId);
     }
 
