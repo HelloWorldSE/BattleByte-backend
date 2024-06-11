@@ -356,7 +356,7 @@ public class GameSocket {
             //创建比赛
 
             Map<String, Integer> playerMap = new HashMap<>();
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < users.size(); i++) {
                 playerMap.put(Integer.toString(i), users.get(i));
             }
 
