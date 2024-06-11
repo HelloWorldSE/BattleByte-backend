@@ -40,7 +40,7 @@ public class FriendService {
         return friendDao.findFriend(id, name, uid, pageable);
     }
 
-    public void addFriend(Integer dest) {
+    public FriendApplication addFriend(Integer dest) {
         int sender = JwtUtil.getUserId();
         User user = userService.findById(sender);
         FriendApplication application = new FriendApplication();
@@ -64,13 +64,13 @@ public class FriendService {
         FriendApplication friendApplication = friendApplicationDao.getOne(dest, sender);
         if (friendApplication != null) {
             processApply(friendApplication.getId(), true);
-            return;
+            throw new ServiceException(0, "对方也向你发送过好友请求，现在你们已是好友");
         }
         application.setSenderId(sender);
         application.setReceiverId(dest);
         String text = user.getUserName() + "向你发送了好友申请！";
         messageService.send(JwtUtil.getUserId(), dest, text, 1);
-        friendApplicationDao.save(application);
+        return friendApplicationDao.save(application);
     }
 
     public void processApply(Integer id, boolean accept) {

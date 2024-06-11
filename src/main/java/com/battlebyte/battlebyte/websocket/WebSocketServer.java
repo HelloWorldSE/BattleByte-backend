@@ -195,11 +195,13 @@ public class WebSocketServer {
     }
 
     //收到好友申请
-    public void sendFriendInvitation(int fromId, int toId) throws IOException {
+    public void sendFriendInvitation(int id, int fromId, int toId, String name) throws IOException {
         JSONObject output = new JSONObject();
         JSONObject dataOutput = new JSONObject();
 
         dataOutput.put("friendid", fromId);
+        dataOutput.put("id", fromId);
+        dataOutput.put("name", name);
 
         output.put("type", "FRIEND_INVITATION");
         output.put("data", dataOutput);
