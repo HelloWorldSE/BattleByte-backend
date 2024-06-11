@@ -269,7 +269,7 @@ public class WebSocketServer {
                         Integer hpValue = entry.getValue();
                         Integer acValue = acMAP.get(userId);
 
-                        if (acValue != null && currentGameMap.contains(userId)) {
+                        if (acValue != null && currentGameMap.containsKey(userId)) {
                             // 计算差距
                             int difference = maxAcValue - acValue;
                             // 更新HPMAP的值
