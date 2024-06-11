@@ -71,9 +71,6 @@ public class GameService {
 
     // 保存userGameRecord记录
     public void save(UserGameRecord userGameRecord) {
-        if (userGameRecordDao.findByGameIdAndUserId(userGameRecord.getGameId(), userGameRecord.getUserId()) != null) {
-            throw new ServiceException("已存在此用户，添加失败");
-        }
         userGameRecordDao.save(userGameRecord);
     }
 

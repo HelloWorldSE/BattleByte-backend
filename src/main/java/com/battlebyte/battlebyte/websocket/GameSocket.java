@@ -347,7 +347,7 @@ public class GameSocket {
 
         //todo:修改currentGameMap+返回MatchEnter,数据库增加teamId
         ArrayList<Integer> users = getRoomUsersId(roomid);
-        if (users.size() >= 2) {
+        if (users.size() > 2) {
             //增加teamId到数据库
             for (int i = 0; i < users.size(); i++) {
                 gameService.setTeam(gameId, users.get(i), i);
@@ -388,7 +388,7 @@ public class GameSocket {
             }
 
             room.setStatus(1);
-            roomService.update(room);
+            roomService.updateRoom(room);
         } else {
             System.out.println("Room " + roomid + " size is less than 2");
         }
@@ -560,6 +560,7 @@ public class GameSocket {
             }
         }
         userGameRecord.setRank(rank);
+        gameService.save(userGameRecord);
         //清除当前比赛
         currentGameMap.remove(userId);
     }
