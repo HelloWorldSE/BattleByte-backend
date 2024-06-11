@@ -199,9 +199,9 @@ public class WebSocketServer {
         JSONObject output = new JSONObject();
         JSONObject dataOutput = new JSONObject();
 
-        dataOutput.put("friendid", fromId);
-        dataOutput.put("id", fromId);
-        dataOutput.put("name", name);
+        dataOutput.put("friendid", id); // 主键
+        dataOutput.put("id", fromId); // 发出者的id
+        dataOutput.put("name", name); // 发出者的名字
 
         output.put("type", "FRIEND_INVITATION");
         output.put("data", dataOutput);
