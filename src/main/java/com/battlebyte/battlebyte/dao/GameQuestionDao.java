@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface GameQuestionDao extends JpaRepository<GameQuestionRecord, Integer> {
     List<GameQuestionRecord> findByGameId(Integer gameId);
+    void deleteByGameIdAndQuestionId(Integer gid, Integer qid);
 }
