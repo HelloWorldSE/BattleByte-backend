@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 
 
 import static com.battlebyte.battlebyte.websocket.WebSocketServer.*;
+import static java.lang.Integer.max;
 
 public class GameSocket {
     private OJService ojService;
@@ -522,6 +523,26 @@ public class GameSocket {
         //加入ac的题目
         if (!currentGame.getAcRecord().get(userId).contains(questionIdBig)) {
             currentGame.getAcRecord().get(userId).add(questionIdBig);
+
+            Integer gameId = currentGameMap.get(userId).getGameId();
+            List<UserGameDTO> players = gameService.getPlayer(gameId);
+            for (UserGameDTO userGameDTO : players) {
+                //如果对方还在同一局游戏内
+                if (currentGameMap.containsKey(userGameDTO.getId()) && currentGameMap.get(userGameDTO.getId()).getGameId() == currentGame.getGameId()) {
+                    //输出逻辑
+                    JSONObject output = new JSONObject();
+                    JSONObject dataOutput = new JSONObject();
+
+                    dataOutput.put("change_id", userId);
+                    dataOutput.put("ac", currentGame.getAcRecord().get(userId).size());
+
+                    output.put("type", "AC_CHANGE");
+                    output.put("data", dataOutput);
+                    sendMsg(userGameDTO.getId(), output.toJSONString());
+                }
+            }
+
+
         }
         currentGame.getAcMAP().put(userId, currentGame.getAcRecord().get(userId).size());
 
