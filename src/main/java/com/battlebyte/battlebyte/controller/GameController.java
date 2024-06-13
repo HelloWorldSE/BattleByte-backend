@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.controller;
 
 import com.battlebyte.battlebyte.entity.*;
+import com.battlebyte.battlebyte.entity.dto.GameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.service.GameService;
@@ -68,6 +69,10 @@ public class GameController {
     }
 
     @GetMapping("/history")
+    public List<GameDTO> findHistory() {
+        return gameService.findHistory(JwtUtil.getUserId());
+    }
+
     public List<UserGameRecord> findUGRByUserId() {
         return gameService.findUGRByUserId(JwtUtil.getUserId());
     }

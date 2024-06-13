@@ -5,6 +5,7 @@ import com.battlebyte.battlebyte.dao.GameQuestionDao;
 import com.battlebyte.battlebyte.dao.RoomDao;
 import com.battlebyte.battlebyte.dao.UserGameRecordDao;
 import com.battlebyte.battlebyte.entity.*;
+import com.battlebyte.battlebyte.entity.dto.GameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import com.battlebyte.battlebyte.exception.ServiceException;
 import com.battlebyte.battlebyte.util.JwtUtil;
@@ -138,6 +139,10 @@ public class GameService {
 
     public List<GameQuestionRecord> findByGameId(Integer gameId) {
         return gameQuestionDao.findByGameId(gameId);
+    }
+
+    public List<GameDTO> findHistory(Integer id) {
+        return gameDao.findHistory(id);
     }
 
     /* ------------------  权限判断  -------------------- */
