@@ -78,7 +78,7 @@ public class WebSocketServer {
      * 连接关闭调用的方法
      */
     @OnClose
-    public void onClose() {
+    public void onClose() throws IOException {
         if (webSocketMap.containsKey(uid)) {
             webSocketMap.remove(uid);
             //取消匹配
@@ -89,6 +89,7 @@ public class WebSocketServer {
             List<Room> roomList = roomService.findRoomByUserAndStatus(uid, 0);
             for (Room room : roomList) {
                 gameSocket.delUserInRoom(room.getId(), uid);
+                gameSocket.sendRoomRefresh(room.getId());
             }
             log.info("用户【" + uid + "】退出，当前在线人数为:" + getOnlineCount());
         }

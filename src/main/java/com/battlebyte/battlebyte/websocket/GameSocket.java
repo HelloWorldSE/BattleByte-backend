@@ -89,7 +89,7 @@ public class GameSocket {
                 if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
                     winTeam(uid);
                 } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
-                    acQuestion(uid,dataResult.getInteger("problem"));
+                    acQuestion(uid, dataResult.getInteger("problem"));
                 }
             }
         }
@@ -211,11 +211,13 @@ public class GameSocket {
                 output.put("data", dataOutput);
 
                 sendMsg(uid, output.toJSONString());
-            } else{
+            } else {
                 //退出房间
                 List<Room> roomList = roomService.findRoomByUserAndStatus(uid, 0);
+                System.out.println(roomList);
                 for (Room room : roomList) {
                     delUserInRoom(room.getId(), uid);
+                    sendRoomRefresh(room.getId());
                 }
                 addUserInRoom(roomid, uid);
             }
@@ -237,6 +239,10 @@ public class GameSocket {
                 delUserInRoom(roomid, uid);
         }
 
+        sendRoomRefresh(roomid);
+    }
+
+    public void sendRoomRefresh(int roomid) throws IOException {
         //输出
         JSONObject output = new JSONObject();
         JSONObject dataOutput = new JSONObject();
