@@ -1,6 +1,7 @@
 package com.battlebyte.battlebyte.dao;
 
 import com.battlebyte.battlebyte.entity.Game;
+import com.battlebyte.battlebyte.entity.dto.GameDTO;
 import com.battlebyte.battlebyte.entity.dto.UserGameDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,7 @@ public interface GameDao extends JpaRepository<Game, Integer> {
     public List<UserGameDTO> getPlayer(Integer id);
 
     public Integer countById(Integer id);
+
+    @Query(value = "select game.id, game_type as gameType, date, `rank` from game, user_game_record where game.id = user_game_record.game_id and user_id = ?1", nativeQuery = true)
+    public List<GameDTO> findHistory(Integer id);
 }
