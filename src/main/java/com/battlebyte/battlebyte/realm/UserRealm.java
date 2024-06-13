@@ -50,14 +50,15 @@ public class UserRealm extends AuthorizingRealm {
             throw new UnknownAccountException();
         }
 
-//        if (!JwtUtil.verifierToken(accessToken, userId, user.getPassword())) {
-//            throw new IncorrectCredentialsException();
-//        }
-        try {
-            JwtUtil.verifierToken(accessToken, userId, user.getPassword());
-        } catch (JWTVerificationException e) {
+        if (!JwtUtil.verifierToken(accessToken, userId, user.getPassword())) {
             throw new IncorrectCredentialsException();
         }
+
+//        try {
+//            JwtUtil.verifierToken(accessToken, userId, user.getPassword());
+//        } catch (JWTVerificationException e) {
+//            throw new IncorrectCredentialsException();
+//        }
 
         if (JwtUtil.isExpire(accessToken)) {
             throw new ExpiredCredentialsException();
