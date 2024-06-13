@@ -85,8 +85,9 @@ public class UserService {
         }
         if (!(user.getPassword() == null || user.getPassword() == "")) {
             passwordCheck(user);
+        } else {
+            user.setPassword(null);
         }
-        user.setPassword(null);
         userDao.save(user);
     }
 
