@@ -14,6 +14,6 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     public Result exception(Exception e) {
         e.printStackTrace();
-        return Result.error(e.getMessage());
+        return Result.error("Unknown Error");
     }
 }
