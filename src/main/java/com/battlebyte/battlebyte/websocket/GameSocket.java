@@ -89,7 +89,7 @@ public class GameSocket {
                 if (currentGameMap.get(uid).getGameType().equals(1)) {//如果是单人模式
                     winTeam(uid);
                 } else if (currentGameMap.get(uid).getGameType().equals(2)) {//如果是大逃杀模式
-                    acQuestion(uid,dataResult.getInteger("problem"));
+                    acQuestion(uid, dataResult.getInteger("problem"));
                 }
             }
         }
