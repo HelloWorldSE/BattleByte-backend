@@ -211,8 +211,15 @@ public class GameSocket {
                 output.put("data", dataOutput);
 
                 sendMsg(uid, output.toJSONString());
-            } else
+            } else {
+                //退出房间
+                List<Room> roomList = roomService.findRoomByUserAndStatus(uid, 0);
+                for (Room room : roomList) {
+                    delUserInRoom(room.getId(), uid);
+                    sendRoomRefresh(room.getId());
+                }
                 addUserInRoom(roomid, uid);
+            }
         } else if (type.equals("out")) {
 
             if (!getRoomUsersId(roomid).contains(uid)) {
@@ -229,7 +236,10 @@ public class GameSocket {
             } else
                 delUserInRoom(roomid, uid);
         }
+        sendRoomRefresh(roomid);
+    }
 
+    public void sendRoomRefresh(int roomid) throws IOException {
         //输出
         JSONObject output = new JSONObject();
         JSONObject dataOutput = new JSONObject();
