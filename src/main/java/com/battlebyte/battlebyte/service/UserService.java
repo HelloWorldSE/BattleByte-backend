@@ -38,19 +38,31 @@ public class UserService {
         if (userDao.findByUserName(user.getUserName()) != null) {
             throw new ServiceException("用户名已存在");
         } else {
-            if (user.getPassword().length() <= 5) {
-                throw new ServiceException("密码长度过短！");
-            }
-            if (user.getUserName().length() < 2) {
-                throw new ServiceException("用户名长度过短！");
-            }
+            String password;
 
             try {
-                user.setPassword(RsaUtils.decrypt(user.getPassword()));
+                password = RsaUtils.decrypt(user.getPassword());
             } catch (Exception e) {
                 throw new ServiceException(2, "密码无法解密");
             }
 
+            if (user.getPassword().length() <= 5) {
+                throw new ServiceException("密码长度过短！");
+            }
+
+            if (user.getPassword().length() >= 20) {
+                throw new ServiceException("密码长度过长！");
+            }
+
+            if (user.getUserName().length() < 2) {
+                throw new ServiceException("用户名长度过短！");
+            }
+
+            if (user.getUserName().length() >= 20) {
+                throw new ServiceException("用户名长度过长！");
+            }
+
+            user.setPassword(password);
             User user1 = userDao.save(user);
             userDao.setRole(user1.getId(), 1); // default set role = user
         }
@@ -94,9 +106,31 @@ public class UserService {
         }
         if (!userDao.existsById(user.getId())) {
             throw new ServiceException("用户不存在！");
-        } else {
-            userDao.save(user);
         }
+        String password;
+        try {
+            password = RsaUtils.decrypt(user.getPassword());
+        } catch (Exception e) {
+            throw new ServiceException(2, "密码无法解密");
+        }
+
+        if (user.getPassword().length() <= 5) {
+            throw new ServiceException("密码长度过短！");
+        }
+
+        if (user.getPassword().length() >= 20) {
+            throw new ServiceException("密码长度过长！");
+        }
+
+        if (user.getUserName().length() < 2) {
+            throw new ServiceException("用户名长度过短！");
+        }
+
+        if (user.getUserName().length() >= 20) {
+            throw new ServiceException("用户名长度过长！");
+        }
+        user.setPassword(password);
+        userDao.save(user);
     }
 
     public User findById(Integer uid) {

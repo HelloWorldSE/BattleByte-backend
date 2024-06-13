@@ -20,11 +20,23 @@ public class RoomController {
 
     @PostMapping("/add")
     public Room addRoom(@RequestBody Room room) {
-        return roomService.addRoom(room);
+        if (room.getName().length() >= 20 || room.getName().length() <= 2) {
+            throw new ServiceException("房间名过长或过短");
+        }
+        Room room1 = null;
+        try {
+            room1 = roomService.addRoom(room);
+        } catch (Exception e) {
+            throw new ServiceException("添加失败");
+        }
+        return room1;
     }
 
     @PostMapping("update")
     public Room updateRoom(@RequestBody Room room) {
+        if (room.getName().length() >= 20 || room.getName().length() <= 2) {
+            throw new ServiceException("房间名过长或过短");
+        }
         return roomService.updateRoom(room);
     }
 
